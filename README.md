@@ -6,4 +6,4 @@ This project targets a smooth integration between spring-security-saml and Sprin
 
 ## Check out the spring-security-saml Sample
 
-In [spring-boot-security-saml](spring-boot-security-saml) there's a fully working Spring Boot app integrated with Spring Security SAML and several IdPs (SSOCircle, Ping Identity, OKTA, OpenLogin)
+In [spring-boot-security-saml-sample](spring-boot-security-saml-sample) there's a fully working Spring Boot app integrated with Spring Security SAML and several IdPs (SSOCircle, Ping Identity, OKTA, OpenLogin)
