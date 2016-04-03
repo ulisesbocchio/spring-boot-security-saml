@@ -39,6 +39,8 @@
                              Location="https://ulises-bocchio-dev.onelogin.com/trust/saml2/http-post/sso/529178"/>
         <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
                              Location="https://ulises-bocchio-dev.onelogin.com/trust/saml2/soap/sso/529178"/>
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                             Location="https://ulises-bocchio-dev.onelogin.com/trust/saml2/http-redirect/slo/529178"/>
     </IDPSSODescriptor>
     <ContactPerson contactType="technical">
         <SurName>Support</SurName>
