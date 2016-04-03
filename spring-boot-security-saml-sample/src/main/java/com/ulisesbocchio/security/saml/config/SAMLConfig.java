@@ -1,6 +1,7 @@
 package com.ulisesbocchio.security.saml.config;
 
 import com.google.common.collect.ImmutableMap;
+import com.ulisesbocchio.security.saml.certificate.KeystoreFactory;
 import com.ulisesbocchio.security.saml.spring.SpringResourceWrapperOpenSAMLResource;
 import com.ulisesbocchio.security.saml.spring.security.SAMLUserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -34,6 +36,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
+import java.security.KeyStore;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -113,8 +116,8 @@ public class SAMLConfig {
     }
 
     @Bean
-    public MetadataGeneratorFilter metadataGeneratorFilter() {
-        return new MetadataGeneratorFilter(metadataGenerator());
+    public MetadataGeneratorFilter metadataGeneratorFilter(MetadataGenerator metadataGenerator) {
+        return new MetadataGeneratorFilter(metadataGenerator);
     }
 
     @Bean
@@ -167,12 +170,12 @@ public class SAMLConfig {
     }
 
     @Bean
-    public MetadataGenerator metadataGenerator() {
+    public MetadataGenerator metadataGenerator(KeyManager keyManager) {
         MetadataGenerator generator = new MetadataGenerator();
         generator.setEntityId("localhost-demo");
         generator.setExtendedMetadata(extendedMetadata());
         generator.setIncludeDiscoveryExtension(false);
-        generator.setKeyManager(keyManager());
+        generator.setKeyManager(keyManager);
         return generator;
     }
 
@@ -229,19 +232,20 @@ public class SAMLConfig {
     }
 
     @Bean
-    public KeyManager keyManager() {
-        DefaultResourceLoader loader = new DefaultResourceLoader();
-        Resource storeFile = loader.getResource("classpath:/keystore.jks");
-        String storePass = "123456";
-        Map<String, String> passwords = ImmutableMap.of("ping", "123456");
-        String defaultKey = "ping";
-        return new JKSKeyManager(storeFile, storePass, passwords, defaultKey);
+    public KeystoreFactory keystoreFactory(ResourceLoader resourceLoader) {
+        return new KeystoreFactory(resourceLoader);
     }
 
     @Bean
-    public TLSProtocolConfigurer tlsProtocolConfigurer() {
+    public KeyManager keyManager(KeystoreFactory keystoreFactory) {
+        KeyStore keystore = keystoreFactory.loadKeystore("classpath:/localhost.cert", "classpath:/localhost.key.der", "localhost", "");
+        return new JKSKeyManager(keystore, ImmutableMap.of("localhost", ""), "localhost");
+    }
+
+    @Bean
+    public TLSProtocolConfigurer tlsProtocolConfigurer(KeyManager keyManager) {
         TLSProtocolConfigurer configurer = new TLSProtocolConfigurer();
-        configurer.setKeyManager(keyManager());
+        configurer.setKeyManager(keyManager);
         return configurer;
     }
 
