@@ -7,7 +7,8 @@ This sample uses the plain old spring-security-saml library to add SP capabiliti
 - [OneLogin](https://www.onelogin.com/)
 - [Ping One Clound] (https://www.pingidentity.com/en/products/pingone.html)
 - [OKTA](https://www.okta.com)
-- 
+
+
 ### Credentials ###
 
 Use the following credentials:
