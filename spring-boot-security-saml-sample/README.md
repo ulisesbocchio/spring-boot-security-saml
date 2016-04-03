@@ -14,5 +14,5 @@ Use the following credentials:
 
 - *SSO Circle:* Register with [SSO Circle] (http://www.ssocircle.com/en/) and use those credentials to login in the application.
 - *OneLogin:* user: dough1234321@gmail.com pass: Test1234!
-- *Ping One:* user: test pass: Test1234!
+- *Ping One:* user: dough1234321@gmail.com pass: Test1234!
 - *OKTA:* user: dough1234321@gmail.com pass: Test1234!
