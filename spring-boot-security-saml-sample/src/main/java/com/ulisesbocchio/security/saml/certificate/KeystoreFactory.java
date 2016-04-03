@@ -4,19 +4,15 @@ import lombok.SneakyThrows;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.security.saml.key.JKSKeyManager;
 import org.springframework.util.StreamUtils;
 
-import java.io.IOException;
-import java.security.*;
+import java.security.KeyFactory;
+import java.security.KeyStore;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Collections;
 
 /**
  * @author Ulises Bocchio
@@ -76,17 +72,5 @@ public class KeystoreFactory {
 
     public void setResourceLoader(DefaultResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
-    }
-
-    public static void main(String[] args) throws CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException, KeyStoreException {
-        ResourceLoader rl = new DefaultResourceLoader();
-        KeystoreFactory kf = new KeystoreFactory(rl);
-        KeyStore keyStore = kf.loadKeystore("classpath:/localhost.cert", "classpath:/localhost.key.der", "ping", "123456");
-
-        JKSKeyManager keyManager = new JKSKeyManager(keyStore, Collections.singletonMap("ping", "123456"), "ping");
-        keyManager.getAvailableCredentials().forEach(System.out::println);
-        System.out.println(keyManager.getDefaultCredential().getPrivateKey().getFormat());
-        System.out.println(keyManager.getDefaultCredential().getPublicKey().getFormat());
-
     }
 }
