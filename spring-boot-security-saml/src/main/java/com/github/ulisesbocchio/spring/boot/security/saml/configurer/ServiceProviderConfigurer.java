@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
  */
 public interface ServiceProviderConfigurer {
 
-    void configure(ServiceProviderSecurityConfigurer resources) throws Exception;
+    void configure(ServiceProviderSecurityBuilder serviceProvider) throws Exception;
 
     void configure(HttpSecurity http) throws Exception;
 }

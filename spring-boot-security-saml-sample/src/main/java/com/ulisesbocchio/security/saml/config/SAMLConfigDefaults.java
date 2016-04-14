@@ -55,13 +55,13 @@ public class SAMLConfigDefaults {
     }
 
     @Bean
-    public WebSSOProfileConsumerHoKImpl hokWebSSOProfile() {
-        return new WebSSOProfileConsumerHoKImpl();
+    public WebSSOProfileECPImpl ecpProfile() {
+        return new WebSSOProfileECPImpl();
     }
 
     @Bean
-    public WebSSOProfileECPImpl ecpProfile() {
-        return new WebSSOProfileECPImpl();
+    public WebSSOProfileHoKImpl hokWebSSOProfile() {
+        return new WebSSOProfileHoKImpl();
     }
 
     @Bean

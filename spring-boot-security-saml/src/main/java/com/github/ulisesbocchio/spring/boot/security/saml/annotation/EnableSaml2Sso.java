@@ -4,7 +4,8 @@ package com.github.ulisesbocchio.spring.boot.security.saml.annotation;
  * @author Ulises Bocchio
  */
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configuration.Saml2ServiceProviderSecurityConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.configuration.DefaultSAMLConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.configuration.SAML2ServiceProviderSecurityConfiguration;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.Saml2SsoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
@@ -17,6 +18,6 @@ import java.lang.annotation.*;
 @Documented
 @EnableOAuth2Client
 @EnableConfigurationProperties(Saml2SsoProperties.class)
-@Import({Saml2ServiceProviderSecurityConfiguration.class})
-public @interface EnableSaml2Sso {
+@Import({DefaultSAMLConfiguration.class, SAML2ServiceProviderSecurityConfiguration.class})
+public @interface EnableSAML2Sso {
 }

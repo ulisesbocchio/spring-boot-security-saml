@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
  */
 public class ServiceProviderConfigurerAdapter implements ServiceProviderConfigurer {
     @Override
-    public void configure(ServiceProviderSecurityConfigurer resources) throws Exception {
+    public void configure(ServiceProviderSecurityBuilder serviceProvider) throws Exception {
     }
 
     @Override
