@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
+import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.security.saml.parser.ParserPoolHolder;
 
 import java.util.Collections;

@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.saml.metadata.CachingMetadataManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.security.saml.metadata.MetadataManager;
@@ -29,7 +30,7 @@ public class ServiceProviderSecurityBuilder extends
         AbstractConfiguredSecurityBuilder<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>
         implements SecurityBuilder<ServiceProviderSecurityConfigurer>{
 
-    private List<ExtendedMetadataDelegate> metadataProviders;
+    private List<MetadataProvider> metadataProviders = new ArrayList<>();
 
     public ServiceProviderSecurityBuilder(ObjectPostProcessor<Object> objectPostProcessor) {
         super(objectPostProcessor);
@@ -37,15 +38,23 @@ public class ServiceProviderSecurityBuilder extends
 
     @Override
     protected ServiceProviderSecurityConfigurer performBuild() throws Exception {
-        return new ServiceProviderSecurityConfigurer();
+        MetadataManager metadataManager = getSharedObject(MetadataManager.class);
+        if(metadataManager == null) {
+            metadataManager = new CachingMetadataManager(metadataProviders);
+        } else {
+            metadataManager.setProviders(metadataProviders);
+        }
+        return new ServiceProviderSecurityConfigurer(metadataManager);
     }
 
-    public ServiceProviderSecurityBuilder metadataManager(MetadataManager metadataManager) {
+    public MetadataManagerConfigurer metadataManager(MetadataManager metadataManager) throws Exception {
+        metadataProviders.addAll(metadataManager.getProviders());
         setSharedObject(MetadataManager.class, metadataManager);
-        return this;
+        return getOrApply(new MetadataManagerConfigurer(this));
     }
 
     public MetadataManagerConfigurer metadataManager() throws Exception {
+        setSharedObject(MetadataManager.class, new CachingMetadataManager(metadataProviders));
         return getOrApply(new MetadataManagerConfigurer(this));
     }
 
@@ -59,7 +68,7 @@ public class ServiceProviderSecurityBuilder extends
     }
 
     protected void setMetadataProviders(List<ExtendedMetadataDelegate> metadataProviders) {
-        this.metadataProviders = metadataProviders;
+        this.metadataProviders.addAll(metadataProviders);
     }
 
     public static class MetadataManagerConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
