@@ -2,7 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configuration;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.Saml2SsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAML2SsoProperties;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.security.saml.parser.ParserPoolHolder;
 
 import java.util.Collections;
@@ -23,7 +22,7 @@ import java.util.function.Consumer;
  * @author Ulises Bocchio
  */
 @Configuration
-@EnableConfigurationProperties(Saml2SsoProperties.class)
+@EnableConfigurationProperties(SAML2SsoProperties.class)
 public class SAML2ServiceProviderSecurityConfiguration extends WebSecurityConfigurerAdapter implements Ordered {
 
     private List<ServiceProviderConfigurer> serviceProviderConfigurers = Collections.emptyList();
@@ -32,7 +31,7 @@ public class SAML2ServiceProviderSecurityConfiguration extends WebSecurityConfig
     private ObjectPostProcessor<Object> objectPostProcessor;
 
     @Autowired
-    private Saml2SsoProperties saml2SsoProperties;
+    private SAML2SsoProperties sAML2SsoProperties;
 
     @Autowired(required = false)
     private ExtendedMetadata extendedMetadata;
@@ -46,8 +45,8 @@ public class SAML2ServiceProviderSecurityConfiguration extends WebSecurityConfig
     protected void configure(HttpSecurity http) throws Exception {
         ServiceProviderSecurityBuilder securityConfigurer = new ServiceProviderSecurityBuilder(objectPostProcessor);
         securityConfigurer.setSharedObject(ParserPool.class, ParserPoolHolder.getPool());
-        securityConfigurer.setSharedObject(Saml2SsoProperties.class, saml2SsoProperties);
-        securityConfigurer.setSharedObject(ExtendedMetadata.class, extendedMetadata != null ? extendedMetadata : saml2SsoProperties.getExtendedMetadata());
+        securityConfigurer.setSharedObject(SAML2SsoProperties.class, sAML2SsoProperties);
+        securityConfigurer.setSharedObject(ExtendedMetadata.class, extendedMetadata != null ? extendedMetadata : sAML2SsoProperties.getExtendedMetadata());
         serviceProviderConfigurers.stream().forEach(propagate(c -> c.configure(http)));
         serviceProviderConfigurers.stream().forEach(propagate(c -> c.configure(securityConfigurer)));
         http.apply(securityConfigurer.build());

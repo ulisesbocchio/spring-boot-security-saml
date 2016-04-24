@@ -38,7 +38,11 @@ public class SpringBootSecuritySAMLDemoApplication {
 			serviceProvider
 					.metadataManager()
                     .metadataFilter(new RequiredValidUntilFilter())
-					.metadataProvider(metadataProvider());
+					.metadataProvider(metadataProvider())
+			.and()
+			.authenticationProvider()
+					.excludeCredential(false)
+					.forcePrincipalAsString(false);
 		}
 
         @Value("classpath:/idp-ssocircle.xml")
