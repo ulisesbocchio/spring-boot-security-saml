@@ -64,6 +64,12 @@ public class ServiceProviderSecurityBuilder extends
         MetadataDisplayFilter metadataDisplayFilter = getSharedObject(MetadataDisplayFilter.class);
         MetadataGeneratorFilter metadataGeneratorFilter = getSharedObject(MetadataGeneratorFilter.class);
 
+        getOrApply(new MetadataGeneratorConfigurer());
+
+        getOrApply(new KeyManagerConfigurer());
+
+        getOrApply(new TLSConfigurer());
+
         return new ServiceProviderSecurityConfigurer(metadataManager, authenticationProvider, samlProcessor,
                 samlLogoutFilter, samlLogoutProcessingFilter, metadataDisplayFilter, metadataGeneratorFilter);
     }
@@ -113,6 +119,18 @@ public class ServiceProviderSecurityBuilder extends
 
     public MetadataGeneratorConfigurer metadataGenerator() throws Exception {
         return getOrApply(new MetadataGeneratorConfigurer());
+    }
+
+    public SSOConfigurer sso() throws Exception {
+        return getOrApply(new SSOConfigurer());
+    }
+
+    public KeyManagerConfigurer keyManager() throws Exception {
+        return getOrApply(new KeyManagerConfigurer());
+    }
+
+    public TLSConfigurer tls() throws Exception {
+        return getOrApply(new TLSConfigurer());
     }
 
     /**
@@ -619,6 +637,50 @@ public class ServiceProviderSecurityBuilder extends
         }
     }
 
+    /**
+     * Configures Single Sign On filter for SAML Service Provider
+     */
+    public static class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
+        @Override
+        public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+            super.init(builder);
+        }
+
+        @Override
+        public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+            super.configure(builder);
+        }
+    }
+
+    /**
+     * Configures Single Sign On filter for SAML Service Provider
+     */
+    public static class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
+        @Override
+        public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+            super.init(builder);
+        }
+
+        @Override
+        public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+            super.configure(builder);
+        }
+    }
+
+    /**
+     * Configures Single Sign On filter for SAML Service Provider
+     */
+    public static class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
+        @Override
+        public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+            super.init(builder);
+        }
+
+        @Override
+        public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+            super.configure(builder);
+        }
+    }
     /**
      * Simple pass through User Details Service
      */
