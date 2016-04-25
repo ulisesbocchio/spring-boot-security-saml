@@ -1,13 +1,12 @@
 package com.github.ulisesbocchio.demo;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.annotation.EnableSAML2Sso;
+import com.github.ulisesbocchio.spring.boot.security.saml.annotation.EnableSAMLSso;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurerAdapter;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.SpringResourceWrapperOpenSAMLResource;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.RequiredValidUntilFilter;
 import org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider;
-import org.opensaml.saml2.metadata.provider.SignatureValidationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import java.util.Timer;
 
 @SpringBootApplication
-@EnableSAML2Sso
+@EnableSAMLSso
 public class SpringBootSecuritySAMLDemoApplication {
 
 	public static void main(String[] args) {

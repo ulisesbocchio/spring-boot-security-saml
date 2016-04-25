@@ -2,7 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configuration;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAML2SsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  * @author Ulises Bocchio
  */
 @Configuration
-@EnableConfigurationProperties(SAML2SsoProperties.class)
+@EnableConfigurationProperties(SAMLSsoProperties.class)
 public class SAML2ServiceProviderSecurityConfiguration extends WebSecurityConfigurerAdapter implements Ordered {
 
     private List<ServiceProviderConfigurer> serviceProviderConfigurers = Collections.emptyList();
@@ -31,7 +31,7 @@ public class SAML2ServiceProviderSecurityConfiguration extends WebSecurityConfig
     private ObjectPostProcessor<Object> objectPostProcessor;
 
     @Autowired
-    private SAML2SsoProperties sAML2SsoProperties;
+    private SAMLSsoProperties sAMLSsoProperties;
 
     @Autowired(required = false)
     private ExtendedMetadata extendedMetadata;
@@ -45,8 +45,8 @@ public class SAML2ServiceProviderSecurityConfiguration extends WebSecurityConfig
     protected void configure(HttpSecurity http) throws Exception {
         ServiceProviderSecurityBuilder securityConfigurer = new ServiceProviderSecurityBuilder(objectPostProcessor);
         securityConfigurer.setSharedObject(ParserPool.class, ParserPoolHolder.getPool());
-        securityConfigurer.setSharedObject(SAML2SsoProperties.class, sAML2SsoProperties);
-        securityConfigurer.setSharedObject(ExtendedMetadata.class, extendedMetadata != null ? extendedMetadata : sAML2SsoProperties.getExtendedMetadata());
+        securityConfigurer.setSharedObject(SAMLSsoProperties.class, sAMLSsoProperties);
+        securityConfigurer.setSharedObject(ExtendedMetadata.class, extendedMetadata != null ? extendedMetadata : sAMLSsoProperties.getExtendedMetadata());
         serviceProviderConfigurers.stream().forEach(propagate(c -> c.configure(http)));
         serviceProviderConfigurers.stream().forEach(propagate(c -> c.configure(securityConfigurer)));
         http.apply(securityConfigurer.build());

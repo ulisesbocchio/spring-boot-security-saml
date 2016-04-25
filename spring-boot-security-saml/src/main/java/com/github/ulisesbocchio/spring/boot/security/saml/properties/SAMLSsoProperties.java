@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -13,7 +13,7 @@ import java.util.Set;
  */
 @ConfigurationProperties(prefix = "saml.sso")
 @Data
-public class SAML2SsoProperties {
+public class SAMLSsoProperties {
     @NestedConfigurationProperty
     private IdentityProvidersConfiguration idps = new IdentityProvidersConfiguration();
     @NestedConfigurationProperty
@@ -22,9 +22,36 @@ public class SAML2SsoProperties {
     private ExtendedMetadataDelegateConfiguration extendedDelegate = new ExtendedMetadataDelegateConfiguration();
     @NestedConfigurationProperty
     private AuthenticationProviderConfiguration authenticationProvider = new AuthenticationProviderConfiguration();
-    private String metadataLocation = "classpath:idp-metadata.xml";
     @NestedConfigurationProperty
     private SAMLProcessorConfiguration samlProcessor = new SAMLProcessorConfiguration();
+    @NestedConfigurationProperty
+    private LogoutConfiguration logout = new LogoutConfiguration();
+    @NestedConfigurationProperty
+    private MetadataGeneratorConfiguration metadataGenerator = new MetadataGeneratorConfiguration();
+
+    @Data
+    public static class MetadataGeneratorConfiguration {
+        private String metadataURL = "/saml/metadata";
+        private String entityId = "localhost";
+        private boolean wantAssertionSigned = true;
+        private boolean requestSigned = true;
+        private Collection<String> nameId = null;
+        private String entityBaseURL = null;
+        private Collection<String> bindingsHoKSSO = null;
+        private Collection<String> bindingsSLO = null;
+        private Collection<String> bindingsSSO = null;
+        private int assertionConsumerIndex = 0;
+        private boolean includeDiscoveryExtension = true;
+    }
+
+    @Data
+    public static class LogoutConfiguration {
+        private String defaultTargetURL = "/";
+        private String logoutURL = "/saml/logout";
+        private String singleLogoutURL = "saml/SingleLogout";
+        private boolean clearAuthentication = true;
+        private boolean invalidateSession = false;
+    }
 
     @Data
     public static class AuthenticationProviderConfiguration {
@@ -34,7 +61,7 @@ public class SAML2SsoProperties {
 
     @Data
     public static class IdentityProvidersConfiguration {
-        private Set<String> metadataLocations= new HashSet<>();
+        private String metadataLocation = "classpath:idp-metadata.xml";
     }
 
     @Data
