@@ -3,9 +3,13 @@ package com.github.ulisesbocchio.spring.boot.security.saml.properties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
+import org.springframework.security.saml.websso.WebSSOProfileOptions;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,6 +32,57 @@ public class SAMLSsoProperties {
     private LogoutConfiguration logout = new LogoutConfiguration();
     @NestedConfigurationProperty
     private MetadataGeneratorConfiguration metadataGenerator = new MetadataGeneratorConfiguration();
+    private String defaultSuccessURL = "/";
+    private String defaultFailureURL = "/error";
+    private String ssoProcessingURL = "/saml/SSO";
+    private boolean enableSsoHoK = true;
+    private String discoveryProcessingURL = "/saml/discovery";
+    private String idpSelectionPageURL = "/idpselection";
+    private String ssoLoginURL = "saml/login";
+    @NestedConfigurationProperty
+    private WebSSOProfileOptions profileOptions = new WebSSOProfileOptions();
+    @NestedConfigurationProperty
+    private KeystoreConfiguration keystore = new KeystoreConfiguration();
+    private TLSConfiguration tls = new TLSConfiguration();
+
+    @Data
+    public static class TLSConfiguration {
+        /**
+         * Name of protocol to register.
+         */
+        private String protocolName = "https";
+
+        /*
+         * Default port of protocol.
+         */
+        private int protocolPort = 443;
+
+        /**
+         * Storage for all available keys.
+         */
+        private KeyManager keyManager;
+
+        /**
+         * Hostname verifier to use for verification of SSL connections, e.g. for ArtifactResolution.
+         */
+        private String sslHostnameVerification = "default";
+
+        /**
+         * Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is null
+         * all keys in the keyStore will be treated as trusted.
+         */
+        private Set<String> trustedKeys;
+    }
+
+    @Data
+    public static class KeystoreConfiguration {
+        String publicKeyPEMLocation;
+        String privateKeyDERLocation;
+        String storeLocation;
+        String storePass;
+        Map<String, String> keyPasswords = new HashMap<>();
+        String defaultKey = "localhost";
+    }
 
     @Data
     public static class MetadataGeneratorConfiguration {

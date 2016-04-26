@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -36,6 +37,9 @@ public class SAML2ServiceProviderSecurityConfiguration extends WebSecurityConfig
     @Autowired(required = false)
     private ExtendedMetadata extendedMetadata;
 
+    @Autowired
+    private ResourceLoader resourceLoader;
+
     @Override
     public int getOrder() {
         return 1;
@@ -45,6 +49,7 @@ public class SAML2ServiceProviderSecurityConfiguration extends WebSecurityConfig
     protected void configure(HttpSecurity http) throws Exception {
         ServiceProviderSecurityBuilder securityConfigurer = new ServiceProviderSecurityBuilder(objectPostProcessor);
         securityConfigurer.setSharedObject(ParserPool.class, ParserPoolHolder.getPool());
+        securityConfigurer.setSharedObject(ResourceLoader.class, resourceLoader);
         securityConfigurer.setSharedObject(SAMLSsoProperties.class, sAMLSsoProperties);
         securityConfigurer.setSharedObject(ExtendedMetadata.class, extendedMetadata != null ? extendedMetadata : sAMLSsoProperties.getExtendedMetadata());
         serviceProviderConfigurers.stream().forEach(propagate(c -> c.configure(http)));

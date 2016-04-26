@@ -1,8 +1,10 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.resource.KeystoreFactory;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.SpringResourceWrapperOpenSAMLResource;
 import com.github.ulisesbocchio.spring.boot.security.saml.user.SAMLUserDetails;
+import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -12,25 +14,34 @@ import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.saml.SAMLAuthenticationProvider;
-import org.springframework.security.saml.SAMLCredential;
-import org.springframework.security.saml.SAMLLogoutFilter;
-import org.springframework.security.saml.SAMLLogoutProcessingFilter;
+import org.springframework.security.saml.*;
+import org.springframework.security.saml.key.EmptyKeyManager;
+import org.springframework.security.saml.key.JKSKeyManager;
+import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.metadata.*;
 import org.springframework.security.saml.processor.*;
+import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.security.saml.util.VelocityFactory;
 import org.springframework.security.saml.websso.ArtifactResolutionProfileImpl;
+import org.springframework.security.saml.websso.WebSSOProfileOptions;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
+import java.security.KeyStore;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,18 +71,24 @@ public class ServiceProviderSecurityBuilder extends
         SAMLLogoutFilter samlLogoutFilter = getSharedObject(SAMLLogoutFilter.class);
         SAMLLogoutProcessingFilter samlLogoutProcessingFilter = getSharedObject(SAMLLogoutProcessingFilter.class);
 
-        getOrApply(new MetadataManagerConfigurer());
+        getOrApply(new MetadataGeneratorConfigurer());
         MetadataDisplayFilter metadataDisplayFilter = getSharedObject(MetadataDisplayFilter.class);
         MetadataGeneratorFilter metadataGeneratorFilter = getSharedObject(MetadataGeneratorFilter.class);
 
-        getOrApply(new MetadataGeneratorConfigurer());
+        getOrApply(new SSOConfigurer());
+        SAMLProcessingFilter sAMLProcessingFilter = getSharedObject(SAMLProcessingFilter.class);
+        SAMLWebSSOHoKProcessingFilter sAMLWebSSOHoKProcessingFilter = getSharedObject(SAMLWebSSOHoKProcessingFilter.class);
+        SAMLDiscovery sAMLDiscovery = getSharedObject(SAMLDiscovery.class);
+        SAMLEntryPoint sAMLEntryPoint = getSharedObject(SAMLEntryPoint.class);
 
         getOrApply(new KeyManagerConfigurer());
+        KeyManager keyManager = getSharedObject(KeyManager.class);
 
         getOrApply(new TLSConfigurer());
 
         return new ServiceProviderSecurityConfigurer(metadataManager, authenticationProvider, samlProcessor,
-                samlLogoutFilter, samlLogoutProcessingFilter, metadataDisplayFilter, metadataGeneratorFilter);
+                samlLogoutFilter, samlLogoutProcessingFilter, metadataDisplayFilter, metadataGeneratorFilter,
+                sAMLProcessingFilter, sAMLWebSSOHoKProcessingFilter, sAMLDiscovery, sAMLEntryPoint, keyManager);
     }
 
     public MetadataManagerConfigurer metadataManager(MetadataManager metadataManager) throws Exception {
@@ -129,6 +146,11 @@ public class ServiceProviderSecurityBuilder extends
         return getOrApply(new KeyManagerConfigurer());
     }
 
+    public KeyManagerConfigurer keyManager(KeyManager keyManager) throws Exception {
+        setSharedObject(KeyManager.class, keyManager);
+        return getOrApply(new KeyManagerConfigurer());
+    }
+
     public TLSConfigurer tls() throws Exception {
         return getOrApply(new TLSConfigurer());
     }
@@ -147,19 +169,22 @@ public class ServiceProviderSecurityBuilder extends
         private Set<String> metadataTrustedKeys = null;
         private Boolean requireValidMetadata = null;
         private List<String> metadataProviderLocations = new ArrayList<>();
+        private MetadataManager metadataManager;
+        private ResourceLoader resourceLoader;
 
         @Override
         public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+            metadataManager = builder.getSharedObject(MetadataManager.class);
+            resourceLoader = builder.getSharedObject(ResourceLoader.class);
         }
 
         @Override
         public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-            MetadataManager metadataManager = builder.getSharedObject(MetadataManager.class);
 
             if(metadataProviders.size() == 0 && metadataProviderLocations.size() > 0) {
                 for(String metadataLocation : metadataProviderLocations) {
                     MetadataProvider defaultProvider = new ResourceBackedMetadataProvider(new Timer(),
-                            new SpringResourceWrapperOpenSAMLResource(new ClassPathResource(metadataLocation)));
+                            new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(metadataLocation)));
                     metadataProviders.add(defaultProvider);
                 }
             }
@@ -168,7 +193,7 @@ public class ServiceProviderSecurityBuilder extends
                 String metadataLocation = builder.getSharedObject(SAMLSsoProperties.class).getIdps().getMetadataLocation();
                 for(String location : metadataLocation.split(",")) {
                     MetadataProvider defaultProvider = new ResourceBackedMetadataProvider(new Timer(),
-                            new SpringResourceWrapperOpenSAMLResource(new ClassPathResource(location.trim())));
+                            new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(location.trim())));
                     metadataProviders.add(defaultProvider);
                 }
             }
@@ -285,12 +310,17 @@ public class ServiceProviderSecurityBuilder extends
         private Boolean excludeCredential = null;
         private Boolean forcePrincipalAsString = null;
         private SAMLUserDetailsService userDetailsService;
+        private SAMLAuthenticationProvider authenticationProvider;
+        private SAMLSsoProperties config;
+
+        @Override
+        public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+            authenticationProvider = builder.getSharedObject(SAMLAuthenticationProvider.class);
+            config = builder.getSharedObject(SAMLSsoProperties.class);
+        }
 
         @Override
         public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-            SAMLAuthenticationProvider authenticationProvider = builder.getSharedObject(SAMLAuthenticationProvider.class);
-            SAMLSsoProperties config = builder.getSharedObject(SAMLSsoProperties.class);
-
             if(excludeCredential == null) {
                 excludeCredential = config.getAuthenticationProvider().isExcludeCredential();
             }
@@ -305,11 +335,6 @@ public class ServiceProviderSecurityBuilder extends
                 userDetailsService = new SimpleSAMLUserDetailsService();
             }
             authenticationProvider.setUserDetails(postProcess(userDetailsService));
-        }
-
-        @Override
-        public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.init(builder);
         }
 
         public AuthenticationProviderConfigurer excludeCredential(boolean excludeCredential) {
@@ -344,16 +369,17 @@ public class ServiceProviderSecurityBuilder extends
         HTTPArtifactBinding artifactBinding;
         HTTPSOAP11Binding soapBinding;
         HTTPPAOS11Binding paosBinding;
+        private SAMLSsoProperties.SAMLProcessorConfiguration processorConfig;
+        private ParserPool parserPool;
 
         @Override
         public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.init(builder);
+            processorConfig = builder.getSharedObject(SAMLSsoProperties.class).getSamlProcessor();
+            parserPool = builder.getSharedObject(ParserPool.class);
         }
 
         @Override
         public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-            SAMLSsoProperties.SAMLProcessorConfiguration processorConfig = builder.getSharedObject(SAMLSsoProperties.class).getSamlProcessor();
-            ParserPool parserPool = builder.getSharedObject(ParserPool.class);
             List<SAMLBinding> bindings = new ArrayList<>();
 
             if(Optional.ofNullable(redirect).orElseGet(processorConfig::isRedirect)) {
@@ -451,16 +477,15 @@ public class ServiceProviderSecurityBuilder extends
         private LogoutSuccessHandler successHandler;
         private LogoutHandler localHandler;
         private LogoutHandler globalHandler;
+        private SAMLSsoProperties.LogoutConfiguration config;
 
         @Override
         public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.init(builder);
+            config = builder.getSharedObject(SAMLSsoProperties.class).getLogout();
         }
 
         @Override
         public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-            SAMLSsoProperties.LogoutConfiguration config = builder.getSharedObject(SAMLSsoProperties.class).getLogout();
-
             if(successHandler == null) {
                 SimpleUrlLogoutSuccessHandler successLogoutHandler = new SimpleUrlLogoutSuccessHandler();
                 successLogoutHandler.setDefaultTargetUrl(Optional.ofNullable(defaultTargetURL).orElseGet(config::getDefaultTargetURL));
@@ -548,17 +573,15 @@ public class ServiceProviderSecurityBuilder extends
         private Collection<String> bindingsSSO;
         private Integer assertionConsumerIndex;
         private Boolean includeDiscoveryExtension;
+        private SAMLSsoProperties.MetadataGeneratorConfiguration config;
 
         @Override
         public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.init(builder);
+            config = builder.getSharedObject(SAMLSsoProperties.class).getMetadataGenerator();
         }
 
         @Override
         public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-
-            SAMLSsoProperties.MetadataGeneratorConfiguration config = builder.getSharedObject(SAMLSsoProperties.class).getMetadataGenerator();
-
             MetadataDisplayFilter metadataDisplayFilter = new MetadataDisplayFilter();
             metadataDisplayFilter.setFilterProcessesUrl(Optional.ofNullable(metadataURL).orElseGet(config::getMetadataURL));
 
@@ -641,14 +664,115 @@ public class ServiceProviderSecurityBuilder extends
      * Configures Single Sign On filter for SAML Service Provider
      */
     public static class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
+
+        private String defaultSuccessURL;
+        private AuthenticationSuccessHandler successHandler;
+        private String defaultFailureURL;
+        private AuthenticationFailureHandler failureHandler;
+        private String ssoProcessingURL;
+        private Boolean enableSsoHoK;
+        private String discoveryProcessingURL;
+        private String idpSelectionPageURL;
+        private String ssoLoginURL;
+        private WebSSOProfileOptions profileOptions;
+        private AuthenticationManager authenticationManager;
+        private SAMLSsoProperties config;
+
         @Override
         public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.init(builder);
+            authenticationManager = builder.getSharedObject(AuthenticationManager.class);
+            config = builder.getSharedObject(SAMLSsoProperties.class);
         }
 
         @Override
         public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.configure(builder);
+            if(successHandler == null) {
+                SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+                successRedirectHandler.setDefaultTargetUrl(Optional.ofNullable(defaultSuccessURL).orElseGet(config::getDefaultSuccessURL));
+                successHandler = successRedirectHandler;
+            }
+
+            if(failureHandler == null) {
+                SimpleUrlAuthenticationFailureHandler authenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler();
+                authenticationFailureHandler.setDefaultFailureUrl(Optional.ofNullable(defaultFailureURL).orElseGet(config::getDefaultFailureURL));
+                failureHandler = authenticationFailureHandler;
+            }
+
+
+            SAMLProcessingFilter ssoFilter = new SAMLProcessingFilter();
+            ssoFilter.setAuthenticationManager(authenticationManager);
+            ssoFilter.setAuthenticationSuccessHandler(successHandler);
+            ssoFilter.setAuthenticationFailureHandler(failureHandler);
+            ssoFilter.setFilterProcessesUrl(Optional.ofNullable(ssoProcessingURL).orElseGet(config::getSsoProcessingURL));
+            builder.setSharedObject(SAMLProcessingFilter.class, ssoFilter);
+
+            if(Optional.ofNullable(enableSsoHoK).orElseGet(config::isEnableSsoHoK)) {
+                SAMLWebSSOHoKProcessingFilter ssoHoKFilter = new SAMLWebSSOHoKProcessingFilter();
+                ssoHoKFilter.setAuthenticationSuccessHandler(successHandler);
+                ssoHoKFilter.setAuthenticationManager(authenticationManager);
+                ssoHoKFilter.setAuthenticationFailureHandler(failureHandler);
+                builder.setSharedObject(SAMLWebSSOHoKProcessingFilter.class, ssoHoKFilter);
+            }
+
+            SAMLDiscovery discoveryFilter = new SAMLDiscovery();
+            discoveryFilter.setFilterProcessesUrl(Optional.ofNullable(discoveryProcessingURL).orElseGet(config::getDiscoveryProcessingURL));
+            discoveryFilter.setIdpSelectionPath(Optional.ofNullable(idpSelectionPageURL).orElseGet(config::getIdpSelectionPageURL));
+            builder.setSharedObject(SAMLDiscovery.class, discoveryFilter);
+
+            SAMLEntryPoint entryPoint = new SAMLEntryPoint();
+            entryPoint.setDefaultProfileOptions(Optional.ofNullable(profileOptions).orElseGet(config::getProfileOptions));
+            entryPoint.setFilterProcessesUrl(Optional.ofNullable(ssoLoginURL).orElseGet(config::getSsoLoginURL));
+            builder.setSharedObject(SAMLEntryPoint.class, entryPoint);
+        }
+
+        public SSOConfigurer defaultSuccessURL(String defaultSuccessURL) {
+            this.defaultSuccessURL = defaultSuccessURL;
+            return this;
+        }
+
+        public SSOConfigurer successHandler(AuthenticationSuccessHandler successHandler) {
+            this.successHandler = successHandler;
+            return this;
+        }
+
+        public SSOConfigurer defaultFailureURL(String defaultFailureURL) {
+            this.defaultFailureURL = defaultFailureURL;
+            return this;
+        }
+
+        public SSOConfigurer failureHandler(AuthenticationFailureHandler failureHandler) {
+            this.failureHandler = failureHandler;
+            return this;
+        }
+
+        public SSOConfigurer ssoProcessingURL(String ssoProcessingURL) {
+            this.ssoProcessingURL = ssoProcessingURL;
+            return this;
+        }
+
+        public SSOConfigurer enableSsoHoK(boolean enableSsoHoK) {
+            this.enableSsoHoK = enableSsoHoK;
+            return this;
+        }
+
+        public SSOConfigurer discoveryProcessingURL(String discoveryProcessingURL) {
+            this.discoveryProcessingURL = discoveryProcessingURL;
+            return this;
+        }
+
+        public SSOConfigurer idpSelectionPageURL(String idpSelectionPageURL) {
+            this.idpSelectionPageURL = idpSelectionPageURL;
+            return this;
+        }
+
+        public SSOConfigurer ssoLoginURL(String ssoLoginURL) {
+            this.ssoLoginURL = ssoLoginURL;
+            return this;
+        }
+
+        public SSOConfigurer profileOptions(WebSSOProfileOptions profileOptions) {
+            this.profileOptions = profileOptions;
+            return this;
         }
     }
 
@@ -656,14 +780,96 @@ public class ServiceProviderSecurityBuilder extends
      * Configures Single Sign On filter for SAML Service Provider
      */
     public static class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
+
+        private KeyManager keyManager;
+        private KeyStore keyStore;
+        private String publicKeyPEMLocation;
+        private String privateKeyDERLocation;
+        private String storeLocation;
+        private String storePass;
+        private Map<String, String> keyPasswords;
+        private String defaultKey;
+        private SAMLSsoProperties.KeystoreConfiguration config;
+        private KeystoreFactory keystoreFactory;
+        private ResourceLoader resourceLoader;
+
         @Override
         public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.init(builder);
+            keyManager = builder.getSharedObject(KeyManager.class);
+            config = builder.getSharedObject(SAMLSsoProperties.class).getKeystore();
+            resourceLoader = builder.getSharedObject(ResourceLoader.class);
+            keystoreFactory = new KeystoreFactory(resourceLoader);
         }
 
         @Override
         public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.configure(builder);
+            privateKeyDERLocation = Optional.ofNullable(privateKeyDERLocation).orElseGet(config::getPrivateKeyDERLocation);
+            publicKeyPEMLocation = Optional.ofNullable(publicKeyPEMLocation).orElseGet(config::getPublicKeyPEMLocation);
+            defaultKey = Optional.ofNullable(defaultKey).orElseGet(config::getDefaultKey);
+            keyPasswords = Optional.ofNullable(keyPasswords).orElseGet(config::getKeyPasswords);
+            storePass = Optional.ofNullable(storePass).orElseGet(config::getStorePass);
+            storeLocation = Optional.ofNullable(storeLocation).orElseGet(config::getStoreLocation);
+
+            if(keyManager == null) {
+                if(keyStore == null) {
+                    if(storeLocation == null) {
+                        if(privateKeyDERLocation == null || publicKeyPEMLocation == null) {
+                            keyManager = new EmptyKeyManager();
+                        } else {
+                            keyStore = keystoreFactory.loadKeystore(publicKeyPEMLocation, privateKeyDERLocation, defaultKey, "");
+                            keyManager = new JKSKeyManager(keyStore, keyPasswords, defaultKey);
+                        }
+                    } else {
+                        keyManager = new JKSKeyManager(resourceLoader.getResource(storeLocation), storePass, keyPasswords, defaultKey);
+                    }
+                } else {
+                    keyManager = new JKSKeyManager(keyStore, keyPasswords, defaultKey);
+                }
+            }
+            builder.setSharedObject(KeyManager.class, keyManager);
+        }
+
+        public KeyManagerConfigurer keyStore(KeyStore keyStore) {
+            this.keyStore = keyStore;
+            return this;
+        }
+
+        public KeyManagerConfigurer publicKeyPEMLocation(String publicKeyPEMLocation) {
+            this.publicKeyPEMLocation = publicKeyPEMLocation;
+            return this;
+        }
+
+        public KeyManagerConfigurer privateKeyDERLocation(String privateKeyDERLocation) {
+            this.privateKeyDERLocation = privateKeyDERLocation;
+            return this;
+        }
+
+        public KeyManagerConfigurer storeLocation(String storeLocation) {
+            this.storeLocation = storeLocation;
+            return this;
+        }
+
+        public KeyManagerConfigurer storePass(String storePass) {
+            this.storePass = storePass;
+            return this;
+        }
+
+        public KeyManagerConfigurer keyPasswords(Map<String, String> keyPasswords) {
+            this.keyPasswords = keyPasswords;
+            return this;
+        }
+
+        public KeyManagerConfigurer keyPassword(String key, String password) {
+            if(keyPasswords == null) {
+                keyPasswords = new HashMap<>();
+            }
+            keyPasswords.put(key, password);
+            return this;
+        }
+
+        public KeyManagerConfigurer defaultKey(String defaultKey) {
+            this.defaultKey = defaultKey;
+            return this;
         }
     }
 
@@ -671,14 +877,49 @@ public class ServiceProviderSecurityBuilder extends
      * Configures Single Sign On filter for SAML Service Provider
      */
     public static class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
+
+        private String protocolName;
+        private Integer protocolPort;
+        private KeyManager keyManager;
+        private String sslHostnameVerification;
+        private Set<String> trustedKeys;
+        private SAMLSsoProperties.TLSConfiguration config;
+
         @Override
         public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.init(builder);
+            keyManager = builder.getSharedObject(KeyManager.class);
+            config = builder.getSharedObject(SAMLSsoProperties.class).getTls();
         }
 
         @Override
         public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-            super.configure(builder);
+            TLSProtocolConfigurer configurer = new TLSProtocolConfigurer();
+            configurer.setProtocolName(Optional.ofNullable(protocolName).orElseGet(config::getProtocolName));
+            configurer.setProtocolPort(Optional.ofNullable(protocolPort).orElseGet(config::getProtocolPort));
+            configurer.setSslHostnameVerification(Optional.ofNullable(sslHostnameVerification).orElseGet(config::getSslHostnameVerification));
+            configurer.setTrustedKeys(Optional.ofNullable(trustedKeys).orElseGet(config::getTrustedKeys));
+            configurer.setKeyManager(keyManager);
+            builder.setSharedObject(TLSProtocolConfigurer.class, configurer);
+        }
+
+        public TLSConfigurer protocolName(String protocolName) {
+            this.protocolName = protocolName;
+            return this;
+        }
+
+        public TLSConfigurer protocolPort(int protocolPort) {
+            this.protocolPort = protocolPort;
+            return this;
+        }
+
+        public TLSConfigurer sslHostnameVerification(String sslHostnameVerification) {
+            this.sslHostnameVerification = sslHostnameVerification;
+            return this;
+        }
+
+        public TLSConfigurer trustedKeys(Set<String> trustedKeys) {
+            this.trustedKeys = trustedKeys;
+            return this;
         }
     }
     /**
