@@ -58,6 +58,8 @@ public class ServiceProviderSecurityBuilder extends
 
     @Override
     protected ServiceProviderSecurityConfigurer performBuild() throws Exception {
+        SAMLSsoProperties config = getSharedObject(SAMLSsoProperties.class);
+
         getOrApply(new MetadataManagerConfigurer());
         MetadataManager metadataManager = getSharedObject(MetadataManager.class);
 
@@ -85,10 +87,12 @@ public class ServiceProviderSecurityBuilder extends
         KeyManager keyManager = getSharedObject(KeyManager.class);
 
         getOrApply(new TLSConfigurer());
+        TLSProtocolConfigurer tlsProtocolConfigurer = getSharedObject(TLSProtocolConfigurer.class);
 
-        return new ServiceProviderSecurityConfigurer(metadataManager, authenticationProvider, samlProcessor,
+        return new ServiceProviderSecurityConfigurer(config, metadataManager, authenticationProvider, samlProcessor,
                 samlLogoutFilter, samlLogoutProcessingFilter, metadataDisplayFilter, metadataGeneratorFilter,
-                sAMLProcessingFilter, sAMLWebSSOHoKProcessingFilter, sAMLDiscovery, sAMLEntryPoint, keyManager);
+                sAMLProcessingFilter, sAMLWebSSOHoKProcessingFilter, sAMLDiscovery, sAMLEntryPoint, keyManager,
+                tlsProtocolConfigurer);
     }
 
     public MetadataManagerConfigurer metadataManager(MetadataManager metadataManager) throws Exception {

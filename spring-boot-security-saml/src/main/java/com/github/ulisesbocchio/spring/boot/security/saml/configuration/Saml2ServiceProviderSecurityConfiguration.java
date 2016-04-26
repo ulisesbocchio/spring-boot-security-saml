@@ -3,6 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configuration;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import lombok.SneakyThrows;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -62,6 +63,7 @@ public class SAML2ServiceProviderSecurityConfiguration extends WebSecurityConfig
         this.serviceProviderConfigurers = serviceProviderConfigurers;
     }
 
+    @SneakyThrows
     private <T, E extends Throwable> Consumer<T> propagate(UnsafeConsumer<T, E> consumer) {
         return t -> {
             try {
