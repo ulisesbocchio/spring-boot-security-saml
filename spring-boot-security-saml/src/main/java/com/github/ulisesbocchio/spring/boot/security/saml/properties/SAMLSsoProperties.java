@@ -43,7 +43,17 @@ public class SAMLSsoProperties {
     private WebSSOProfileOptions profileOptions = new WebSSOProfileOptions();
     @NestedConfigurationProperty
     private KeystoreConfiguration keystore = new KeystoreConfiguration();
+    @NestedConfigurationProperty
     private TLSConfiguration tls = new TLSConfiguration();
+    @NestedConfigurationProperty
+    private MetadataManagerConfiguration metadataManager = new MetadataManagerConfiguration();
+
+    @Data
+    public static class MetadataManagerConfiguration {
+        private String defaultIDP;
+        private String hostedSPName;
+        private Integer refreshCheckInterval;
+    }
 
     @Data
     public static class TLSConfiguration {

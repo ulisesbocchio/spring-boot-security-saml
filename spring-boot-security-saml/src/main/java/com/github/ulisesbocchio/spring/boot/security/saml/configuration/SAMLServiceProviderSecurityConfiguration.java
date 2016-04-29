@@ -3,6 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configuration;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml.metadata.CachingMetadataManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
@@ -35,8 +34,6 @@ import static com.github.ulisesbocchio.spring.boot.security.saml.util.Functional
  */
 @Configuration
 @EnableConfigurationProperties(SAMLSsoProperties.class)
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
 public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private List<ServiceProviderConfigurer> serviceProviderConfigurers = Collections.emptyList();
@@ -69,19 +66,21 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        ServiceProviderSecurityBuilder securityConfigurer = new ServiceProviderSecurityBuilder(beanFactory);
-        securityConfigurer.setSharedObject(ParserPool.class, ParserPoolHolder.getPool());
-        securityConfigurer.setSharedObject(MetadataManager.class, metadataManager);
-        securityConfigurer.setSharedObject(WebSSOProfileConsumerImpl.class, (WebSSOProfileConsumerImpl) webSSOProfileConsumer);
-        securityConfigurer.setSharedObject(WebSSOProfileConsumerHoKImpl.class, hokWebSSOProfileConsumer);
-        securityConfigurer.setSharedObject(ServiceProviderEndpoints.class, new ServiceProviderEndpoints());
-        securityConfigurer.setSharedObject(ResourceLoader.class, resourceLoader);
-        securityConfigurer.setSharedObject(SAMLSsoProperties.class, sAMLSsoProperties);
-        securityConfigurer.setSharedObject(ExtendedMetadata.class, extendedMetadata != null ? extendedMetadata : sAMLSsoProperties.getExtendedMetadata());
-        securityConfigurer.setSharedObject(AuthenticationManager.class, authenticationManager());
+        ServiceProviderSecurityBuilder securityConfigurerBuilder = new ServiceProviderSecurityBuilder(beanFactory);
+        securityConfigurerBuilder.setSharedObject(ParserPool.class, ParserPoolHolder.getPool());
+        securityConfigurerBuilder.setSharedObject(MetadataManager.class, metadataManager);
+        securityConfigurerBuilder.setSharedObject(WebSSOProfileConsumerImpl.class, (WebSSOProfileConsumerImpl) webSSOProfileConsumer);
+        securityConfigurerBuilder.setSharedObject(WebSSOProfileConsumerHoKImpl.class, hokWebSSOProfileConsumer);
+        securityConfigurerBuilder.setSharedObject(ServiceProviderEndpoints.class, new ServiceProviderEndpoints());
+        securityConfigurerBuilder.setSharedObject(ResourceLoader.class, resourceLoader);
+        securityConfigurerBuilder.setSharedObject(SAMLSsoProperties.class, sAMLSsoProperties);
+        securityConfigurerBuilder.setSharedObject(ExtendedMetadata.class, extendedMetadata != null ? extendedMetadata : sAMLSsoProperties.getExtendedMetadata());
+        securityConfigurerBuilder.setSharedObject(AuthenticationManager.class, authenticationManager());
         serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(http)));
-        serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(securityConfigurer)));
-        http.apply(securityConfigurer.build());
+        serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(securityConfigurerBuilder)));
+        ServiceProviderSecurityConfigurer securityConfigurer = securityConfigurerBuilder.build();
+        securityConfigurer.init(http);
+        securityConfigurer.configure(http);
     }
 
     @Autowired(required = false)

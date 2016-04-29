@@ -44,7 +44,8 @@ public class SpringBootSecuritySAMLDemoApplication {
             serviceProvider.logout()
                     .defaultTargetURL("/");
             serviceProvider.metadataManager()
-                    .metadataLocations("classpath:/idp-ssocircle.xml");
+                    .metadataLocations("classpath:/idp-ssocircle.xml")
+                    .refreshCheckInterval(0);
         }
     }
 }

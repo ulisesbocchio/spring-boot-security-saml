@@ -61,6 +61,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
 
         MetadataGeneratorFilter metadataGeneratorFilter = new MetadataGeneratorFilter(metadataGenerator);
 
+        builder.setSharedObject(MetadataGenerator.class, metadataGenerator);
         builder.setSharedObject(MetadataDisplayFilter.class, metadataDisplayFilter);
         builder.setSharedObject(MetadataGeneratorFilter.class, metadataGeneratorFilter);
     }

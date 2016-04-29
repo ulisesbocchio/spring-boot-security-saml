@@ -79,6 +79,7 @@ public class ServiceProviderSecurityBuilder extends
         postProcess(metadataDisplayFilter);
         MetadataGeneratorFilter metadataGeneratorFilter = getSharedObject(MetadataGeneratorFilter.class);
         postProcess(metadataGeneratorFilter);
+        MetadataGenerator metadataGenerator = getSharedObject(MetadataGenerator.class);
 
         SAMLProcessingFilter sAMLProcessingFilter = getSharedObject(SAMLProcessingFilter.class);
         postProcess(sAMLProcessingFilter);
@@ -92,6 +93,7 @@ public class ServiceProviderSecurityBuilder extends
         KeyManager keyManager = getSharedObject(KeyManager.class);
         postProcess(keyManager);
         metadataManager.setKeyManager(keyManager);
+        metadataGenerator.setKeyManager(keyManager);
 
         TLSProtocolConfigurer tlsProtocolConfigurer = getSharedObject(TLSProtocolConfigurer.class);
         postProcess(tlsProtocolConfigurer);
