@@ -5,6 +5,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.processor.*;
@@ -20,7 +21,9 @@ import java.util.Optional;
  */
 public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
 
+    private static VelocityEngine velocityEngine;
     private SAMLProcessor sAMLProcessor;
+    private SAMLProcessor sAMLProcessorBean;
     private Boolean redirect = null;
     private Boolean post = null;
     private Boolean artifact = null;
@@ -39,44 +42,58 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
         this.sAMLProcessor = sAMLProcessor;
     }
 
+    public SAMLProcessorConfigurer() {
+
+    }
+
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+        sAMLProcessorBean = builder.getSharedObject(SAMLProcessor.class);
         processorConfig = builder.getSharedObject(SAMLSsoProperties.class).getSamlProcessor();
         parserPool = builder.getSharedObject(ParserPool.class);
     }
 
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-        if(sAMLProcessor == null) {
-            List<SAMLBinding> bindings = new ArrayList<>();
+        if(sAMLProcessorBean == null) {
+            if(sAMLProcessor == null) {
+                List<SAMLBinding> bindings = new ArrayList<>();
 
-            if(Optional.ofNullable(redirect).orElseGet(processorConfig::isRedirect)) {
-                bindings.add(postProcess(new HTTPRedirectDeflateBinding(parserPool)));
+                if(Optional.ofNullable(redirect).orElseGet(processorConfig::isRedirect)) {
+                    bindings.add(postProcess(new HTTPRedirectDeflateBinding(parserPool)));
+                }
+
+                if(Optional.ofNullable(post).orElseGet(processorConfig::isRedirect)) {
+                    bindings.add(postProcess(new HTTPPostBinding(parserPool, getVelocityEngine())));
+                }
+
+                if(Optional.ofNullable(artifact).orElseGet(processorConfig::isArtifact)) {
+                    HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+                    ArtifactResolutionProfileImpl artifactResolutionProfile = new ArtifactResolutionProfileImpl(httpClient);
+                    HTTPSOAP11Binding soapBinding = new HTTPSOAP11Binding(parserPool);
+                    artifactResolutionProfile.setProcessor(new SAMLProcessorImpl(soapBinding));
+                    bindings.add(postProcess(new HTTPArtifactBinding(parserPool, getVelocityEngine(), artifactResolutionProfile)));
+                }
+
+                if(Optional.ofNullable(soap).orElseGet(processorConfig::isSoap)) {
+                    bindings.add(postProcess(new HTTPSOAP11Binding(parserPool)));
+                }
+
+                if(Optional.ofNullable(paos).orElseGet(processorConfig::isPaos)) {
+                    bindings.add(postProcess(new HTTPPAOS11Binding(parserPool)));
+                }
+                sAMLProcessor = new SAMLProcessorImpl(bindings);
             }
 
-            if(Optional.ofNullable(post).orElseGet(processorConfig::isRedirect)) {
-                bindings.add(postProcess(new HTTPPostBinding(parserPool, VelocityFactory.getEngine())));
-            }
-
-            if(Optional.ofNullable(artifact).orElseGet(processorConfig::isArtifact)) {
-                HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
-                ArtifactResolutionProfileImpl artifactResolutionProfile = new ArtifactResolutionProfileImpl(httpClient);
-                HTTPSOAP11Binding soapBinding = new HTTPSOAP11Binding(parserPool);
-                artifactResolutionProfile.setProcessor(new SAMLProcessorImpl(soapBinding));
-                bindings.add(postProcess(new HTTPArtifactBinding(parserPool, VelocityFactory.getEngine(), artifactResolutionProfile)));
-            }
-
-            if(Optional.ofNullable(soap).orElseGet(processorConfig::isSoap)) {
-                bindings.add(postProcess(new HTTPSOAP11Binding(parserPool)));
-            }
-
-            if(Optional.ofNullable(paos).orElseGet(processorConfig::isPaos)) {
-                bindings.add(postProcess(new HTTPPAOS11Binding(parserPool)));
-            }
-            sAMLProcessor = new SAMLProcessorImpl(bindings);
+            builder.setSharedObject(SAMLProcessor.class, sAMLProcessor);
         }
+    }
 
-        builder.setSharedObject(SAMLProcessor.class, sAMLProcessor);
+    private VelocityEngine getVelocityEngine() {
+        if(velocityEngine == null) {
+            velocityEngine = VelocityFactory.getEngine();
+        }
+        return velocityEngine;
     }
 
     public SAMLProcessorConfigurer disableRedirectBinding() {

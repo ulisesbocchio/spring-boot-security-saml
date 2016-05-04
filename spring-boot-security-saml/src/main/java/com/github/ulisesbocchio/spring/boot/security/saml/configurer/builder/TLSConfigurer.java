@@ -4,7 +4,6 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
-import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 
 import java.util.Optional;
@@ -17,14 +16,12 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
 
     private String protocolName;
     private Integer protocolPort;
-    private KeyManager keyManager;
     private String sslHostnameVerification;
     private Set<String> trustedKeys;
     private SAMLSsoProperties.TLSConfiguration config;
 
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-        keyManager = builder.getSharedObject(KeyManager.class);
         config = builder.getSharedObject(SAMLSsoProperties.class).getTls();
     }
 
@@ -35,7 +32,6 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         configurer.setProtocolPort(Optional.ofNullable(protocolPort).orElseGet(config::getProtocolPort));
         configurer.setSslHostnameVerification(Optional.ofNullable(sslHostnameVerification).orElseGet(config::getSslHostnameVerification));
         configurer.setTrustedKeys(Optional.ofNullable(trustedKeys).orElseGet(config::getTrustedKeys));
-        configurer.setKeyManager(keyManager);
         builder.setSharedObject(TLSProtocolConfigurer.class, configurer);
     }
 

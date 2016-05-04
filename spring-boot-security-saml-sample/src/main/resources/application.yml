@@ -3,4 +3,4 @@ management:
     enabled: false
   context-path: "/manage"
 
-logging.level.org.springframework.security: DEBUG
+logging.level.org.springframework.security.saml: DEBUG

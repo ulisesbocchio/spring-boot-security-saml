@@ -21,6 +21,7 @@ import java.util.Optional;
 public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
 
     private KeyManager keyManager;
+    private KeyManager keyManagerBean;
     private KeyStore keyStore;
     private String publicKeyPEMLocation;
     private String privateKeyDERLocation;
@@ -36,8 +37,13 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
         this.keyManager = keyManager;
     }
 
+    public KeyManagerConfigurer() {
+
+    }
+
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+        keyManagerBean = builder.getSharedObject(KeyManager.class);
         config = builder.getSharedObject(SAMLSsoProperties.class).getKeystore();
         resourceLoader = builder.getSharedObject(ResourceLoader.class);
         keystoreFactory = new KeystoreFactory(resourceLoader);
@@ -52,20 +58,22 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
         storePass = Optional.ofNullable(storePass).orElseGet(config::getStorePass);
         storeLocation = Optional.ofNullable(storeLocation).orElseGet(config::getStoreLocation);
 
-        if(keyManager == null) {
-            if(keyStore == null) {
-                if(storeLocation == null) {
-                    if(privateKeyDERLocation == null || publicKeyPEMLocation == null) {
-                        keyManager = new EmptyKeyManager();
+        if(keyManagerBean == null) {
+            if(keyManager == null) {
+                if(keyStore == null) {
+                    if(storeLocation == null) {
+                        if(privateKeyDERLocation == null || publicKeyPEMLocation == null) {
+                            keyManager = new EmptyKeyManager();
+                        } else {
+                            keyStore = keystoreFactory.loadKeystore(publicKeyPEMLocation, privateKeyDERLocation, defaultKey, "");
+                            keyManager = new JKSKeyManager(keyStore, keyPasswords, defaultKey);
+                        }
                     } else {
-                        keyStore = keystoreFactory.loadKeystore(publicKeyPEMLocation, privateKeyDERLocation, defaultKey, "");
-                        keyManager = new JKSKeyManager(keyStore, keyPasswords, defaultKey);
+                        keyManager = new JKSKeyManager(resourceLoader.getResource(storeLocation), storePass, keyPasswords, defaultKey);
                     }
                 } else {
-                    keyManager = new JKSKeyManager(resourceLoader.getResource(storeLocation), storePass, keyPasswords, defaultKey);
+                    keyManager = new JKSKeyManager(keyStore, keyPasswords, defaultKey);
                 }
-            } else {
-                keyManager = new JKSKeyManager(keyStore, keyPasswords, defaultKey);
             }
         }
         builder.setSharedObject(KeyManager.class, keyManager);

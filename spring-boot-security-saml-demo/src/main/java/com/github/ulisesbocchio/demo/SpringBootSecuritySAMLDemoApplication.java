@@ -38,14 +38,25 @@ public class SpringBootSecuritySAMLDemoApplication {
 
         @Override
         public void configure(ServiceProviderSecurityBuilder serviceProvider) throws Exception {
-            serviceProvider.sso()
-                    .defaultSuccessURL("/home")
-                    .idpSelectionPageURL("/idpselection");
-            serviceProvider.logout()
-                    .defaultTargetURL("/");
-            serviceProvider.metadataManager()
-                    .metadataLocations("classpath:/idp-ssocircle.xml")
-                    .refreshCheckInterval(0);
+            serviceProvider
+                .metadataGenerator()
+                .entityId("localhost-demo")
+            .and()
+                .sso()
+                .defaultSuccessURL("/home")
+                .idpSelectionPageURL("/idpselection")
+            .and()
+                .logout()
+                .defaultTargetURL("/")
+            .and()
+                .metadataManager()
+                .metadataLocations("classpath:/idp-ssocircle.xml")
+                .refreshCheckInterval(0)
+            .and()
+                .keyManager()
+                .privateKeyDERLocation("classpath:/localhost.key.der")
+                .publicKeyPEMLocation("classpath:/localhost.cert");
+
         }
     }
 }

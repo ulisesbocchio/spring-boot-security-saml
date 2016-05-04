@@ -14,6 +14,7 @@ import org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
+import org.springframework.security.saml.metadata.CachingMetadataManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
 import org.springframework.security.saml.metadata.MetadataManager;
@@ -39,48 +40,67 @@ import java.util.stream.Collectors;
     private Integer refreshCheckInterval;
     private List<String> metadataProviderLocations = new ArrayList<>();
     private MetadataManager metadataManager;
+    private MetadataManager metadataManagerBean;
     private ResourceLoader resourceLoader;
     private ExtendedMetadataDelegateConfiguration extendedDelegateConfig;
     private MetadataManagerConfiguration managerConfig;
 
+    public MetadataManagerConfigurer(MetadataManager metadataManager) {
+        this.metadataManager = metadataManager;
+    }
+
+    public MetadataManagerConfigurer() {
+    }
+
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
         resourceLoader = builder.getSharedObject(ResourceLoader.class);
-        metadataManager = builder.getSharedObject(MetadataManager.class);
+        metadataManagerBean = builder.getSharedObject(MetadataManager.class);
         extendedDelegateConfig = getBuilder().getSharedObject(SAMLSsoProperties.class).getExtendedDelegate();
         managerConfig = builder.getSharedObject(SAMLSsoProperties.class).getMetadataManager();
     }
 
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-        if(metadataProviders.size() == 0 && metadataProviderLocations.size() > 0) {
-            for(String metadataLocation : metadataProviderLocations) {
-                MetadataProvider defaultProvider = new ResourceBackedMetadataProvider(new Timer(),
-                        new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(metadataLocation)));
-                metadataProviders.add(defaultProvider);
+        if(metadataManagerBean == null) {
+            if(metadataManager == null) {
+                metadataManager = new CachingMetadataManager(null);
             }
+
+            if(metadataProviders.size() == 0 && metadataProviderLocations.size() > 0) {
+                for(String metadataLocation : metadataProviderLocations) {
+                    MetadataProvider providerFromLocation = new ResourceBackedMetadataProvider(new Timer(),
+                            new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(metadataLocation)));
+                    metadataProviders.add(postProcess(providerFromLocation));
+                }
+            }
+
+            if(metadataProviders.size() == 0) {
+                String metadataLocation = builder.getSharedObject(SAMLSsoProperties.class).getIdps().getMetadataLocation();
+                for(String location : metadataLocation.split(",")) {
+                    MetadataProvider providerFromProperties = new ResourceBackedMetadataProvider(new Timer(),
+                            new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(location.trim())));
+                    metadataProviders.add(postProcess(providerFromProperties));
+                }
+            }
+
+            Optional.ofNullable(Optional.ofNullable(defaultIDP).orElseGet(managerConfig::getDefaultIDP))
+                    .ifPresent(metadataManager::setDefaultIDP);
+            Optional.ofNullable(Optional.ofNullable(hostedSPName).orElseGet(managerConfig::getHostedSPName))
+                    .ifPresent(metadataManager::setHostedSPName);
+            Optional.ofNullable(Optional.ofNullable(refreshCheckInterval).orElseGet(managerConfig::getRefreshCheckInterval))
+                    .ifPresent(metadataManager::setRefreshCheckInterval);
+
+            List<MetadataProvider> extendedMetadataDelegates = metadataProviders.stream()
+                    .map(this::setParserPool)
+                    .map(this::getExtendedProvider)
+                    .collect(Collectors.toList());
+
+
+            metadataManager.setProviders(extendedMetadataDelegates);
+            builder.setSharedObject(MetadataManager.class, metadataManager);
         }
 
-        if(metadataProviders.size() == 0) {
-            String metadataLocation = builder.getSharedObject(SAMLSsoProperties.class).getIdps().getMetadataLocation();
-            for(String location : metadataLocation.split(",")) {
-                MetadataProvider defaultProvider = new ResourceBackedMetadataProvider(new Timer(),
-                        new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(location.trim())));
-                metadataProviders.add(defaultProvider);
-            }
-        }
-        Optional.ofNullable(Optional.ofNullable(defaultIDP).orElseGet(managerConfig::getDefaultIDP))
-                .ifPresent(metadataManager::setDefaultIDP);
-        Optional.ofNullable(Optional.ofNullable(hostedSPName).orElseGet(managerConfig::getHostedSPName))
-                .ifPresent(metadataManager::setHostedSPName);
-        Optional.ofNullable(Optional.ofNullable(refreshCheckInterval).orElseGet(managerConfig::getRefreshCheckInterval))
-                .ifPresent(metadataManager::setRefreshCheckInterval);
-
-        List<MetadataProvider> extendedMetadataDelegates = metadataProviders.stream()
-            .map(this::setParserPool)
-            .map(this::getExtendedProvider)
-            .collect(Collectors.toList());
-        metadataManager.setProviders(extendedMetadataDelegates);
     }
 
     private MetadataProvider setParserPool(MetadataProvider provider) {

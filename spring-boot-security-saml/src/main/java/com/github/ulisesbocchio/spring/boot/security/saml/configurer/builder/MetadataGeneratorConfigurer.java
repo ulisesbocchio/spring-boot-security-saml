@@ -32,11 +32,13 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     private Boolean includeDiscoveryExtension;
     private SAMLSsoProperties.MetadataGeneratorConfiguration config;
     private ServiceProviderEndpoints endpoints;
+    private ExtendedMetadata extendedMetadata;
 
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
         config = builder.getSharedObject(SAMLSsoProperties.class).getMetadataGenerator();
         endpoints = builder.getSharedObject(ServiceProviderEndpoints.class);
+        extendedMetadata = builder.getSharedObject(ExtendedMetadata.class);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
 
         MetadataGenerator metadataGenerator = new MetadataGenerator();
         metadataGenerator.setEntityId(Optional.ofNullable(entityId).orElseGet(config::getEntityId));
-        metadataGenerator.setExtendedMetadata(builder.getSharedObject(ExtendedMetadata.class));
+        metadataGenerator.setExtendedMetadata(extendedMetadata);
         metadataGenerator.setWantAssertionSigned(Optional.ofNullable(wantAssertionSigned).orElseGet(config::isWantAssertionSigned));
         metadataGenerator.setRequestSigned(Optional.ofNullable(requestSigned).orElseGet(config::isRequestSigned));
         metadataGenerator.setNameID(Optional.ofNullable(nameId).orElseGet(config::getNameId));

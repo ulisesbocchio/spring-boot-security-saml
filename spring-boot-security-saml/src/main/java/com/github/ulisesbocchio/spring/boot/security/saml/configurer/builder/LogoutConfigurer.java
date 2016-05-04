@@ -42,21 +42,18 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
             defaultTargetURL = Optional.ofNullable(defaultTargetURL).orElseGet(config::getDefaultTargetURL);
             successLogoutHandler.setDefaultTargetUrl(defaultTargetURL);
             endpoints.setDefaultTargetURL(defaultTargetURL);
-            successHandler = successLogoutHandler;
+            successHandler = postProcess(successLogoutHandler);
         }
 
         if(localHandler == null) {
             SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
             logoutHandler.setInvalidateHttpSession(Optional.ofNullable(invalidateSession).orElseGet(config::isInvalidateSession));
             logoutHandler.setClearAuthentication(Optional.ofNullable(clearAuthentication).orElseGet(config::isClearAuthentication));
-            localHandler = logoutHandler;
+            localHandler = postProcess(logoutHandler);
         }
 
         if(globalHandler == null) {
-            SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-            logoutHandler.setInvalidateHttpSession(Optional.ofNullable(invalidateSession).orElseGet(config::isInvalidateSession));
-            logoutHandler.setClearAuthentication(Optional.ofNullable(clearAuthentication).orElseGet(config::isClearAuthentication));
-            globalHandler = logoutHandler;
+            globalHandler = localHandler;
         }
 
         SAMLLogoutFilter samlLogoutFilter = new SAMLLogoutFilter(successHandler, new LogoutHandler[]{localHandler}, new LogoutHandler[]{globalHandler});

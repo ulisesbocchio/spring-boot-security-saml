@@ -1,7 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.saml.*;
@@ -12,7 +11,6 @@ import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.security.saml.processor.SAMLProcessor;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.Filter;
@@ -64,6 +62,7 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
 
     @Override
     public void init(HttpSecurity builder) throws Exception {
+        metadataManager.setRefreshRequired(true);
         postProcess(metadataManager);
         postProcess(authenticationProvider);
         postProcess(samlProcessor);
@@ -72,7 +71,7 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
         postProcess(metadataDisplayFilter);
         postProcess(metadataGeneratorFilter);
         postProcess(sAMLProcessingFilter);
-        if(sAMLWebSSOHoKProcessingFilter != null) {
+        if (sAMLWebSSOHoKProcessingFilter != null) {
             postProcess(sAMLWebSSOHoKProcessingFilter);
         }
         postProcess(sAMLDiscovery);
@@ -84,34 +83,34 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
-            .httpBasic()
-            .disable();
+                .httpBasic()
+                .disable();
         http
-            .csrf()
-            .disable();
+                .csrf()
+                .disable();
         //http
-            addFilterAfter(http, metadataGeneratorFilter);
-            addFilterAfter(http, metadataDisplayFilter);
-            addFilterAfter(http, sAMLEntryPoint);
-            addFilterAfter(http, sAMLProcessingFilter);
-            addFilterAfter(http, sAMLWebSSOHoKProcessingFilter);
-            addFilterAfter(http, samlLogoutProcessingFilter);
-            addFilterAfter(http, sAMLDiscovery);
-            addFilterAfter(http, samlLogoutFilter);
+        addFilterAfter(http, metadataGeneratorFilter);
+        addFilterAfter(http, metadataDisplayFilter);
+        addFilterAfter(http, sAMLEntryPoint);
+        addFilterAfter(http, sAMLProcessingFilter);
+        addFilterAfter(http, sAMLWebSSOHoKProcessingFilter);
+        addFilterAfter(http, samlLogoutProcessingFilter);
+        addFilterAfter(http, sAMLDiscovery);
+        addFilterAfter(http, samlLogoutFilter);
         http
-            .authorizeRequests()
-            .requestMatchers(endpoints.getRequestMatcher()).permitAll()
-            .anyRequest().authenticated();
+                .authorizeRequests()
+                .requestMatchers(endpoints.getRequestMatcher()).permitAll()
+                .anyRequest().authenticated();
         http
-            .exceptionHandling()
-            .authenticationEntryPoint(sAMLEntryPoint);
+                .exceptionHandling()
+                .authenticationEntryPoint(sAMLEntryPoint);
         http
-            .logout()
-            .disable();
+                .logout()
+                .disable();
     }
 
     private void addFilterAfter(HttpSecurity http, Filter filterBeingAdded) {
-        if(filterBeingAdded != null) {
+        if (filterBeingAdded != null) {
             http.addFilterAfter(filterBeingAdded, lastFilterClass);
             lastFilterClass = filterBeingAdded.getClass();
         }

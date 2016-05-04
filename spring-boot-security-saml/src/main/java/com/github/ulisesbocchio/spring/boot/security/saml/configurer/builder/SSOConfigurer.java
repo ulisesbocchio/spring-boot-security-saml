@@ -49,7 +49,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         if(successHandler == null) {
             SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
             successRedirectHandler.setDefaultTargetUrl(Optional.ofNullable(defaultSuccessURL).orElseGet(config::getDefaultSuccessURL));
-            successHandler = successRedirectHandler;
+            successHandler = postProcess(successRedirectHandler);
         }
 
         if(failureHandler == null) {
@@ -57,7 +57,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
             defaultFailureURL = Optional.ofNullable(defaultFailureURL).orElseGet(config::getDefaultFailureURL);
             endpoints.setDefaultFailureURL(defaultFailureURL);
             authenticationFailureHandler.setDefaultFailureUrl(defaultFailureURL);
-            failureHandler = authenticationFailureHandler;
+            failureHandler = postProcess(authenticationFailureHandler);
         }
 
 

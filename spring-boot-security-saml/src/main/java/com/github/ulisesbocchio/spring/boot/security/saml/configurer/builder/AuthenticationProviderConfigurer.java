@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
+import java.util.Optional;
+
 /**
  * Configures Authentication Provider
  */
@@ -17,7 +19,7 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
     private Boolean forcePrincipalAsString = null;
     private SAMLUserDetailsService userDetailsService;
     private SAMLAuthenticationProvider authenticationProvider;
-    private SAMLSsoProperties config;
+    private SAMLSsoProperties.AuthenticationProviderConfiguration config;
 
     public AuthenticationProviderConfigurer(SAMLAuthenticationProvider provider) {
         authenticationProvider = provider;
@@ -25,25 +27,19 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
 
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-        config = builder.getSharedObject(SAMLSsoProperties.class);
+        config = builder.getSharedObject(SAMLSsoProperties.class).getAuthenticationProvider();
     }
 
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-        if(excludeCredential == null) {
-            excludeCredential = config.getAuthenticationProvider().isExcludeCredential();
-        }
-        authenticationProvider.setExcludeCredential(excludeCredential);
+        authenticationProvider.setExcludeCredential(Optional.ofNullable(excludeCredential).
+                orElseGet(config::isExcludeCredential));
 
-        if(forcePrincipalAsString == null) {
-            forcePrincipalAsString = config.getAuthenticationProvider().isForcePrincipalAsString();
-        }
-        authenticationProvider.setForcePrincipalAsString(forcePrincipalAsString);
+        authenticationProvider.setForcePrincipalAsString(Optional.ofNullable(forcePrincipalAsString)
+                .orElseGet(config::isForcePrincipalAsString));
 
-        if(userDetailsService == null) {
-            userDetailsService = new SimpleSAMLUserDetailsService();
-        }
-        authenticationProvider.setUserDetails(postProcess(userDetailsService));
+        authenticationProvider.setUserDetails(postProcess(Optional.ofNullable(userDetailsService)
+                .orElseGet(SimpleSAMLUserDetailsService::new)));
 
         builder.setSharedObject(SAMLAuthenticationProvider.class, authenticationProvider);
     }
