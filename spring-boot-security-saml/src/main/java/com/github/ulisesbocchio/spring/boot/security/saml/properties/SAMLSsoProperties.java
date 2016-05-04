@@ -7,10 +7,7 @@ import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Ulises Bocchio
@@ -90,7 +87,7 @@ public class SAMLSsoProperties {
         String privateKeyDERLocation;
         String storeLocation;
         String storePass;
-        Map<String, String> keyPasswords = new HashMap<>();
+        Map<String, String> keyPasswords = Collections.singletonMap("localhost", "");
         String defaultKey = "localhost";
     }
 
