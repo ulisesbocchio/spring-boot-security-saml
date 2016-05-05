@@ -3,7 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLDiscovery;
@@ -34,13 +34,13 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     private String ssoLoginURL;
     private WebSSOProfileOptions profileOptions;
     private AuthenticationManager authenticationManager;
-    private SAMLSsoProperties config;
+    private SAMLSSOProperties config;
     private ServiceProviderEndpoints endpoints;
 
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
         authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-        config = builder.getSharedObject(SAMLSsoProperties.class);
+        config = builder.getSharedObject(SAMLSSOProperties.class);
         endpoints = builder.getSharedObject(ServiceProviderEndpoints.class);
     }
 

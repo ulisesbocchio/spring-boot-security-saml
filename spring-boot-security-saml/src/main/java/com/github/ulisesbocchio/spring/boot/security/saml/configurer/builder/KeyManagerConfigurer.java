@@ -2,7 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.KeystoreFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -29,7 +29,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
     private String storePass;
     private Map<String, String> keyPasswords;
     private String defaultKey;
-    private SAMLSsoProperties.KeystoreConfiguration config;
+    private SAMLSSOProperties.KeystoreConfiguration config;
     private KeystoreFactory keystoreFactory;
     private ResourceLoader resourceLoader;
 
@@ -44,7 +44,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
         keyManagerBean = builder.getSharedObject(KeyManager.class);
-        config = builder.getSharedObject(SAMLSsoProperties.class).getKeystore();
+        config = builder.getSharedObject(SAMLSSOProperties.class).getKeystore();
         resourceLoader = builder.getSharedObject(ResourceLoader.class);
         keystoreFactory = new KeystoreFactory(resourceLoader);
     }

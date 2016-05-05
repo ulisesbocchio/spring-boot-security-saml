@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.demo;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.annotation.EnableSAMLSso;
+import com.github.ulisesbocchio.spring.boot.security.saml.annotation.EnableSAMLSSO;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurerAdapter;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import org.springframework.boot.SpringApplication;
@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
-@EnableSAMLSso
+@EnableSAMLSSO
 public class SpringBootSecuritySAMLDemoApplication {
 
     public static void main(String[] args) {
@@ -52,6 +52,9 @@ public class SpringBootSecuritySAMLDemoApplication {
                 .metadataManager()
                 .metadataLocations("classpath:/idp-ssocircle.xml")
                 .refreshCheckInterval(0)
+            .and()
+                .extendedMetadata()
+                .idpDiscoveryEnabled(true)
             .and()
                 .keyManager()
                 .privateKeyDERLocation("classpath:/localhost.key.der")

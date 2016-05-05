@@ -4,7 +4,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,7 +34,7 @@ import static com.github.ulisesbocchio.spring.boot.security.saml.util.Functional
  * @author Ulises Bocchio
  */
 @Configuration
-@EnableConfigurationProperties(SAMLSsoProperties.class)
+@EnableConfigurationProperties(SAMLSSOProperties.class)
 public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private List<ServiceProviderConfigurer> serviceProviderConfigurers = Collections.emptyList();
@@ -43,16 +43,16 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
     private ObjectPostProcessor<Object> objectPostProcessor;
 
     @Autowired
-    private SAMLSsoProperties sAMLSsoProperties;
-
-    @Autowired(required = false)
-    private ExtendedMetadata extendedMetadata;
+    private SAMLSSOProperties sAMLSsoProperties;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
     @Autowired
     AutowireCapableBeanFactory beanFactory;
+
+    @Autowired(required = false)
+    private ExtendedMetadata extendedMetadata;
 
     @Autowired(required = false)
     SAMLContextProvider samlContextProvider;
@@ -102,9 +102,9 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
         securityConfigurerBuilder.setSharedObject(WebSSOProfileConsumerHoKImpl.class, hokWebSSOProfileConsumer);
         securityConfigurerBuilder.setSharedObject(ServiceProviderEndpoints.class, new ServiceProviderEndpoints());
         securityConfigurerBuilder.setSharedObject(ResourceLoader.class, resourceLoader);
-        securityConfigurerBuilder.setSharedObject(SAMLSsoProperties.class, sAMLSsoProperties);
-        securityConfigurerBuilder.setSharedObject(ExtendedMetadata.class, extendedMetadata != null ? extendedMetadata : sAMLSsoProperties.getExtendedMetadata());
-        securityConfigurerBuilder.setSharedObject(AuthenticationManager.class, authenticationManager());
+        securityConfigurerBuilder.setSharedObject(SAMLSSOProperties.class, sAMLSsoProperties);
+        securityConfigurerBuilder.setSharedObject(ExtendedMetadata.class, extendedMetadata);
+        securityConfigurerBuilder.setSharedObject(AuthenticationManager.class, authenticationManagerBean());
 
         securityConfigurerBuilder.setSharedObject(SAMLContextProvider.class, samlContextProvider);
         securityConfigurerBuilder.setSharedObject(KeyManager.class, keyManager);

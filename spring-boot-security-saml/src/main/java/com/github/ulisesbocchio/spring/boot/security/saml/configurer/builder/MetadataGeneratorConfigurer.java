@@ -3,7 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.MetadataDisplayFilter;
@@ -30,19 +30,19 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     private Collection<String> bindingsSSO;
     private Integer assertionConsumerIndex;
     private Boolean includeDiscoveryExtension;
-    private SAMLSsoProperties.MetadataGeneratorConfiguration config;
+    private SAMLSSOProperties.MetadataGeneratorConfiguration config;
     private ServiceProviderEndpoints endpoints;
     private ExtendedMetadata extendedMetadata;
 
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-        config = builder.getSharedObject(SAMLSsoProperties.class).getMetadataGenerator();
+        config = builder.getSharedObject(SAMLSSOProperties.class).getMetadataGenerator();
         endpoints = builder.getSharedObject(ServiceProviderEndpoints.class);
-        extendedMetadata = builder.getSharedObject(ExtendedMetadata.class);
     }
 
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+        extendedMetadata = builder.getSharedObject(ExtendedMetadata.class);
         MetadataDisplayFilter metadataDisplayFilter = new MetadataDisplayFilter();
         metadataURL = Optional.ofNullable(metadataURL).orElseGet(config::getMetadataURL);
         endpoints.setMetadataURL(metadataURL);

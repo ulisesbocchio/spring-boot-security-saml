@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.saml.*;
@@ -20,7 +20,7 @@ import javax.servlet.Filter;
  */
 public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
-    private SAMLSsoProperties config;
+    private SAMLSSOProperties config;
     private MetadataManager metadataManager;
     private SAMLAuthenticationProvider authenticationProvider;
     private SAMLProcessor samlProcessor;
@@ -37,7 +37,7 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
     private ServiceProviderEndpoints endpoints;
     private Class<? extends Filter> lastFilterClass = BasicAuthenticationFilter.class;
 
-    public ServiceProviderSecurityConfigurer(SAMLSsoProperties config, MetadataManager metadataManager, SAMLAuthenticationProvider authenticationProvider,
+    public ServiceProviderSecurityConfigurer(SAMLSSOProperties config, MetadataManager metadataManager, SAMLAuthenticationProvider authenticationProvider,
                                              SAMLProcessor samlProcessor, SAMLLogoutFilter samlLogoutFilter, SAMLLogoutProcessingFilter samlLogoutProcessingFilter,
                                              MetadataDisplayFilter metadataDisplayFilter, MetadataGeneratorFilter metadataGeneratorFilter,
                                              SAMLProcessingFilter sAMLProcessingFilter, SAMLWebSSOHoKProcessingFilter sAMLWebSSOHoKProcessingFilter,
@@ -107,6 +107,8 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
         http
                 .logout()
                 .disable();
+        http.
+                authenticationProvider(authenticationProvider);
     }
 
     private void addFilterAfter(HttpSecurity http, Filter filterBeingAdded) {

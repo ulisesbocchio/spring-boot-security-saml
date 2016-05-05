@@ -1,7 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder.*;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.AutowiringObjectPostProcessor;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.CompositeObjectPostProcessor;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -12,15 +12,15 @@ import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.*;
 import org.springframework.security.saml.context.SAMLContextProvider;
-import org.springframework.security.saml.context.SAMLContextProviderImpl;
 import org.springframework.security.saml.key.KeyManager;
-import org.springframework.security.saml.metadata.MetadataDisplayFilter;
-import org.springframework.security.saml.metadata.MetadataGenerator;
-import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
-import org.springframework.security.saml.metadata.MetadataManager;
+import org.springframework.security.saml.metadata.*;
 import org.springframework.security.saml.processor.SAMLProcessor;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 import org.springframework.security.saml.websso.*;
+
+import java.util.stream.Stream;
+
+import static com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.unchecked;
 
 /**
  * @author Ulises Bocchio
@@ -43,7 +43,7 @@ public class ServiceProviderSecurityBuilder extends
     }
 
     private void registerBean(String name, Object o) {
-        if(!beanExists(o.getClass())) {
+        if (!beanExists(o.getClass())) {
             singletonBeanRegistry.registerSingleton(name, o);
         }
     }
@@ -63,7 +63,7 @@ public class ServiceProviderSecurityBuilder extends
 
     @Override
     public <C> void setSharedObject(Class<C> sharedType, C object) {
-        if(object != null) {
+        if (object != null) {
             super.setSharedObject(sharedType, object);
         }
     }
@@ -77,9 +77,14 @@ public class ServiceProviderSecurityBuilder extends
         return apply(configurer);
     }
 
+    private <C extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>> C removeConfigurerAdapter(Class<C> configurer) {
+        return removeConfigurer(configurer);
+    }
+
     @Override
     protected void beforeInit() throws Exception {
         keyManager();
+        extendedMetadata();
         metadataManager();
         samlContextProvider();
         samlProcessor();
@@ -94,6 +99,30 @@ public class ServiceProviderSecurityBuilder extends
         sso();
         tls();
         metadataGenerator();
+        //make sure they're in the right order.
+        reorderConfigurers();
+    }
+
+    private void reorderConfigurers() {
+        Stream.<Class<? extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>>>of(
+                KeyManagerConfigurer.class,
+                ExtendedMetadataConfigurer.class,
+                MetadataManagerConfigurer.class,
+                AuthenticationProviderConfigurer.class,
+                SAMLContextProviderConfigurer.class,
+                SAMLProcessorConfigurer.class,
+                WebSSOProfileConsumerConfigurer.class,
+                WebSSOProfileHoKConsumerConfigurer.class,
+                WebSSOProfileConfigurer.class,
+                WebSSOProfileECPConfigurer.class,
+                WebSSOProfileHoKConfigurer.class,
+                SingleLogoutProfileConfigurer.class,
+                LogoutConfigurer.class,
+                SSOConfigurer.class,
+                TLSConfigurer.class,
+                MetadataGeneratorConfigurer.class)
+                .map(this::removeConfigurerAdapter)
+                .forEach(unchecked(this::getOrApply));
     }
 
     @Override
@@ -107,48 +136,64 @@ public class ServiceProviderSecurityBuilder extends
         registerBean(samlContextProvider);
         SAMLProcessor samlProcessor = getSharedObject(SAMLProcessor.class);
         registerBean(samlProcessor);
-        WebSSOProfile webSSOProfile = getSharedObject(WebSSOProfile.class);
-        registerBean("webSSOprofile", webSSOProfile);
-        WebSSOProfileECPImpl ecpProfile = getSharedObject(WebSSOProfileECPImpl.class);
-        registerBean("hokProfile", ecpProfile);
-        WebSSOProfileHoKImpl hokWebSSOProfile = getSharedObject(WebSSOProfileHoKImpl.class);
-        registerBean("hokWebSSOProfile", hokWebSSOProfile);
-        SingleLogoutProfile sloProfile = getSharedObject(SingleLogoutProfile.class);
-        registerBean(sloProfile);
         WebSSOProfileConsumer webSSOprofileConsumer = getSharedObject(WebSSOProfileConsumer.class);
         registerBean("webSSOprofileConsumer", webSSOprofileConsumer);
         WebSSOProfileConsumerHoKImpl hokWebSSOprofileConsumer = getSharedObject(WebSSOProfileConsumerHoKImpl.class);
         registerBean("hokWebSSOprofileConsumer", hokWebSSOprofileConsumer);
+        WebSSOProfile webSSOProfile = getSharedObject(WebSSOProfile.class);
+        registerBean("webSSOprofile", webSSOProfile);
+        WebSSOProfileECPImpl ecpProfile = getSharedObject(WebSSOProfileECPImpl.class);
+        registerBean("ecpProfile", ecpProfile);
+        WebSSOProfileHoKImpl hokWebSSOProfile = getSharedObject(WebSSOProfileHoKImpl.class);
+        registerBean("hokWebSSOProfile", hokWebSSOProfile);
+        SingleLogoutProfile sloProfile = getSharedObject(SingleLogoutProfile.class);
+        registerBean(sloProfile);
+        MetadataGenerator metadataGenerator = getSharedObject(MetadataGenerator.class);
+        registerBean(metadataGenerator);
 
-        SAMLSsoProperties config = getSharedObject(SAMLSsoProperties.class);
+        SAMLSSOProperties config = getSharedObject(SAMLSSOProperties.class);
 
         SAMLAuthenticationProvider authenticationProvider = getSharedObject(SAMLAuthenticationProvider.class);
+        registerBean(authenticationProvider);
 
         SAMLLogoutFilter samlLogoutFilter = getSharedObject(SAMLLogoutFilter.class);
+        registerBean(samlLogoutFilter);
         SAMLLogoutProcessingFilter samlLogoutProcessingFilter = getSharedObject(SAMLLogoutProcessingFilter.class);
+        registerBean(samlLogoutProcessingFilter);
 
         MetadataDisplayFilter metadataDisplayFilter = getSharedObject(MetadataDisplayFilter.class);
+        registerBean(metadataDisplayFilter);
         MetadataGeneratorFilter metadataGeneratorFilter = getSharedObject(MetadataGeneratorFilter.class);
-        MetadataGenerator metadataGenerator = getSharedObject(MetadataGenerator.class);
+        registerBean(metadataGeneratorFilter);
 
         SAMLProcessingFilter sAMLProcessingFilter = getSharedObject(SAMLProcessingFilter.class);
+        registerBean(sAMLProcessingFilter);
         SAMLWebSSOHoKProcessingFilter sAMLWebSSOHoKProcessingFilter = getSharedObject(SAMLWebSSOHoKProcessingFilter.class);
+        registerBean(sAMLWebSSOHoKProcessingFilter);
         SAMLDiscovery sAMLDiscovery = getSharedObject(SAMLDiscovery.class);
+        registerBean(sAMLDiscovery);
         SAMLEntryPoint sAMLEntryPoint = getSharedObject(SAMLEntryPoint.class);
-
-        metadataManager.setKeyManager(keyManager);
-        metadataGenerator.setKeyManager(keyManager);
+        registerBean(sAMLEntryPoint);
 
         TLSProtocolConfigurer tlsProtocolConfigurer = getSharedObject(TLSProtocolConfigurer.class);
         tlsProtocolConfigurer.setKeyManager(keyManager);
+        registerBean(tlsProtocolConfigurer);
 
         ServiceProviderEndpoints endpoints = getSharedObject(ServiceProviderEndpoints.class);
 
-        if (samlContextProvider instanceof SAMLContextProviderImpl) {
-            ((SAMLContextProviderImpl) samlContextProvider).setKeyManager(keyManager);
-            ((SAMLContextProviderImpl) samlContextProvider).setMetadata(metadataManager);
-        }
+        postProcess(webSSOprofileConsumer);
         postProcess(samlContextProvider);
+        postProcess(webSSOProfile);
+        postProcess(ecpProfile);
+        postProcess(hokWebSSOProfile);
+        postProcess(sloProfile);
+        postProcess(webSSOprofileConsumer);
+        postProcess(hokWebSSOprofileConsumer);
+        metadataGenerator.setSamlEntryPoint(sAMLEntryPoint);
+        metadataGenerator.setSamlLogoutProcessingFilter(samlLogoutProcessingFilter);
+        metadataGenerator.setSamlWebSSOFilter(sAMLProcessingFilter);
+        metadataGenerator.setSamlWebSSOHoKFilter(sAMLWebSSOHoKProcessingFilter);
+        postProcess(metadataGenerator);
 
         ServiceProviderSecurityConfigurer httpSecurityConfigurer = new ServiceProviderSecurityConfigurer(config, metadataManager, authenticationProvider, samlProcessor,
                 samlLogoutFilter, samlLogoutProcessingFilter, metadataDisplayFilter, metadataGeneratorFilter,
@@ -236,6 +281,14 @@ public class ServiceProviderSecurityBuilder extends
 
     public SingleLogoutProfileConfigurer sloProfile(SingleLogoutProfile sloProfile) throws Exception {
         return getOrApply(new SingleLogoutProfileConfigurer(sloProfile));
+    }
+
+    public ExtendedMetadataConfigurer extendedMetadata() throws Exception {
+        return getOrApply(new ExtendedMetadataConfigurer());
+    }
+
+    public ExtendedMetadataConfigurer extendedMetadata(ExtendedMetadata extendedMetadata) throws Exception {
+        return getOrApply(new ExtendedMetadataConfigurer(extendedMetadata));
     }
 
     public AuthenticationProviderConfigurer authenticationProvider() throws Exception {

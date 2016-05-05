@@ -2,7 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.velocity.app.VelocityEngine;
@@ -35,7 +35,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
     HTTPArtifactBinding artifactBinding;
     HTTPSOAP11Binding soapBinding;
     HTTPPAOS11Binding paosBinding;
-    private SAMLSsoProperties.SAMLProcessorConfiguration processorConfig;
+    private SAMLSSOProperties.SAMLProcessorConfiguration processorConfig;
     private ParserPool parserPool;
 
     public SAMLProcessorConfigurer(SAMLProcessor sAMLProcessor) {
@@ -49,7 +49,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
         sAMLProcessorBean = builder.getSharedObject(SAMLProcessor.class);
-        processorConfig = builder.getSharedObject(SAMLSsoProperties.class).getSamlProcessor();
+        processorConfig = builder.getSharedObject(SAMLSSOProperties.class).getSamlProcessor();
         parserPool = builder.getSharedObject(ParserPool.class);
     }
 

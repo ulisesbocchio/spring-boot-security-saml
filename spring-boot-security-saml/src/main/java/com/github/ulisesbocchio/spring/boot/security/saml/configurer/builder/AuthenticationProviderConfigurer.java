@@ -2,7 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.user.SimpleSAMLUserDetailsService;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
@@ -19,7 +19,7 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
     private Boolean forcePrincipalAsString = null;
     private SAMLUserDetailsService userDetailsService;
     private SAMLAuthenticationProvider authenticationProvider;
-    private SAMLSsoProperties.AuthenticationProviderConfiguration config;
+    private SAMLSSOProperties.AuthenticationProviderConfiguration config;
 
     public AuthenticationProviderConfigurer(SAMLAuthenticationProvider provider) {
         authenticationProvider = provider;
@@ -27,7 +27,7 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
 
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
-        config = builder.getSharedObject(SAMLSsoProperties.class).getAuthenticationProvider();
+        config = builder.getSharedObject(SAMLSSOProperties.class).getAuthenticationProvider();
     }
 
     @Override

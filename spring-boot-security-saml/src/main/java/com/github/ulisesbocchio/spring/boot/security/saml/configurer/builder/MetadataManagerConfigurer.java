@@ -2,9 +2,9 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties.ExtendedMetadataDelegateConfiguration;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSsoProperties.MetadataManagerConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.ExtendedMetadataDelegateConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.MetadataManagerConfiguration;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.SpringResourceWrapperOpenSAMLResource;
 import lombok.SneakyThrows;
 import org.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
@@ -56,12 +56,14 @@ import java.util.stream.Collectors;
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
         resourceLoader = builder.getSharedObject(ResourceLoader.class);
         metadataManagerBean = builder.getSharedObject(MetadataManager.class);
-        extendedDelegateConfig = getBuilder().getSharedObject(SAMLSsoProperties.class).getExtendedDelegate();
-        managerConfig = builder.getSharedObject(SAMLSsoProperties.class).getMetadataManager();
+        extendedDelegateConfig = getBuilder().getSharedObject(SAMLSSOProperties.class).getExtendedDelegate();
+        managerConfig = builder.getSharedObject(SAMLSSOProperties.class).getMetadataManager();
     }
 
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+        extendedMetadata = getBuilder().getSharedObject(ExtendedMetadata.class);
+
         if(metadataManagerBean == null) {
             if(metadataManager == null) {
                 metadataManager = new CachingMetadataManager(null);
@@ -76,7 +78,7 @@ import java.util.stream.Collectors;
             }
 
             if(metadataProviders.size() == 0) {
-                String metadataLocation = builder.getSharedObject(SAMLSsoProperties.class).getIdps().getMetadataLocation();
+                String metadataLocation = builder.getSharedObject(SAMLSSOProperties.class).getIdps().getMetadataLocation();
                 for(String location : metadataLocation.split(",")) {
                     MetadataProvider providerFromProperties = new ResourceBackedMetadataProvider(new Timer(),
                             new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(location.trim())));
@@ -114,9 +116,6 @@ import java.util.stream.Collectors;
     private ExtendedMetadataDelegate getExtendedProvider(MetadataProvider provider) {
         if(provider instanceof ExtendedMetadataDelegate) {
             return (ExtendedMetadataDelegate) provider;
-        }
-        if(extendedMetadata == null) {
-            extendedMetadata = getBuilder().getSharedObject(ExtendedMetadata.class);
         }
         ExtendedMetadataDelegate extendedMetadataDelegate = new ExtendedMetadataDelegate(provider, extendedMetadata);
 
@@ -179,12 +178,6 @@ import java.util.stream.Collectors;
 
     public MetadataManagerConfigurer metadataFilter(MetadataFilter filter) {
         metadataFilter = filter;
-        return this;
-    }
-
-    public MetadataManagerConfigurer extendedMetadata(ExtendedMetadata extendedMetadata) {
-        getBuilder().setSharedObject(ExtendedMetadata.class, extendedMetadata);
-        this.extendedMetadata = extendedMetadata;
         return this;
     }
 

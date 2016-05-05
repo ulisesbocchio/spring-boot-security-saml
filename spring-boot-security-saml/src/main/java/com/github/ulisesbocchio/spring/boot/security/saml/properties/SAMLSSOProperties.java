@@ -14,7 +14,7 @@ import java.util.*;
  */
 @ConfigurationProperties(prefix = "saml.sso")
 @Data
-public class SAMLSsoProperties {
+public class SAMLSSOProperties {
     @NestedConfigurationProperty
     private IdentityProvidersConfiguration idps = new IdentityProvidersConfiguration();
     @NestedConfigurationProperty
@@ -99,9 +99,9 @@ public class SAMLSsoProperties {
         private boolean requestSigned = true;
         private Collection<String> nameId = null;
         private String entityBaseURL = null;
-        private Collection<String> bindingsHoKSSO = null;
-        private Collection<String> bindingsSLO = null;
-        private Collection<String> bindingsSSO = null;
+        private Collection<String> bindingsSSO = Arrays.asList("post", "artifact");
+        private Collection<String> bindingsHoKSSO = Arrays.asList();
+        private Collection<String> bindingsSLO = Arrays.asList("post", "redirect");
         private int assertionConsumerIndex = 0;
         private boolean includeDiscoveryExtension = true;
     }
