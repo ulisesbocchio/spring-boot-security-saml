@@ -32,11 +32,6 @@ public class SpringBootSecuritySAMLDemoApplication {
     @Configuration
     public static class MyServiceProviderConfig extends ServiceProviderConfigurerAdapter {
         @Override
-        public void configure(HttpSecurity http) throws Exception {
-            super.configure(http);
-        }
-
-        @Override
         public void configure(ServiceProviderSecurityBuilder serviceProvider) throws Exception {
             serviceProvider
                 .metadataGenerator()
