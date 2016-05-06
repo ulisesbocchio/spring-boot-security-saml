@@ -2,4 +2,5 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <logger name="PROTOCOL_MESSAGE" level="DEBUG"/>
+    <logger name="com.github.ulisesbocchio" level="DEBUG"/>
 </configuration>

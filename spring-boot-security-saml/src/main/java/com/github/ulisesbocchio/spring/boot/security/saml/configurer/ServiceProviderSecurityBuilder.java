@@ -1,11 +1,11 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
+import com.github.ulisesbocchio.spring.boot.security.saml.configuration.SAMLServiceProviderSecurityConfiguration.BeanRegistry;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder.*;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.AutowiringObjectPostProcessor;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.CompositeObjectPostProcessor;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.SingletonBeanRegistry;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
@@ -30,35 +30,27 @@ public class ServiceProviderSecurityBuilder extends
         implements SecurityBuilder<ServiceProviderSecurityConfigurer> {
 
     private CompositeObjectPostProcessor compositePostProcessor = new CompositeObjectPostProcessor();
-    private AutowireCapableBeanFactory beanFactory;
-    private SingletonBeanRegistry singletonBeanRegistry;
+    private DefaultListableBeanFactory beanFactory;
+    private BeanRegistry beanRegistry;
 
-    public ServiceProviderSecurityBuilder(ObjectPostProcessor<Object> objectPostProcessor, AutowireCapableBeanFactory beanFactory, SingletonBeanRegistry singletonBeanRegistry) {
+    public ServiceProviderSecurityBuilder(ObjectPostProcessor<Object> objectPostProcessor, DefaultListableBeanFactory beanFactory, BeanRegistry beanRegistry) {
         super(objectPostProcessor, false);
         this.beanFactory = beanFactory;
-        this.singletonBeanRegistry = singletonBeanRegistry;
+        this.beanRegistry = beanRegistry;
         compositePostProcessor.addObjectPostProcessor(new AutowiringObjectPostProcessor(beanFactory));
         compositePostProcessor.addObjectPostProcessor(objectPostProcessor);
         objectPostProcessor(compositePostProcessor);
     }
 
     private void registerBean(String name, Object o) {
-        if (!beanExists(o.getClass())) {
-            singletonBeanRegistry.registerSingleton(name, o);
+        if (!beanRegistry.isRegistered(o)) {
+            beanRegistry.addSingleton(name, o);
+            beanFactory.registerSingleton(name, o);
         }
     }
 
     private void registerBean(Object o) {
         registerBean(o.getClass().getName(), o);
-    }
-
-    private boolean beanExists(Class<?> beanType) {
-        try {
-            beanFactory.getBean(beanType);
-            return true;
-        } catch (Throwable t) {
-            return false;
-        }
     }
 
     @Override
