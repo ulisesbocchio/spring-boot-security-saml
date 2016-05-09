@@ -13,7 +13,7 @@ import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
  *
  * @author Ulises Bocchio
  */
-class SimpleSAMLUserDetailsService implements SAMLUserDetailsService {
+public class SimpleSAMLUserDetailsService implements SAMLUserDetailsService {
     @Override
     public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
         return new SAMLUserDetails(credential);

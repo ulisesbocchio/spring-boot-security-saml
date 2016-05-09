@@ -27,15 +27,16 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Builder configurer that takes care of configuring/customizing the {@link MetadataManager} bean.
  * <p>
- * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the Context.
- * So if not {@link MetadataManager} bean is defined, priority goes to a custom MetadataManager provided explicitly
- * to this configurer through the constructor. And if not provided through the constructor, a default implementation is
- * instantiated that is configurable through the DSL methods.
+ * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the
+ * Context. So if not {@link MetadataManager} bean is defined, priority goes to a custom MetadataManager provided
+ * explicitly to this configurer through the constructor. And if not provided through the constructor, a default
+ * implementation is instantiated that is configurable through the DSL methods.
  * </p>
  * <p>
  * This configurer also reads the values from {@link SAMLSSOProperties#getMetadataManager()} and
  * {@link SAMLSSOProperties#getExtendedDelegate()} if no custom MetadataManager
- * is provided, for some DSL methods if they are not used. In other words, the user is able to configure the MetadataManager through the
+ * is provided, for some DSL methods if they are not used. In other words, the user is able to configure the
+ * MetadataManager through the
  * following properties:
  * <pre>
  *     saml.sso.metadataManager.defaultIDP
@@ -252,8 +253,8 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
     }
 
     /**
-     * Specify the location(s) of the metadata files to be loaded as {@link ResourceBackedMetadataProvider}. Not relevant
-     * is using {@link #metadataProvider(MetadataProvider)}, {@link #metadataProviders(List)}, or
+     * Specify the location(s) of the metadata files to be loaded as {@link ResourceBackedMetadataProvider}. Not
+     * relevant is using {@link #metadataProvider(MetadataProvider)}, {@link #metadataProviders(List)}, or
      * {@link #metadataProviders(MetadataProvider...)}
      * <p>
      * Alternatively use property:
@@ -295,9 +296,10 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
     }
 
     /**
-     * Determines whether check for certificate revocation should always be done as part of the PKIX validation. Revocation
-     * is evaluated by the underlaying JCE implementation and depending on configuration may include CRL and OCSP verification
-     * of the certificate in question. When set to false revocation is only performed when MetadataManager includes CRLs.
+     * Determines whether check for certificate revocation should always be done as part of the PKIX validation.
+     * Revocation is evaluated by the underlaying JCE implementation and depending on configuration may include CRL and
+     * OCSP verification of the certificate in question. When set to false revocation is only performed when
+     * MetadataManager includes CRLs.
      * Default is {@code false}.
      * <p>
      * Alternatively use property:
@@ -315,8 +317,9 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
     }
 
     /**
-     * When set to true metadata from this provider should only be accepted when correctly signed and verified. Metadata with
-     * an invalid signature or signed by a not-trusted credential will be ignored.
+     * When set to true metadata from this provider should only be accepted when correctly signed and verified.
+     * Metadata
+     * with an invalid signature or signed by a not-trusted credential will be ignored.
      * Default is {@code false}.
      * <p>
      * Alternatively use property:

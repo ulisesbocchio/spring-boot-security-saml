@@ -33,8 +33,10 @@ public class KeystoreFactory {
     }
 
     /**
-     * Based on a public certificate, private key, alias and password, this method will load the certificate and private key as an entry
-     * into a newly created keystore, and it will set the provided alias and password to the keystore entry.
+     * Based on a public certificate, private key, alias and password, this method will load the certificate and
+     * private key as an entry into a newly created keystore, and it will set the provided alias and password to the
+     * keystore entry.
+     *
      * @param certResourceLocation
      * @param privateKeyResourceLocation
      * @param alias
@@ -51,8 +53,9 @@ public class KeystoreFactory {
     }
 
     /**
-     * Based on a public certificate, private key, alias and password, this method will load the certificate and private key as an entry
-     * into the keystore, and it will set the provided alias and password to the keystore entry.
+     * Based on a public certificate, private key, alias and password, this method will load the certificate and
+     * private key as an entry into the keystore, and it will set the provided alias and password to the keystore entry.
+     *
      * @param keyStore
      * @param cert
      * @param privateKey
@@ -68,6 +71,7 @@ public class KeystoreFactory {
 
     /**
      * Returns an empty KeyStore object.
+     *
      * @return
      */
     @SneakyThrows
@@ -79,6 +83,7 @@ public class KeystoreFactory {
 
     /**
      * Given a resource location it loads a PEM X509 certificate.
+     *
      * @param certLocation
      * @return
      */
@@ -92,6 +97,7 @@ public class KeystoreFactory {
 
     /**
      * Given a resource location it loads a DER RSA private Key.
+     *
      * @param privateKeyLocation
      * @return
      */

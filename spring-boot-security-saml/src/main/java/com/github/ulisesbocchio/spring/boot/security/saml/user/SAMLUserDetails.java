@@ -1,6 +1,5 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.user;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurer;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.XSAny;
@@ -18,9 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Default Implementation of {@link UserDetails} for Spring Boot Security SAML. This simple implementation hardly covers
- * all security aspects since it's mostly hardcoded. I.E. accounts are never locked, expired, or disabled, and always
- * return the same granted authority "ROLE_USER".
+ * Default Implementation of {@link UserDetails} for Spring Boot Security SAML. This simple implementation hardly
+ * covers all security aspects since it's mostly hardcoded. I.E. accounts are never locked, expired, or disabled, and
+ * always eturn the same granted authority "ROLE_USER".
  * Consider implementing your own {@link UserDetails} and {@link SAMLUserDetailsService}.
  *
  * @author Ulises Bocchio

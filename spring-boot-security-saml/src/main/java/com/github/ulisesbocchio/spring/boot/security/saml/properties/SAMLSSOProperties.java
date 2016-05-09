@@ -17,7 +17,8 @@ import java.util.*;
 
 /**
  * Configuration Properties exposed to allow customization of the Service Provider enabled by {@link EnableSAMLSSO}.
- * All configuration properties have their counterpart on the Java DSL provided by {@link ServiceProviderSecurityBuilder}.
+ * All configuration properties have their counterpart on the Java DSL provided by {@link
+ * ServiceProviderSecurityBuilder}.
  *
  * @author Ulises Bocchio
  */
@@ -37,7 +38,8 @@ public class SAMLSSOProperties {
     private ExtendedMetadata extendedMetadata = new ExtendedMetadata();
 
     /**
-     * Extended Metadata Delegate configuration used to wrap Metadata Providers with extended metadata and other options.
+     * Extended Metadata Delegate configuration used to wrap Metadata Providers with extended metadata and other
+     * options.
      */
     @NestedConfigurationProperty
     private ExtendedMetadataDelegateConfiguration extendedDelegate = new ExtendedMetadataDelegateConfiguration();
@@ -67,10 +69,10 @@ public class SAMLSSOProperties {
     private MetadataGeneratorConfiguration metadataGenerator = new MetadataGeneratorConfiguration();
 
     /**
-     * Supplies the default target Url that will be used if no saved request is found in the session, or the alwaysUseDefaultTargetUrl
-     * property is set to true. If not set, defaults to /. It will be treated as relative to the web-app's context path,
-     * and should include the leading /. Alternatively, inclusion of a scheme name (such as "http://" or "https://") as
-     * the prefix will denote a fully-qualified URL and this is also supported.
+     * Supplies the default target Url that will be used if no saved request is found in the session, or the
+     * alwaysUseDefaultTargetUrl property is set to true. If not set, defaults to /. It will be treated as relative to
+     * the web-app's context path, and should include the leading /. Alternatively, inclusion of a scheme name (such as
+     * "http://" or "https://") as the prefix will denote a fully-qualified URL and this is also supported.
      */
     private String defaultSuccessURL = "/";
 
@@ -95,7 +97,8 @@ public class SAMLSSOProperties {
     private String discoveryProcessingURL = "/saml/discovery";
 
     /**
-     * Sets path where request dispatcher will send user for IDP selection. In case it is null the default IDP will always be used.
+     * Sets path where request dispatcher will send user for IDP selection. In case it is null the default IDP will
+     * always be used.
      */
     private String idpSelectionPageURL = "/idpselection";
 
@@ -136,15 +139,15 @@ public class SAMLSSOProperties {
         private String defaultIDP;
 
         /**
-         * Sets nameID of SP hosted on this machine. This can either be called from springContext or automatically during
-         * invocation of metadata generation filter.
+         * Sets nameID of SP hosted on this machine. This can either be called from springContext or automatically
+         * during invocation of metadata generation filter.
          */
         private String hostedSPName;
 
         /**
          * Interval in milliseconds used for re-verification of metadata and their reload. Upon trigger each provider
-         * is asked to return it's metadata, which might trigger their reloading. In case metadata is reloaded the manager
-         * is notified and automatically refreshes all internal data by calling refreshMetadata.
+         * is asked to return it's metadata, which might trigger their reloading. In case metadata is reloaded the
+         * manager is notified and automatically refreshes all internal data by calling refreshMetadata.
          * <p>
          * In case the value is smaller than zero the timer is not created.
          * </p>
@@ -175,8 +178,8 @@ public class SAMLSSOProperties {
         private String sslHostnameVerification = "default";
 
         /**
-         * Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is null
-         * all keys in the keyStore will be treated as trusted.
+         * Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is
+         * null all keys in the keyStore will be treated as trusted.
          */
         private Set<String> trustedKeys;
     }
@@ -249,38 +252,40 @@ public class SAMLSSOProperties {
         private String entityBaseURL = null;
 
         /**
-         * List of bindings to be included in the generated metadata for Web Single Sign-On. Ordering of bindings affects inclusion in
-         * the generated metadata. Supported values are: "artifact" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"),
-         * "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") and "paos" (or "urn:oasis:names:tc:SAML:2.0:bindings:PAOS").
-         * The following bindings are included by default: "artifact", "post".
+         * List of bindings to be included in the generated metadata for Web Single Sign-On. Ordering of bindings
+         * affects inclusion in the generated metadata. Supported values are: "artifact" (or
+         * "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"), "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
+         * and "paos" (or "urn:oasis:names:tc:SAML:2.0:bindings:PAOS"). The following bindings are included by default:
+         * "artifact", "post".
          */
         private Collection<String> bindingsSSO = Arrays.asList("post", "artifact");
 
         /**
-         * List of bindings to be included in the generated metadata for Web Single Sign-On Holder of Key. Ordering of bindings
-         * affects inclusion in the generated metadata. Supported values are: "artifact"
-         * (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact") and "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").
+         * List of bindings to be included in the generated metadata for Web Single Sign-On Holder of Key. Ordering of
+         * bindings affects inclusion in the generated metadata. Supported values are: "artifact" (or
+         * "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact") and "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").
          * By default there are no included bindings for the profile.
          */
         private Collection<String> bindingsHoKSSO = Arrays.asList();
 
         /**
-         * List of bindings to be included in the generated metadata for Single Logout. Ordering of bindings affects inclusion in
-         * the generated metadata. Supported values are: "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") and
-         * "redirect" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"). The following bindings are included by default:
-         * "post", "redirect".
+         * List of bindings to be included in the generated metadata for Single Logout. Ordering of bindings affects
+         * inclusion in the generated metadata. Supported values are: "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
+         * and "redirect" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"). The following bindings are
+         * included
+         * by default: "post", "redirect".
          */
         private Collection<String> bindingsSLO = Arrays.asList("post", "redirect");
 
         /**
-         * Generated assertion consumer service with the index equaling set value will be marked as default. Use negative value
-         * to skip the default attribute altogether.
+         * Generated assertion consumer service with the index equaling set value will be marked as default. Use
+         * negative value to skip the default attribute altogether.
          */
         private int assertionConsumerIndex = 0;
 
         /**
-         * When true discovery profile extension metadata pointing to the default SAMLEntryPoint will be generated and stored in
-         * the generated metadata document.
+         * When true discovery profile extension metadata pointing to the default SAMLEntryPoint will be generated and
+         * stored in the generated metadata document.
          */
         private boolean includeDiscoveryExtension = true;
     }
@@ -289,10 +294,11 @@ public class SAMLSSOProperties {
     public static class LogoutConfiguration {
 
         /**
-         * Supplies the default target Url that will be used if no saved request is found in the session, or the alwaysUseDefaultTargetUrl
-         * property is set to true. If not set, defaults to /. It will be treated as relative to the web-app's context path, and should
-         * include the leading /. Alternatively, inclusion of a scheme name (such as "http://" or "https://") as the prefix will denote
-         * a fully-qualified URL and this is also supported.
+         * Supplies the default target Url that will be used if no saved request is found in the session, or the
+         * alwaysUseDefaultTargetUrl property is set to true. If not set, defaults to /. It will be treated as relative
+         * to the web-app's context path, and should include the leading /. Alternatively, inclusion of a scheme name
+         * (such as "http://" or "https://") as the prefix will denote a fully-qualified URL and this is also
+         * supported.
          */
         private String defaultTargetURL = "/";
 
@@ -321,16 +327,17 @@ public class SAMLSSOProperties {
     public static class AuthenticationProviderConfiguration {
 
         /**
-         * When false (default) the resulting Authentication object will include instance of SAMLCredential as a credential
-         * value. The credential includes information related to the authentication process, received attributes and is
-         * required for Single Logout. In case your application doesn't require the credential, it is possible to exclude it
-         * from the Authentication object by setting this flag to true.
+         * When false (default) the resulting Authentication object will include instance of SAMLCredential as a
+         * credential value. The credential includes information related to the authentication process, received
+         * attributes and is required for Single Logout. In case your application doesn't require the credential, it is
+         * possible to exclude it from the Authentication object by setting this flag to true.
          */
         private boolean forcePrincipalAsString = false;
 
         /**
-         * By default principal in the returned Authentication object is the NameID included in the authenticated Assertion.
-         * The NameID is not serializable. Setting this value to true will force the NameID value to be a String.
+         * By default principal in the returned Authentication object is the NameID included in the authenticated
+         * Assertion. The NameID is not serializable. Setting this value to true will force the NameID value to be a
+         * String.
          */
         private boolean excludeCredential = false;
     }
@@ -360,15 +367,16 @@ public class SAMLSSOProperties {
         private boolean metadataTrustCheck = false;
 
         /**
-         * Determines whether check for certificate revocation should always be done as part of the PKIX validation. Revocation
-         * is evaluated by the underlaying JCE implementation and depending on configuration may include CRL and OCSP verification
-         * of the certificate in question. When set to false revocation is only performed when MetadataManager includes CRLs.
+         * Determines whether check for certificate revocation should always be done as part of the PKIX validation.
+         * Revocation is evaluated by the underlaying JCE implementation and depending on configuration may include CRL
+         * and OCSP verification of the certificate in question. When set to false revocation is only performed when
+         * MetadataManager includes CRLs.
          */
         private boolean forceMetadataRevocationCheck = false;
 
         /**
-         * When set to true metadata from this provider should only be accepted when correctly signed and verified. Metadata with
-         * an invalid signature or signed by a not-trusted credential will be ignored.
+         * When set to true metadata from this provider should only be accepted when correctly signed and verified.
+         * Metadata with an invalid signature or signed by a not-trusted credential will be ignored.
          */
         private boolean metadataRequireSignature = false;
 

@@ -15,7 +15,7 @@ import java.util.List;
 public final class CompositeObjectPostProcessor implements ObjectPostProcessor<Object> {
     private List<ObjectPostProcessor<? extends Object>> postProcessors = new ArrayList<>();
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Object postProcess(Object object) {
         for (ObjectPostProcessor opp : postProcessors) {
             Class<?> oppClass = opp.getClass();
@@ -30,6 +30,7 @@ public final class CompositeObjectPostProcessor implements ObjectPostProcessor<O
 
     /**
      * Adds an {@link ObjectPostProcessor} to use
+     *
      * @param objectPostProcessor the {@link ObjectPostProcessor} to add
      * @return true if the {@link ObjectPostProcessor} was added, else false
      */

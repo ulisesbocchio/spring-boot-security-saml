@@ -24,8 +24,8 @@ import java.util.Optional;
  * {@link MetadataDisplayFilter}, and {@link MetadataGeneratorFilter}  based on the specified configuration.
  * </p>
  * <p>
- * This configurer also reads the values from {@link SAMLSSOProperties#getMetadataGenerator()} for some DSL methods if they are not used.
- * In other words, the user is able to configure the filters through the following properties:
+ * This configurer also reads the values from {@link SAMLSSOProperties#getMetadataGenerator()} for some DSL methods if
+ * they are not used. In other words, the user is able to configure the filters through the following properties:
  * <pre>
  *     saml.sso.metadataGenerator.metadataURL
  *     saml.sso.metadataGenerator.entityId
@@ -201,9 +201,9 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     }
 
     /**
-     * List of bindings to be included in the generated metadata for Web Single Sign-On Holder of Key. Ordering of bindings
-     * affects inclusion in the generated metadata. Supported values are: "artifact"
-     * (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact") and "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").
+     * List of bindings to be included in the generated metadata for Web Single Sign-On Holder of Key. Ordering of
+     * bindings affects inclusion in the generated metadata. Supported values are: "artifact" (or
+     * "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact") and "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").
      * By default there are no included bindings for the profile.
      * <p>
      * Alternatively use property:
@@ -221,10 +221,10 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     }
 
     /**
-     * List of bindings to be included in the generated metadata for Single Logout. Ordering of bindings affects inclusion in
-     * the generated metadata. Supported values are: "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") and
-     * "redirect" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"). The following bindings are included by default:
-     * "post", "redirect".
+     * List of bindings to be included in the generated metadata for Single Logout. Ordering of bindings affects
+     * inclusion in the generated metadata. Supported values are: "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
+     * and "redirect" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"). The following bindings are included by
+     * default: "post", "redirect".
      * <p>
      * Alternatively use property:
      * <pre>
@@ -241,8 +241,8 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     }
 
     /**
-     * List of bindings to be included in the generated metadata for Web Single Sign-On. Ordering of bindings affects inclusion in
-     * the generated metadata. Supported values are: "artifact" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"),
+     * List of bindings to be included in the generated metadata for Web Single Sign-On. Ordering of bindings affects
+     * inclusion in the generated metadata. Supported values are: "artifact" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"),
      * "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") and "paos" (or "urn:oasis:names:tc:SAML:2.0:bindings:PAOS").
      * The following bindings are included by default: "artifact", "post".
      * <p>
@@ -261,8 +261,8 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     }
 
     /**
-     * Generated assertion consumer service with the index equaling set value will be marked as default. Use negative value
-     * to skip the default attribute altogether.
+     * Generated assertion consumer service with the index equaling set value will be marked as default. Use negative
+     * value to skip the default attribute altogether.
      * Default is {@code 0}.
      * <p>
      * Alternatively use property:
@@ -280,8 +280,8 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     }
 
     /**
-     * When true discovery profile extension metadata pointing to the default SAMLEntryPoint will be generated and stored in
-     * the generated metadata document.
+     * When true discovery profile extension metadata pointing to the default SAMLEntryPoint will be generated and
+     * stored in the generated metadata document.
      * <p>
      * Alternatively use property:
      * <pre>

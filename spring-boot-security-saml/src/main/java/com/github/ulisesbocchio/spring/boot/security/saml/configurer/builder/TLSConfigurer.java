@@ -20,8 +20,8 @@ import static java.util.stream.Collectors.toSet;
  * This configurer always instantiates its own {@link TLSProtocolConfigurer}.
  * </p>
  * <p>
- * This configurer also reads the values from {@link SAMLSSOProperties#getTls()} for some the DSL methods if they are not used.
- * In other words, the user is able to configure the TLSProtocolConfigurer through the following properties:
+ * This configurer also reads the values from {@link SAMLSSOProperties#getTls()} for some the DSL methods if they are
+ * not used. In other words, the user is able to configure the TLSProtocolConfigurer through the following properties:
  * <pre>
  *     saml.sso.tls.protocolName
  *     saml.sso.tls.protocolPort
@@ -93,7 +93,8 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     }
 
     /**
-     * Hostname verifier to use for verification of SSL connections. Default value is "default", other supported options
+     * Hostname verifier to use for verification of SSL connections. Default value is "default", other supported
+     * options
      * are "defaultAndLocalhost", "strict" and "allowAll".
      * Default is {@code "default"}.
      * <p>
@@ -112,7 +113,8 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     }
 
     /**
-     * When not set all certificates included in the keystore will be used as trusted certificate authorities. When specified,
+     * When not set all certificates included in the keystore will be used as trusted certificate authorities. When
+     * specified,
      * only keys with the defined aliases will be used for trust evaluation.
      * <p>
      * Alternatively use property:

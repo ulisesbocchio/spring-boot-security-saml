@@ -4,11 +4,11 @@ import com.github.ulisesbocchio.spring.boot.security.saml.annotation.EnableSAMLS
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 /**
- * Simple Adapter for {@link ServiceProviderConfigurer} to be used in conjunction with {@link EnableSAMLSSO} and wanting
- * to further customize the SAML Service Provider using the DSL provided by {@link ServiceProviderSecurityBuilder}, which exposes
- * most aspects of configuring Spring Security SAML. Users of this interface are encouraged to use
- * {@link ServiceProviderConfigurerAdapter} which is the default implementation with empty methods, so users can choose
- * which method to actually override.
+ * Simple Adapter for {@link ServiceProviderConfigurer} to be used in conjunction with {@link EnableSAMLSSO} and
+ * wanting to further customize the SAML Service Provider using the DSL provided by {@link
+ * ServiceProviderSecurityBuilder}, which exposes most aspects of configuring Spring Security SAML. Users of this
+ * interface are encouraged to use {@link ServiceProviderConfigurerAdapter} which is the default implementation with
+ * empty methods, so users can choose which method to actually override.
  * <p>
  * The following is a basic example:
  * <pre>

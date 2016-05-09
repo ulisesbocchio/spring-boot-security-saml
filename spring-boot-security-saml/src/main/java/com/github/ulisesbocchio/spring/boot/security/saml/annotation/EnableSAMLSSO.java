@@ -18,8 +18,8 @@ import java.lang.annotation.*;
 /**
  * Main entry point for this Spring Boot plugin. This annotation enables the annotated Spring Boot Application as a
  * SAML 2.0 Service Provider, which basically configures Spring Security with Spring Security SAML to provide Service
- * Provider capabilities. Exposes to the users of this plugin the {@link ServiceProviderConfigurer} for customization of
- * the Service Provider, a java DSL that resembles the configuration style of {@link WebSecurityConfigurer} and it
+ * Provider capabilities. Exposes to the users of this plugin the {@link ServiceProviderConfigurer} for customization
+ * of the Service Provider, a java DSL that resembles the configuration style of {@link WebSecurityConfigurer} and it
  * provides one adapter with empty implementations, {@link ServiceProviderConfigurerAdapter} which is the preferable
  * class that users of this plugin will extend to customize the service provider. The following is a basic example:
  * <pre>

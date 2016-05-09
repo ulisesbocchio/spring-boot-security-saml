@@ -19,14 +19,16 @@ import java.util.Optional;
 /**
  * Builder configurer that takes care of configuring/customizing the {@link SAMLProcessor} bean.
  * <p>
- * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the Context.
+ * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the
+ * Context.
  * So if not {@link SAMLProcessor} bean is defined, priority goes to a custom SAMLProcessor provided explicitly
  * to this configurer through the constructor. And if not provided through the constructor, a default implementation is
  * instantiated that is configurable through the DSL methods.
  * </p>
  * <p>
  * This configurer also reads the values from {@link SAMLSSOProperties#getSamlProcessor()} if no custom SAMLProcessor
- * is provided, for some DSL methods if they are not used. In other words, the user is able to configure the SAMLProcessor through the
+ * is provided, for some DSL methods if they are not used. In other words, the user is able to configure the
+ * SAMLProcessor through the
  * following properties:
  * <pre>
  *     saml.sso.samlProcessor.redirect
@@ -144,7 +146,8 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
     }
 
     /**
-     * Provide a specific {@link HTTPRedirectDeflateBinding} bindings. Overrides value set by {@link #disableRedirectBinding()}
+     * Provide a specific {@link HTTPRedirectDeflateBinding} bindings. Overrides value set by {@link
+     * #disableRedirectBinding()}
      *
      * @param binding the actual Redirect bindings
      * @return this configurer for further customization
@@ -202,7 +205,8 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
     }
 
     /**
-     * Provide a specific {@link HTTPArtifactBinding} bindings. Overrides value set by {@link #disableArtifactBinding()}
+     * Provide a specific {@link HTTPArtifactBinding} bindings. Overrides value set by {@link
+     * #disableArtifactBinding()}
      *
      * @param binding the actual Artifact bindings
      * @return this configurer for further customization

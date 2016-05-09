@@ -17,10 +17,11 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import javax.servlet.Filter;
 
 /**
- * Class for internal usage of this Spring Boot Plugin. This configurer wires Spring Security's {@link HttpSecurity} builder
- * with the results of {@link ServiceProviderSecurityBuilder}. Once all the configuration has been executed by the Service
- * Provider Builder, all that's left is to wire a Spring Security's Filter Chain with all the different filters applicable
- * for the desired configuration, and the Authentication Provider. Prior to that, all beans are postProcessed and all
+ * Class for internal usage of this Spring Boot Plugin. This configurer wires Spring Security's {@link HttpSecurity}
+ * builder with the results of {@link ServiceProviderSecurityBuilder}. Once all the configuration has been executed by
+ * the Service Provider Builder, all that's left is to wire a Spring Security's Filter Chain with all the different
+ * filters applicable for the desired configuration, and the Authentication Provider. Prior to that, all beans are
+ * postProcessed and all
  * {@link InitializingBean} implementors are called.
  *
  * @author Ulises Bocchio

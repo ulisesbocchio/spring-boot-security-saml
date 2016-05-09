@@ -31,6 +31,7 @@ public class ServiceProviderEndpoints {
     /**
      * Returns an {@link OrRequestMatcher} that contains all the different URLs configured throughout the Service
      * Provider configuration.
+     *
      * @return
      */
     public RequestMatcher getRequestMatcher() {

@@ -15,15 +15,15 @@ import java.util.Optional;
  * Builder configurer that takes care of configuring/customizing a {@link SAMLAuthenticationProvider} for the
  * SAML 2.0 Service Provider.
  * <p>
- * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the Context.
- * If not {@link SAMLAuthenticationProvider} is present in the Spring Context, priority goes to a custom provider provided
- * explicitly to this configurer through the constructor. And if not provided through the constructor, a default
- * implementation is instantiated that is configurable through the DSL methods.
+ * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the
+ * Context. If not {@link SAMLAuthenticationProvider} is present in the Spring Context, priority goes to a custom
+ * provider provided explicitly to this configurer through the constructor. And if not provided through the constructor,
+ * a default implementation is instantiated that is configurable through the DSL methods.
  * </p>
  * <p>
- * This configurer also reads the values from {@link SAMLSSOProperties#getAuthenticationProvider()} if no custom Authentication
- * Provider is provided, for some DSL methods if they are not used. In other words, the user is able to configure the Authentication
- * Provider through the following properties:
+ * This configurer also reads the values from {@link SAMLSSOProperties#getAuthenticationProvider()} if no custom
+ * Authentication Provider is provided, for some DSL methods if they are not used. In other words, the user is able to
+ * configure the Authentication Provider through the following properties:
  * <pre>
  *     saml.sso.authenticationProvider.forcePrincipalAsString
  *     saml.sso.authenticationProvider.excludeCredential
@@ -83,10 +83,10 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
     /**
      * When false (default) the resulting Authentication object will include instance of SAMLCredential as a credential
      * value. The credential includes information related to the authentication process, received attributes and is
-     * required for Single Logout. In case your application doesn't require the credential, it is possible to exclude it
-     * from the Authentication object by setting this flag to true.
+     * required for Single Logout. In case your application doesn't require the credential, it is possible to exclude
+     * it from the Authentication object by setting this flag to true.
      * Default is {@code false}.
-     *
+     * <p>
      * Alternatively use property:
      * <pre>
      *      saml.sso.authenticationProvider.excludeCredential
@@ -101,10 +101,11 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
     }
 
     /**
-     * By default principal in the returned Authentication object is the NameID included in the authenticated Assertion.
+     * By default principal in the returned Authentication object is the NameID included in the authenticated
+     * Assertion.
      * The NameID is not serializable. Setting this value to true will force the NameID value to be a String.
      * Default is {@code false}.
-     *
+     * <p>
      * Alternatively use property:
      * <pre>
      *      saml.sso.authenticationProvider.forcePrincipalAsString
@@ -120,6 +121,7 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
 
     /**
      * The user details can be optionally set and is automatically called while user SAML assertion is validated.
+     *
      * @param userDetailsService the user details service to use.
      * @return This Configurer to keep customizing the Authentication Provider
      */

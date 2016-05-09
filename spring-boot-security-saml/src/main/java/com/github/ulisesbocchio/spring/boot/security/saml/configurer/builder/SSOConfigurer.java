@@ -25,7 +25,8 @@ import java.util.Optional;
  * </p>
  * <p>
  * This configurer always instantiates its own {@link SAMLProcessingFilter},
- * {@link SAMLWebSSOHoKProcessingFilter}, {@link SAMLDiscovery}, and {@link SAMLEntryPoint} based on the specified configuration.
+ * {@link SAMLWebSSOHoKProcessingFilter}, {@link SAMLDiscovery}, and {@link SAMLEntryPoint} based on the specified
+ * configuration.
  * </p>
  * <p>
  * This configurer also reads the values from {@link SAMLSSOProperties} for some DSL methods if they are not used.
@@ -121,10 +122,10 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     }
 
     /**
-     * Supplies the default target Url that will be used if no saved request is found in the session, or the alwaysUseDefaultTargetUrl
-     * property is set to true. If not set, defaults to /. It will be treated as relative to the web-app's context path,
-     * and should include the leading /. Alternatively, inclusion of a scheme name (such as "http://" or "https://") as
-     * the prefix will denote a fully-qualified URL and this is also supported.
+     * Supplies the default target Url that will be used if no saved request is found in the session, or the
+     * alwaysUseDefaultTargetUrl property is set to true. If not set, defaults to /. It will be treated as relative to
+     * the web-app's context path, and should include the leading /. Alternatively, inclusion of a scheme name (such as
+     * "http://" or "https://") as the prefix will denote a fully-qualified URL and this is also supported.
      * Not Relevant if {@link #successHandler(AuthenticationSuccessHandler)} is used.
      * <p>
      * Alternatively use property:
@@ -142,8 +143,8 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     }
 
     /**
-     * Provide a specific {@link AuthenticationSuccessHandler} to be invoked on successful authentication. Overrides value
-     * set by {@link #defaultSuccessURL(String)}.
+     * Provide a specific {@link AuthenticationSuccessHandler} to be invoked on successful authentication. Overrides
+     * value set by {@link #defaultSuccessURL(String)}.
      *
      * @param successHandler the actual success handler.
      * @return this configurer for further customization
@@ -154,7 +155,8 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     }
 
     /**
-     * The URL which will be used as the failure destination. Not relevant if using {@link #failureHandler(AuthenticationFailureHandler)}.
+     * The URL which will be used as the failure destination. Not relevant if using {@link
+     * #failureHandler(AuthenticationFailureHandler)}.
      * Default is {@code "/error"}.
      * <p>
      * Alternatively use property:
@@ -172,8 +174,8 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     }
 
     /**
-     * Provide a specific {@link AuthenticationFailureHandler} to be invoked on unsuccessful authentication. Overrides value
-     * set by {@link #defaultFailureURL(String)}.
+     * Provide a specific {@link AuthenticationFailureHandler} to be invoked on unsuccessful authentication. Overrides
+     * value set by {@link #defaultFailureURL(String)}.
      *
      * @param failureHandler the actual failure handler.
      * @return this configurer for further customization
@@ -238,7 +240,8 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     }
 
     /**
-     * Sets path where request dispatcher will send user for IDP selection. In case it is null the default IDP will always be used.
+     * Sets path where request dispatcher will send user for IDP selection. In case it is null the default IDP will
+     * always be used.
      * Default is {@code "/idpselection"}.
      * <p>
      * Alternatively use property:

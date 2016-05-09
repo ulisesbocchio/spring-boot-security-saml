@@ -8,10 +8,11 @@ import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
 /**
  * Builder configurer that takes care of configuring/customizing the {@link WebSSOProfileConsumerHoKImpl} bean.
  * <p>
- * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the Context.
- * So if not {@link WebSSOProfileConsumerHoKImpl} bean is defined, priority goes to a custom WebSSOProfileConsumerHoKImpl provided explicitly
- * to this configurer through the constructor. And if not provided through the constructor, a default implementation is
- * instantiated.
+ * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the
+ * Context.
+ * So if not {@link WebSSOProfileConsumerHoKImpl} bean is defined, priority goes to a custom
+ * WebSSOProfileConsumerHoKImpl provided explicitly to this configurer through the constructor. And if not provided
+ * through the constructor, a default implementation is instantiated.
  * </p>
  *
  * @author Ulises Bocchio

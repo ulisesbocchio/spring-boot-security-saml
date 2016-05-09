@@ -15,15 +15,16 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Builder configurer that takes care of configuring/customizing the {@link ExtendedMetadata} bean.
  * <p>
- * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the Context.
+ * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the
+ * Context.
  * So if not {@link ExtendedMetadata} bean is defined, priority goes to a custom ExtendedMetadata provided explicitly
  * to this configurer through the constructor. And if not provided through the constructor, a default implementation is
  * instantiated that is configurable through the DSL methods.
  * </p>
  * <p>
  * This configurer also reads the values from {@link SAMLSSOProperties#getExtendedMetadata()} if no custom Extended
- * Metadata is provided, for some DSL methods if they that are not used. In other words, the user is able to configure the Extended
- * Metadata through the following properties:
+ * Metadata is provided, for some DSL methods if they that are not used. In other words, the user is able to configure
+ * the Extended Metadata through the following properties:
  * <pre>
  *     saml.sso.extendedMetadata.local
  *     saml.sso.extendedMetadata.alias
@@ -122,7 +123,8 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
     }
 
     /**
-     * When set to true entity is treated as locally deployed and will be able to accept messages on endpoints determined
+     * When set to true entity is treated as locally deployed and will be able to accept messages on endpoints
+     * determined
      * by the selected alias.
      * Default is {@code false}.
      * <p>
@@ -141,7 +143,8 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
     }
 
     /**
-     * When true IDP discovery will be invoked before initializing WebSSO, unless IDP is already specified inside SAMLContext.
+     * When true IDP discovery will be invoked before initializing WebSSO, unless IDP is already specified inside
+     * SAMLContext.
      * Default is {@code false}.
      * <p>
      * Alternatively use property:
@@ -393,7 +396,8 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
     }
 
     /**
-     * Algorithm used for creation of digital signatures of this entity. At the moment only used for metadata signatures.
+     * Algorithm used for creation of digital signatures of this entity. At the moment only used for metadata
+     * signatures.
      * Only valid for local entities.
      * <p>
      * Alternatively use property:
@@ -411,7 +415,8 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
     }
 
     /**
-     * Name of generator for KeyInfo elements in metadata and signatures. At the moment only used for metadata signatures.
+     * Name of generator for KeyInfo elements in metadata and signatures. At the moment only used for metadata
+     * signatures.
      * Only valid for local entities.
      * <p>
      * Alternatively use property:
@@ -429,8 +434,8 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
     }
 
     /**
-     * Key (stored in the local keyManager) used for encryption/decryption of messages coming/sent from this entity. For local entities
-     * private key must be available, for remote entities only public key is required.
+     * Key (stored in the local keyManager) used for encryption/decryption of messages coming/sent from this entity. For
+     * local entities private key must be available, for remote entities only public key is required.
      * <p>
      * Alternatively use property:
      * <pre>
@@ -447,8 +452,10 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
     }
 
     /**
-     * Key used for verification of SSL/TLS connections. For local entities key is included in the generated metadata when specified.
-     * For remote entities key is used to for server authentication of SSL/TLS when specified and when MetaIOP security profile is used.
+     * Key used for verification of SSL/TLS connections. For local entities key is included in the generated metadata
+     * when specified.
+     * For remote entities key is used to for server authentication of SSL/TLS when specified and when MetaIOP security
+     * profile is used.
      * <p>
      * Alternatively use property:
      * <pre>
@@ -465,8 +472,8 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
     }
 
     /**
-     * Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is null
-     * all keys in the keyStore will be treated as trusted.
+     * Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is
+     * null all keys in the keyStore will be treated as trusted.
      * <p>
      * Alternatively use property:
      * <pre>

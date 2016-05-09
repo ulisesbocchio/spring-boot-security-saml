@@ -24,8 +24,9 @@ import java.util.Optional;
  * the specified configuration.
  * </p>
  * <p>
- * This configurer also reads the values from {@link SAMLSSOProperties#getLogout()} for some the DSL methods if they are not used.
- * In other words, the user is able to configure the filters through the following properties:
+ * This configurer also reads the values from {@link SAMLSSOProperties#getLogout()} for some the DSL methods if they
+ * are
+ * not used. In other words, the user is able to configure the filters through the following properties:
  * <pre>
  *     saml.sso.logout.defaultTargetURL
  *     saml.sso.logout.logoutURL
@@ -95,10 +96,10 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
     }
 
     /**
-     * Supplies the default target Url that will be used if no saved request is found in the session, or the alwaysUseDefaultTargetUrl
-     * property is set to true. If not set, defaults to /. It will be treated as relative to the web-app's context path, and should
-     * include the leading /. Alternatively, inclusion of a scheme name (such as "http://" or "https://") as the prefix will denote
-     * a fully-qualified URL and this is also supported.
+     * Supplies the default target Url that will be used if no saved request is found in the session, or the
+     * alwaysUseDefaultTargetUrl property is set to true. If not set, defaults to /. It will be treated as relative to
+     * the web-app's context path, and should include the leading /. Alternatively, inclusion of a scheme name (such as
+     * "http://" or "https://") as the prefix will denote a fully-qualified URL and this is also supported.
      * Default is {@code "/"}. Not relevant if {@link #successHandler(LogoutSuccessHandler)} is used.
      * <p>
      * Alternatively use property:
@@ -161,7 +162,8 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
      * </pre>
      * </p>
      *
-     * @param value true if you wish to clear the Authentication from the SecurityContext (default) or false if the Authentication
+     * @param value true if you wish to clear the Authentication from the SecurityContext (default) or false if the
+     *              Authentication
      *              should not be removed.
      * @return this configurer for further customization
      */

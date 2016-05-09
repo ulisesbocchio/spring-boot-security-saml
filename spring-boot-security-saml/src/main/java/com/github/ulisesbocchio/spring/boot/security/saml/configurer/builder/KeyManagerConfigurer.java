@@ -19,15 +19,16 @@ import java.util.Optional;
 /**
  * Builder configurer that takes care of configuring/customizing the {@link KeyManager} bean.
  * <p>
- * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the Context.
+ * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the
+ * Context.
  * So if not {@link KeyManager} bean is defined, priority goes to a custom KeyManager provided explicitly
  * to this configurer through the constructor. And if not provided through the constructor, a default implementation is
  * instantiated that is configurable through the DSL methods.
  * </p>
  * <p>
  * This configurer also reads the values from {@link SAMLSSOProperties#getKeyManager()} if no custom KeyManager
- * is provided, for some DSL methods if they are not used. In other words, the user is able to configure the KeyManager through the
- * following properties:
+ * is provided, for some DSL methods if they are not used. In other words, the user is able to configure the KeyManager
+ * through the following properties:
  * <pre>
  *     saml.sso.keyManager.publicKeyPEMLocation
  *     saml.sso.keyManager.privateKeyDERLocation
@@ -150,7 +151,8 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
     }
 
     /**
-     * If not {@link KeyStore} is provided, specify the KeyStore location. Takes precedence over {@link #publicKeyPEMLocation(String)} and
+     * If not {@link KeyStore} is provided, specify the KeyStore location. Takes precedence over {@link
+     * #publicKeyPEMLocation(String)} and
      * {@link #privateKeyDERLocation(String)}.
      * <p>
      * Alternatively use property:
@@ -186,7 +188,8 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
     }
 
     /**
-     * Specify the passwords of the keys stored in the {@link KeyStore}. Not relevant if using {@link #publicKeyPEMLocation(String)} and
+     * Specify the passwords of the keys stored in the {@link KeyStore}. Not relevant if using {@link
+     * #publicKeyPEMLocation(String)} and
      * {@link #privateKeyDERLocation(String)}.
      * <p>
      * Alternatively use property:
