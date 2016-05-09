@@ -96,7 +96,7 @@ public class ServiceProviderSecurityBuilder extends
     }
 
     private void reorderConfigurers() {
-        Stream.<Class<? extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>>>of(
+        Stream.of(
                 KeyManagerConfigurer.class,
                 ExtendedMetadataConfigurer.class,
                 MetadataManagerConfigurer.class,
@@ -284,7 +284,7 @@ public class ServiceProviderSecurityBuilder extends
     }
 
     public AuthenticationProviderConfigurer authenticationProvider() throws Exception {
-        return authenticationProvider(new SAMLAuthenticationProvider());
+        return getOrApply(new AuthenticationProviderConfigurer());
     }
 
     public AuthenticationProviderConfigurer authenticationProvider(SAMLAuthenticationProvider provider) throws Exception {

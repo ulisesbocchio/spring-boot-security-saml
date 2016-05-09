@@ -9,10 +9,12 @@ import org.springframework.security.saml.log.SAMLDefaultLogger;
 import org.springframework.security.saml.parser.ParserPoolHolder;
 
 /**
- * Default Spring Security SAML Configuration. Any of this Beans could be
- * overridden.
+ * Default Spring Security SAML Configuration beans. Override any of this beans if necessary.
+ * This beans, required by Spring Security SAML, are injected/used throughout the Service Provider configuration
+ * process.
  *
  * @author Ulises Bocchio
+ * @see SAMLServiceProviderSecurityConfiguration
  */
 @Configuration
 public class DefaultSAMLConfiguration {

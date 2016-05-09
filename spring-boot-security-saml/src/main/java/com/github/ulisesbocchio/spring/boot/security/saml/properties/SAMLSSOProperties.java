@@ -39,7 +39,7 @@ public class SAMLSSOProperties {
     @NestedConfigurationProperty
     private WebSSOProfileOptions profileOptions = new WebSSOProfileOptions();
     @NestedConfigurationProperty
-    private KeystoreConfiguration keystore = new KeystoreConfiguration();
+    private KeyManagerConfiguration keyManager = new KeyManagerConfiguration();
     @NestedConfigurationProperty
     private TLSConfiguration tls = new TLSConfiguration();
     @NestedConfigurationProperty
@@ -49,7 +49,7 @@ public class SAMLSSOProperties {
     public static class MetadataManagerConfiguration {
         private String defaultIDP;
         private String hostedSPName;
-        private Integer refreshCheckInterval;
+        private Long refreshCheckInterval = -1L;
     }
 
     @Data
@@ -82,7 +82,7 @@ public class SAMLSSOProperties {
     }
 
     @Data
-    public static class KeystoreConfiguration {
+    public static class KeyManagerConfiguration {
         String publicKeyPEMLocation;
         String privateKeyDERLocation;
         String storeLocation;
