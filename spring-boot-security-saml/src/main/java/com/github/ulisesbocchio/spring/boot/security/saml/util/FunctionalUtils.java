@@ -4,6 +4,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
+ * Utilities to overcome functional limitations.
+ *
  * @author Ulises Bocchio
  */
 public class FunctionalUtils {
@@ -13,7 +15,7 @@ public class FunctionalUtils {
                 consumer.accept(t);
             } catch (Throwable e) {
                 RuntimeException r;
-                if(e instanceof RuntimeException) {
+                if (e instanceof RuntimeException) {
                     r = (RuntimeException) e;
                 } else {
                     r = new RuntimeException(e);
@@ -29,7 +31,7 @@ public class FunctionalUtils {
                 return function.apply(t);
             } catch (Throwable e) {
                 RuntimeException r;
-                if(e instanceof RuntimeException) {
+                if (e instanceof RuntimeException) {
                     r = (RuntimeException) e;
                 } else {
                     r = new RuntimeException(e);

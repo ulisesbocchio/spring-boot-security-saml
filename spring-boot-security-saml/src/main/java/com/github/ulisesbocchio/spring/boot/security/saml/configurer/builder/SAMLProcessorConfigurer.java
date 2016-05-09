@@ -87,7 +87,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
 
                 if (postBinding != null) {
                     bindings.add(postBinding);
-                } else if (Optional.ofNullable(post).orElseGet(processorConfig::isRedirect)) {
+                } else if (Optional.ofNullable(post).orElseGet(processorConfig::isPost)) {
                     bindings.add(postProcess(new HTTPPostBinding(parserPool, getVelocityEngine())));
                 }
 

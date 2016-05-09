@@ -1,6 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.saml.*;
@@ -16,6 +17,12 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import javax.servlet.Filter;
 
 /**
+ * Class for internal usage of this Spring Boot Plugin. This configurer wires Spring Security's {@link HttpSecurity} builder
+ * with the results of {@link ServiceProviderSecurityBuilder}. Once all the configuration has been executed by the Service
+ * Provider Builder, all that's left is to wire a Spring Security's Filter Chain with all the different filters applicable
+ * for the desired configuration, and the Authentication Provider. Prior to that, all beans are postProcessed and all
+ * {@link InitializingBean} implementors are called.
+ *
  * @author Ulises Bocchio
  */
 public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {

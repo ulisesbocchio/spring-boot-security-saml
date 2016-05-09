@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * Spring <-- OpenSAML resource adapter. It allows the use of Spring {@link Resource}s as an Open SAML {@link org.opensaml.util.resource.Resource}.
+ * The implementation simply delegates all method calls to the Spring resource.
+ *
  * @author Ulises Bocchio
  */
 public class SpringResourceWrapperOpenSAMLResource implements org.opensaml.util.resource.Resource {

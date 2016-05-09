@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * Class for internal usage of this Spring Boot Plugin. It holds user configured endpoint URLS registered throughout
+ * the Service Provider configuration using either the Java DSL or configuration properties. The endpoint URLs are held
+ * so they can later be used to configure Spring Security request mappers properly.
+ *
  * @author Ulises Bocchio
  */
 @Data
@@ -24,6 +28,11 @@ public class ServiceProviderEndpoints {
     private String logoutURL;
     private String singleLogoutURL;
 
+    /**
+     * Returns an {@link OrRequestMatcher} that contains all the different URLs configured throughout the Service
+     * Provider configuration.
+     * @return
+     */
     public RequestMatcher getRequestMatcher() {
         return new OrRequestMatcher(requestMatchers(defaultFailureURL, ssoProcessingURL, discoveryProcessingURL,
                 idpSelectionPageURL, ssoLoginURL, metadataURL, defaultTargetURL, logoutURL, singleLogoutURL));

@@ -46,6 +46,7 @@ import static java.util.stream.Collectors.toSet;
  *     saml.sso.extendedDelegate.forceMetadataRevocationCheck
  *     saml.sso.extendedDelegate.metadataRequireSignature
  *     saml.sso.extendedDelegate.requireValidMetadata
+ *     saml.sso.idp.metadataLocation
  * </pre>
  * </p>
  *
@@ -254,6 +255,12 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * Specify the location(s) of the metadata files to be loaded as {@link ResourceBackedMetadataProvider}. Not relevant
      * is using {@link #metadataProvider(MetadataProvider)}, {@link #metadataProviders(List)}, or
      * {@link #metadataProviders(MetadataProvider...)}
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.idp.metadataLocation
+     * </pre>
+     * </p>
      *
      * @param providerLocation the metadata files to load.
      * @return this configurer for further customization
