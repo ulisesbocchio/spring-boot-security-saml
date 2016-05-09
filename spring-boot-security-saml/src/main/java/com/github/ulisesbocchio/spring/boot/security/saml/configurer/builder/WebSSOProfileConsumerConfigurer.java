@@ -7,6 +7,14 @@ import org.springframework.security.saml.websso.WebSSOProfileConsumer;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
 
 /**
+ * Builder configurer that takes care of configuring/customizing the {@link WebSSOProfileConsumer} bean.
+ * <p>
+ * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the Context.
+ * So if not {@link WebSSOProfileConsumer} bean is defined, priority goes to a custom WebSSOProfileConsumer provided explicitly
+ * to this configurer through the constructor. And if not provided through the constructor, a default implementation is
+ * instantiated.
+ * </p>
+ *
  * @author Ulises Bocchio
  */
 public class WebSSOProfileConsumerConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {

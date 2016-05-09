@@ -6,11 +6,32 @@ import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProp
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toSet;
+
 /**
- * Configures Single Sign On filter for SAML Service Provider
+ * <p>
+ * Builder configurer that takes care of configuring/customizing the {@link TLSProtocolConfigurer} bean.
+ * </p>
+ * <p>
+ * This configurer always instantiates its own {@link TLSProtocolConfigurer}.
+ * </p>
+ * <p>
+ * This configurer also reads the values from {@link SAMLSSOProperties#getTls()} for some the DSL methods if they are not used.
+ * In other words, the user is able to configure the TLSProtocolConfigurer through the following properties:
+ * <pre>
+ *     saml.sso.tls.protocolName
+ *     saml.sso.tls.protocolPort
+ *     saml.sso.tls.keyManager
+ *     saml.sso.tls.sslHostnameVerification
+ *     saml.sso.tls.trustedKeys
+ * </pre>
+ * </p>
+ *
+ * @author Ulises Bocchio
  */
 public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
 
@@ -35,23 +56,76 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         builder.setSharedObject(TLSProtocolConfigurer.class, configurer);
     }
 
+    /**
+     * Name of protocol (ID) to register to HTTP Client, https by default.
+     * Default is {@code "https"}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.tls.protocolName
+     * </pre>
+     * </p>
+     *
+     * @param protocolName the protocol
+     * @return this configurer for further customization
+     */
     public TLSConfigurer protocolName(String protocolName) {
         this.protocolName = protocolName;
         return this;
     }
 
+    /**
+     * Default port for protocol.
+     * Default is {@code 443}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.tls.protocolPort
+     * </pre>
+     * </p>
+     *
+     * @param protocolPort the protocol port
+     * @return this configurer for further customization
+     */
     public TLSConfigurer protocolPort(int protocolPort) {
         this.protocolPort = protocolPort;
         return this;
     }
 
+    /**
+     * Hostname verifier to use for verification of SSL connections. Default value is "default", other supported options
+     * are "defaultAndLocalhost", "strict" and "allowAll".
+     * Default is {@code "default"}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.tls.sslHostnameVerification
+     * </pre>
+     * </p>
+     *
+     * @param sslHostnameVerification hostname verification mode.
+     * @return this configurer for further customization
+     */
     public TLSConfigurer sslHostnameVerification(String sslHostnameVerification) {
         this.sslHostnameVerification = sslHostnameVerification;
         return this;
     }
 
-    public TLSConfigurer trustedKeys(Set<String> trustedKeys) {
-        this.trustedKeys = trustedKeys;
+    /**
+     * When not set all certificates included in the keystore will be used as trusted certificate authorities. When specified,
+     * only keys with the defined aliases will be used for trust evaluation.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.tls.trustedKeys
+     * </pre>
+     * </p>
+     *
+     * @param trustedKeys trusted keys.
+     * @return this configurer for further customization
+     */
+    public TLSConfigurer trustedKeys(String... trustedKeys) {
+        this.trustedKeys = Arrays.stream(trustedKeys).collect(toSet());
         return this;
     }
 }

@@ -6,6 +6,14 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.WebSSOProfileHoKImpl;
 
 /**
+ * Builder configurer that takes care of configuring/customizing the {@link WebSSOProfileHoKImpl} bean.
+ * <p>
+ * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the Context.
+ * So if not {@link WebSSOProfileHoKImpl} bean is defined, priority goes to a custom WebSSOProfileHoKImpl provided explicitly
+ * to this configurer through the constructor. And if not provided through the constructor, a default implementation is
+ * instantiated.
+ * </p>
+ *
  * @author Ulises Bocchio
  */
 public class WebSSOProfileHoKConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {

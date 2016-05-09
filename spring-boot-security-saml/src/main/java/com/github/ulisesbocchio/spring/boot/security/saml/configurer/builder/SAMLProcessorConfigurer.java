@@ -17,7 +17,27 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Configures SAML Processor
+ * Builder configurer that takes care of configuring/customizing the {@link SAMLProcessor} bean.
+ * <p>
+ * Common strategy across most internal configurers is to first give priority to a Spring Bean if present in the Context.
+ * So if not {@link SAMLProcessor} bean is defined, priority goes to a custom SAMLProcessor provided explicitly
+ * to this configurer through the constructor. And if not provided through the constructor, a default implementation is
+ * instantiated that is configurable through the DSL methods.
+ * </p>
+ * <p>
+ * This configurer also reads the values from {@link SAMLSSOProperties#getSamlProcessor()} if no custom SAMLProcessor
+ * is provided, for some DSL methods if they are not used. In other words, the user is able to configure the SAMLProcessor through the
+ * following properties:
+ * <pre>
+ *     saml.sso.samlProcessor.redirect
+ *     saml.sso.samlProcessor.post
+ *     saml.sso.samlProcessor.artifact
+ *     saml.sso.samlProcessor.soap
+ *     saml.sso.samlProcessor.paos
+ * </pre>
+ * </p>
+ *
+ * @author Ulises Bocchio
  */
 public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder> {
 
@@ -30,11 +50,11 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
     private Boolean soap = null;
     private Boolean paos = null;
 
-    HTTPRedirectDeflateBinding redirectBinding;
-    HTTPPostBinding postBinding;
-    HTTPArtifactBinding artifactBinding;
-    HTTPSOAP11Binding soapBinding;
-    HTTPPAOS11Binding paosBinding;
+    private HTTPRedirectDeflateBinding redirectBinding;
+    private HTTPPostBinding postBinding;
+    private HTTPArtifactBinding artifactBinding;
+    private HTTPSOAP11Binding soapBinding;
+    private HTTPPAOS11Binding paosBinding;
     private SAMLSSOProperties.SAMLProcessorConfiguration processorConfig;
     private ParserPool parserPool;
 
@@ -55,19 +75,25 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
 
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-        if(sAMLProcessorBean == null) {
-            if(sAMLProcessor == null) {
+        if (sAMLProcessorBean == null) {
+            if (sAMLProcessor == null) {
                 List<SAMLBinding> bindings = new ArrayList<>();
 
-                if(Optional.ofNullable(redirect).orElseGet(processorConfig::isRedirect)) {
+                if (redirectBinding != null) {
+                    bindings.add(redirectBinding);
+                } else if (Optional.ofNullable(redirect).orElseGet(processorConfig::isRedirect)) {
                     bindings.add(postProcess(new HTTPRedirectDeflateBinding(parserPool)));
                 }
 
-                if(Optional.ofNullable(post).orElseGet(processorConfig::isRedirect)) {
+                if (postBinding != null) {
+                    bindings.add(postBinding);
+                } else if (Optional.ofNullable(post).orElseGet(processorConfig::isRedirect)) {
                     bindings.add(postProcess(new HTTPPostBinding(parserPool, getVelocityEngine())));
                 }
 
-                if(Optional.ofNullable(artifact).orElseGet(processorConfig::isArtifact)) {
+                if (artifactBinding != null) {
+                    bindings.add(artifactBinding);
+                } else if (Optional.ofNullable(artifact).orElseGet(processorConfig::isArtifact)) {
                     HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
                     ArtifactResolutionProfileImpl artifactResolutionProfile = new ArtifactResolutionProfileImpl(httpClient);
                     HTTPSOAP11Binding soapBinding = new HTTPSOAP11Binding(parserPool);
@@ -75,11 +101,15 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
                     bindings.add(postProcess(new HTTPArtifactBinding(parserPool, getVelocityEngine(), artifactResolutionProfile)));
                 }
 
-                if(Optional.ofNullable(soap).orElseGet(processorConfig::isSoap)) {
+                if (soapBinding != null) {
+                    bindings.add(soapBinding);
+                } else if (Optional.ofNullable(soap).orElseGet(processorConfig::isSoap)) {
                     bindings.add(postProcess(new HTTPSOAP11Binding(parserPool)));
                 }
 
-                if(Optional.ofNullable(paos).orElseGet(processorConfig::isPaos)) {
+                if (paosBinding != null) {
+                    bindings.add(paosBinding);
+                } else if (Optional.ofNullable(paos).orElseGet(processorConfig::isPaos)) {
                     bindings.add(postProcess(new HTTPPAOS11Binding(parserPool)));
                 }
                 sAMLProcessor = new SAMLProcessorImpl(bindings);
@@ -90,61 +120,151 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
     }
 
     private VelocityEngine getVelocityEngine() {
-        if(velocityEngine == null) {
+        if (velocityEngine == null) {
             velocityEngine = VelocityFactory.getEngine();
         }
         return velocityEngine;
     }
 
+    /**
+     * HTTP Redirect Bindings are enabled by default. Call this method if you want to disable Redirect Bindings.
+     * Not relevant if using {@link #redirectBinding(HTTPRedirectDeflateBinding)}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.samlProcessor.redirect
+     * </pre>
+     * </p>
+     *
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer disableRedirectBinding() {
         redirect = false;
         return this;
     }
 
+    /**
+     * Provide a specific {@link HTTPRedirectDeflateBinding} bindings. Overrides value set by {@link #disableRedirectBinding()}
+     *
+     * @param binding the actual Redirect bindings
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer redirectBinding(HTTPRedirectDeflateBinding binding) {
         redirect = true;
         redirectBinding = binding;
         return this;
     }
 
+    /**
+     * HTTP Post Bindings are enabled by default. Call this method if you want to disable Post Bindings.
+     * Not relevant if using {@link #postBinding(HTTPPostBinding)}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.samlProcessor.post
+     * </pre>
+     * </p>
+     *
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer disablePostBinding() {
         post = false;
         return this;
     }
 
+    /**
+     * Provide a specific {@link HTTPPostBinding} bindings. Overrides value set by {@link #disablePostBinding()}
+     *
+     * @param binding the actual Post bindings
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer postBinding(HTTPPostBinding binding) {
         post = true;
         postBinding = binding;
         return this;
     }
 
+    /**
+     * HTTP Artifact Bindings are enabled by default. Call this method if you want to disable Artifact Bindings.
+     * Not relevant if using {@link #artifactBinding(HTTPArtifactBinding)}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.samlProcessor.artifact
+     * </pre>
+     * </p>
+     *
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer disableArtifactBinding() {
         artifact = false;
         return this;
     }
 
+    /**
+     * Provide a specific {@link HTTPArtifactBinding} bindings. Overrides value set by {@link #disableArtifactBinding()}
+     *
+     * @param binding the actual Artifact bindings
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer artifactBinding(HTTPArtifactBinding binding) {
         artifact = true;
         artifactBinding = binding;
         return this;
     }
 
+    /**
+     * HTTP SOAP Bindings are enabled by default. Call this method if you want to disable SOAP Bindings.
+     * Not relevant if using {@link #soapBinding(HTTPSOAP11Binding)}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.samlProcessor.soap
+     * </pre>
+     * </p>
+     *
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer disableSoapBinding() {
         soap = false;
         return this;
     }
 
+    /**
+     * Provide a specific {@link HTTPSOAP11Binding} bindings. Overrides value set by {@link #disableSoapBinding()}
+     *
+     * @param binding the actual SOAP bindings
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer soapBinding(HTTPSOAP11Binding binding) {
         soap = true;
         soapBinding = binding;
         return this;
     }
 
+    /**
+     * HTTP PAOS Bindings are enabled by default. Call this method if you want to disable PAOS Bindings.
+     * Not relevant if using {@link #paosBinding(HTTPPAOS11Binding)}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.samlProcessor.paos
+     * </pre>
+     * </p>
+     *
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer disablePaosBinding() {
         paos = false;
         return this;
     }
 
+    /**
+     * Provide a specific {@link HTTPPAOS11Binding} bindings. Overrides value set by {@link #disablePaosBinding()}
+     *
+     * @param binding the actual PAOS bindings
+     * @return this configurer for further customization
+     */
     public SAMLProcessorConfigurer paosBinding(HTTPPAOS11Binding binding) {
         paos = true;
         paosBinding = binding;
