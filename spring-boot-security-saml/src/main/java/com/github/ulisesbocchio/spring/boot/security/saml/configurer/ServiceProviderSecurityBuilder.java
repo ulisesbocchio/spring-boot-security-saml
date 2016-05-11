@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configuration.SAMLServiceProviderSecurityConfiguration.BeanRegistry;
+import com.github.ulisesbocchio.spring.boot.security.saml.util.BeanRegistry;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder.*;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.AutowiringObjectPostProcessor;
