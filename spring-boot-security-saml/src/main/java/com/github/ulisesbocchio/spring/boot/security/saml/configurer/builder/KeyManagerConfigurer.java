@@ -74,32 +74,42 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
 
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-        privateKeyDERLocation = Optional.ofNullable(privateKeyDERLocation).orElseGet(config::getPrivateKeyDERLocation);
-        publicKeyPEMLocation = Optional.ofNullable(publicKeyPEMLocation).orElseGet(config::getPublicKeyPEMLocation);
-        defaultKey = Optional.ofNullable(defaultKey).orElseGet(config::getDefaultKey);
-        keyPasswords = Optional.ofNullable(keyPasswords).orElseGet(config::getKeyPasswords);
-        storePass = Optional.ofNullable(storePass).orElseGet(config::getStorePass);
-        storeLocation = Optional.ofNullable(storeLocation).orElseGet(config::getStoreLocation);
-
         if (keyManagerBean == null) {
             if (keyManager == null) {
+                privateKeyDERLocation = Optional.ofNullable(privateKeyDERLocation).orElseGet(config::getPrivateKeyDERLocation);
+                publicKeyPEMLocation = Optional.ofNullable(publicKeyPEMLocation).orElseGet(config::getPublicKeyPEMLocation);
+                defaultKey = Optional.ofNullable(defaultKey).orElseGet(config::getDefaultKey);
+                keyPasswords = Optional.ofNullable(keyPasswords).orElseGet(config::getKeyPasswords);
+                storePass = Optional.ofNullable(storePass).orElseGet(config::getStorePass);
+                storeLocation = Optional.ofNullable(storeLocation).orElseGet(config::getStoreLocation);
                 if (keyStore == null) {
                     if (storeLocation == null) {
                         if (privateKeyDERLocation == null || publicKeyPEMLocation == null) {
                             keyManager = new EmptyKeyManager();
                         } else {
+                            validateDefaultKeyAndPasswords();
                             keyStore = keystoreFactory.loadKeystore(publicKeyPEMLocation, privateKeyDERLocation, defaultKey, "");
                             keyManager = new JKSKeyManager(keyStore, keyPasswords, defaultKey);
                         }
                     } else {
+                        validateDefaultKeyAndPasswords();
                         keyManager = new JKSKeyManager(resourceLoader.getResource(storeLocation), storePass, keyPasswords, defaultKey);
                     }
                 } else {
                     keyManager = new JKSKeyManager(keyStore, keyPasswords, defaultKey);
                 }
             }
+            builder.setSharedObject(KeyManager.class, keyManager);
         }
-        builder.setSharedObject(KeyManager.class, keyManager);
+    }
+
+    private void validateDefaultKeyAndPasswords() {
+        if(defaultKey == null || defaultKey.trim().equals("")) {
+            throw new IllegalArgumentException("'defaultKey' cannot be null or empty.");
+        }
+        if(keyPasswords == null || keyPasswords.isEmpty()) {
+            throw new IllegalArgumentException("'keyPasswords' cannot be null or empty.");
+        }
     }
 
     /**

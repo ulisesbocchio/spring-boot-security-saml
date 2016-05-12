@@ -4,6 +4,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
+import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLLogoutFilter;
 import org.springframework.security.saml.SAMLLogoutProcessingFilter;
@@ -60,7 +61,7 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (successHandler == null) {
-            SimpleUrlLogoutSuccessHandler successLogoutHandler = new SimpleUrlLogoutSuccessHandler();
+            SimpleUrlLogoutSuccessHandler successLogoutHandler = createDefaultSuccessHandler();
             defaultTargetURL = Optional.ofNullable(defaultTargetURL).orElseGet(config::getDefaultTargetURL);
             successLogoutHandler.setDefaultTargetUrl(defaultTargetURL);
             endpoints.setDefaultTargetURL(defaultTargetURL);
@@ -68,14 +69,14 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
         }
 
         if (localHandler == null) {
-            SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+            SecurityContextLogoutHandler logoutHandler = createDefaultLocalHandler();
             logoutHandler.setInvalidateHttpSession(Optional.ofNullable(invalidateSession).orElseGet(config::isInvalidateSession));
             logoutHandler.setClearAuthentication(Optional.ofNullable(clearAuthentication).orElseGet(config::isClearAuthentication));
             localHandler = postProcess(logoutHandler);
         }
 
         if (globalHandler == null) {
-            SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+            SecurityContextLogoutHandler logoutHandler = createDefaultGlobalHandler();
             logoutHandler.setInvalidateHttpSession(Optional.ofNullable(invalidateSession).orElseGet(config::isInvalidateSession));
             logoutHandler.setClearAuthentication(Optional.ofNullable(clearAuthentication).orElseGet(config::isClearAuthentication));
             globalHandler = postProcess(logoutHandler);
@@ -93,6 +94,21 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
 
         builder.setSharedObject(SAMLLogoutFilter.class, samlLogoutFilter);
         builder.setSharedObject(SAMLLogoutProcessingFilter.class, samlLogoutProcessingFilter);
+    }
+
+    @VisibleForTesting
+    protected SecurityContextLogoutHandler createDefaultLocalHandler() {
+        return new SecurityContextLogoutHandler();
+    }
+
+    @VisibleForTesting
+    protected SecurityContextLogoutHandler createDefaultGlobalHandler() {
+        return new SecurityContextLogoutHandler();
+    }
+
+    @VisibleForTesting
+    protected SimpleUrlLogoutSuccessHandler createDefaultSuccessHandler() {
+        return new SimpleUrlLogoutSuccessHandler();
     }
 
     /**

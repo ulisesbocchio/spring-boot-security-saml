@@ -10,6 +10,7 @@ import org.springframework.security.saml.*;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.MetadataDisplayFilter;
+import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
 
@@ -231,6 +232,11 @@ public class SAMLSSOProperties {
         private String entityId = "localhost";
 
         /**
+         * Local ID. Used as part of Entity Descriptor.
+         */
+        private String id = null;
+
+        /**
          * Whether incoming SAML assertions should be signed or not.
          */
         private boolean wantAssertionSigned = true;
@@ -243,7 +249,7 @@ public class SAMLSSOProperties {
         /**
          * NameIDs to be included in generated metadata.
          */
-        private Collection<String> nameId = null;
+        private Collection<String> nameId = MetadataGenerator.defaultNameID;
 
         /**
          * This Service Provider's entity base URL. Provide if base URL cannot be inferred by using the hostname where

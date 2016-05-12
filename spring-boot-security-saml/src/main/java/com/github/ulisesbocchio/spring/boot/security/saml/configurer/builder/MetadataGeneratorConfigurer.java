@@ -4,6 +4,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
+import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 import org.springframework.security.saml.metadata.MetadataDisplayFilter;
@@ -47,6 +48,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
 
     private String metadataURL;
     private String entityId;
+    private String id;
     private Boolean wantAssertionSigned;
     private Boolean requestSigned;
     private Collection<String> nameId;
@@ -76,6 +78,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
 
         MetadataGenerator metadataGenerator = new MetadataGenerator();
         metadataGenerator.setEntityId(Optional.ofNullable(entityId).orElseGet(config::getEntityId));
+        metadataGenerator.setId(Optional.ofNullable(id).orElseGet(config::getId));
         metadataGenerator.setExtendedMetadata(extendedMetadata);
         metadataGenerator.setWantAssertionSigned(Optional.ofNullable(wantAssertionSigned).orElseGet(config::isWantAssertionSigned));
         metadataGenerator.setRequestSigned(Optional.ofNullable(requestSigned).orElseGet(config::isRequestSigned));
@@ -127,6 +130,24 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      */
     public MetadataGeneratorConfigurer entityId(String entityId) {
         this.entityId = entityId;
+        return this;
+    }
+
+    /**
+     * This Service Provider's SAML ID. Used as ID of {@link EntityDescriptor} managed by {@link MetadataGenerator}.
+     * Default is {@code null}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.metadataGenerator.id
+     * </pre>
+     * </p>
+     *
+     * @param id the id.
+     * @return this configurer for further customization
+     */
+    public MetadataGeneratorConfigurer id(String id) {
+        this.id = id;
         return this;
     }
 
