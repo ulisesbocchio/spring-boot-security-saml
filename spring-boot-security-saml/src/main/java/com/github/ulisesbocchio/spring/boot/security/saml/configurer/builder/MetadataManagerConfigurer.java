@@ -7,10 +7,9 @@ import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProp
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.MetadataManagerConfiguration;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.SpringResourceWrapperOpenSAMLResource;
 import lombok.SneakyThrows;
-import org.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataFilter;
-import org.opensaml.saml2.metadata.provider.MetadataProvider;
-import org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider;
+import org.assertj.core.util.VisibleForTesting;
+import org.opensaml.saml2.metadata.provider.*;
+import org.opensaml.util.resource.ResourceException;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -72,6 +71,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
     private ResourceLoader resourceLoader;
     private ExtendedMetadataDelegateConfiguration extendedDelegateConfig;
     private MetadataManagerConfiguration managerConfig;
+    private SAMLSSOProperties.IdentityProvidersConfiguration idpConfig;
 
     public MetadataManagerConfigurer(MetadataManager metadataManager) {
         this.metadataManager = metadataManager;
@@ -84,42 +84,41 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
         resourceLoader = builder.getSharedObject(ResourceLoader.class);
         metadataManagerBean = builder.getSharedObject(MetadataManager.class);
-        extendedDelegateConfig = getBuilder().getSharedObject(SAMLSSOProperties.class).getExtendedDelegate();
+        extendedDelegateConfig = builder.getSharedObject(SAMLSSOProperties.class).getExtendedDelegate();
         managerConfig = builder.getSharedObject(SAMLSSOProperties.class).getMetadataManager();
+        idpConfig = builder.getSharedObject(SAMLSSOProperties.class).getIdps();
     }
 
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-        extendedMetadata = getBuilder().getSharedObject(ExtendedMetadata.class);
+        extendedMetadata = builder.getSharedObject(ExtendedMetadata.class);
 
         if (metadataManagerBean == null) {
             if (metadataManager == null) {
-                metadataManager = new CachingMetadataManager(null);
+                metadataManager = createDefaultMetadataManager();
+                metadataManager.setDefaultIDP(Optional.ofNullable(defaultIDP).orElseGet(managerConfig::getDefaultIDP));
+                metadataManager.setHostedSPName(Optional.ofNullable(hostedSPName).orElseGet(managerConfig::getHostedSPName));
+                metadataManager.setRefreshCheckInterval(Optional.ofNullable(refreshCheckInterval).orElseGet(managerConfig::getRefreshCheckInterval));
             }
 
-            if (metadataProviders.size() == 0 && metadataProviderLocations.size() > 0) {
-                for (String metadataLocation : metadataProviderLocations) {
-                    MetadataProvider providerFromLocation = new ResourceBackedMetadataProvider(new Timer(),
-                            new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(metadataLocation)));
-                    metadataProviders.add(postProcess(providerFromLocation));
+            if(metadataManager.getProviders() == null || metadataManager.getProviders().size() == 0) {
+                if (metadataProviders.size() == 0 && metadataProviderLocations.size() > 0) {
+                    for (String metadataLocation : metadataProviderLocations) {
+                        MetadataProvider providerFromLocation =createDefaultMetadataProvider(metadataLocation);
+                        metadataProviders.add(postProcess(providerFromLocation));
+                    }
+                }
+
+                if (metadataProviders.size() == 0) {
+                    String metadataLocation = idpConfig.getMetadataLocation();
+                    if(metadataLocation != null && !metadataLocation.trim().equals("")) {
+                        for (String location : metadataLocation.split(",")) {
+                            MetadataProvider providerFromProperties = createDefaultMetadataProvider(location);
+                            metadataProviders.add(postProcess(providerFromProperties));
+                        }
+                    }
                 }
             }
-
-            if (metadataProviders.size() == 0) {
-                String metadataLocation = builder.getSharedObject(SAMLSSOProperties.class).getIdps().getMetadataLocation();
-                for (String location : metadataLocation.split(",")) {
-                    MetadataProvider providerFromProperties = new ResourceBackedMetadataProvider(new Timer(),
-                            new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(location.trim())));
-                    metadataProviders.add(postProcess(providerFromProperties));
-                }
-            }
-
-            Optional.ofNullable(Optional.ofNullable(defaultIDP).orElseGet(managerConfig::getDefaultIDP))
-                    .ifPresent(metadataManager::setDefaultIDP);
-            Optional.ofNullable(Optional.ofNullable(hostedSPName).orElseGet(managerConfig::getHostedSPName))
-                    .ifPresent(metadataManager::setHostedSPName);
-            Optional.ofNullable(Optional.ofNullable(refreshCheckInterval).orElseGet(managerConfig::getRefreshCheckInterval))
-                    .ifPresent(metadataManager::setRefreshCheckInterval);
 
             List<MetadataProvider> extendedMetadataDelegates = metadataProviders.stream()
                     .map(this::setParserPool)
@@ -131,6 +130,22 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
             builder.setSharedObject(MetadataManager.class, metadataManager);
         }
 
+    }
+
+    @VisibleForTesting
+    protected MetadataProvider createDefaultMetadataProvider(String location) throws ResourceException, MetadataProviderException {
+        return new ResourceBackedMetadataProvider(new Timer(),
+                new SpringResourceWrapperOpenSAMLResource(resourceLoader.getResource(location.trim())));
+    }
+
+    @VisibleForTesting
+    protected CachingMetadataManager createDefaultMetadataManager() throws MetadataProviderException {
+        return new CachingMetadataManager(null);
+    }
+
+    @VisibleForTesting
+    protected ExtendedMetadataDelegate createDefaultExtendedMetadataDelegate(MetadataProvider provider) {
+        return new ExtendedMetadataDelegate(provider, extendedMetadata);
     }
 
     private MetadataProvider setParserPool(MetadataProvider provider) {
@@ -145,28 +160,28 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
         if (provider instanceof ExtendedMetadataDelegate) {
             return (ExtendedMetadataDelegate) provider;
         }
-        ExtendedMetadataDelegate extendedMetadataDelegate = new ExtendedMetadataDelegate(provider, extendedMetadata);
+        ExtendedMetadataDelegate delegate = createDefaultExtendedMetadataDelegate(provider);
 
-        extendedMetadataDelegate.setForceMetadataRevocationCheck(Optional.ofNullable(forceMetadataRevocationCheck)
+        delegate.setForceMetadataRevocationCheck(Optional.ofNullable(forceMetadataRevocationCheck)
                 .orElseGet(extendedDelegateConfig::isForceMetadataRevocationCheck));
 
-        extendedMetadataDelegate.setMetadataRequireSignature(Optional.ofNullable(metadataRequireSignature)
+        delegate.setMetadataRequireSignature(Optional.ofNullable(metadataRequireSignature)
                 .orElseGet(extendedDelegateConfig::isMetadataRequireSignature));
 
-        extendedMetadataDelegate.setMetadataTrustCheck(Optional.ofNullable(metadataTrustCheck)
+        delegate.setMetadataTrustCheck(Optional.ofNullable(metadataTrustCheck)
                 .orElseGet(extendedDelegateConfig::isMetadataTrustCheck));
 
-        extendedMetadataDelegate.setMetadataTrustedKeys(Optional.ofNullable(metadataTrustedKeys)
+        delegate.setMetadataTrustedKeys(Optional.ofNullable(metadataTrustedKeys)
                 .orElseGet(extendedDelegateConfig::getMetadataTrustedKeys));
 
-        extendedMetadataDelegate.setRequireValidMetadata(Optional.ofNullable(requireValidMetadata)
+        delegate.setRequireValidMetadata(Optional.ofNullable(requireValidMetadata)
                 .orElseGet(extendedDelegateConfig::isRequireValidMetadata));
 
-        extendedMetadataDelegate.setMetadataFilter(Optional.ofNullable(metadataFilter)
+        delegate.setMetadataFilter(Optional.ofNullable(metadataFilter)
                 .map(this::postProcess)
                 .orElse(null));
 
-        return postProcess(extendedMetadataDelegate);
+        return postProcess(delegate);
     }
 
     /**

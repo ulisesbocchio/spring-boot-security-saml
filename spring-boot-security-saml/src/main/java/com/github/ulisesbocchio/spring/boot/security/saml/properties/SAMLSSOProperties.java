@@ -364,7 +364,7 @@ public class SAMLSSOProperties {
          * Keys stored in the KeyManager which can be used to verify whether signature of the metadata is trusted.
          * If not set any key stored in the keyManager is considered as trusted.
          */
-        private Set<String> metadataTrustedKeys = null;
+        private Set<String> metadataTrustedKeys = Collections.EMPTY_SET;
 
         /**
          * When true metadata signature will be verified for trust using PKIX with metadataTrustedKeys
