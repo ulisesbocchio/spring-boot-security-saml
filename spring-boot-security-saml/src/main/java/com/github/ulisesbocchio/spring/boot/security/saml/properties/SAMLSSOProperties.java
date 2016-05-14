@@ -88,6 +88,12 @@ public class SAMLSSOProperties {
     private String ssoProcessingURL = "/saml/SSO";
 
     /**
+     * The URL that the {@link SAMLWebSSOHoKProcessingFilter} will be listening to. Only relevant if {@code
+     * enableSsoHoK} is true.
+     */
+    private String ssoHoKProcessingURL = "/saml/HoKSSO";
+
+    /**
      * Whether to enable the {@link SAMLWebSSOHoKProcessingFilter} filter or not.
      */
     private boolean enableSsoHoK = true;
@@ -169,11 +175,6 @@ public class SAMLSSOProperties {
         private int protocolPort = 443;
 
         /**
-         * Storage for all available keys.
-         */
-        private KeyManager keyManager;
-
-        /**
          * Hostname verifier to use for verification of SSL connections, e.g. for ArtifactResolution.
          */
         private String sslHostnameVerification = "default";
@@ -182,7 +183,7 @@ public class SAMLSSOProperties {
          * Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is
          * null all keys in the keyStore will be treated as trusted.
          */
-        private Set<String> trustedKeys;
+        private Set<String> trustedKeys = Collections.EMPTY_SET;
     }
 
     @Data

@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 public class ServiceProviderEndpoints {
     private String defaultFailureURL;
     private String ssoProcessingURL;
+    private String ssoHoKProcessingURL;
     private String discoveryProcessingURL;
     private String idpSelectionPageURL;
     private String ssoLoginURL;
@@ -35,7 +36,7 @@ public class ServiceProviderEndpoints {
      * @return
      */
     public RequestMatcher getRequestMatcher() {
-        return new OrRequestMatcher(requestMatchers(defaultFailureURL, ssoProcessingURL, discoveryProcessingURL,
+        return new OrRequestMatcher(requestMatchers(defaultFailureURL, ssoProcessingURL, ssoHoKProcessingURL, discoveryProcessingURL,
                 idpSelectionPageURL, ssoLoginURL, metadataURL, defaultTargetURL, logoutURL, singleLogoutURL));
     }
 

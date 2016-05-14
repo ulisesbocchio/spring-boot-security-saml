@@ -4,6 +4,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
+import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLDiscovery;
@@ -60,6 +61,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     private AuthenticationManager authenticationManager;
     private SAMLSSOProperties config;
     private ServiceProviderEndpoints endpoints;
+    private String ssoHoKProcessingURL;
 
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
@@ -71,21 +73,21 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (successHandler == null) {
-            SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+            SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler = createDefaultSuccessHandler();
             successRedirectHandler.setDefaultTargetUrl(Optional.ofNullable(defaultSuccessURL).orElseGet(config::getDefaultSuccessURL));
             successHandler = postProcess(successRedirectHandler);
         }
 
+        defaultFailureURL = Optional.ofNullable(defaultFailureURL).orElseGet(config::getDefaultFailureURL);
         if (failureHandler == null) {
-            SimpleUrlAuthenticationFailureHandler authenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler();
-            defaultFailureURL = Optional.ofNullable(defaultFailureURL).orElseGet(config::getDefaultFailureURL);
-            endpoints.setDefaultFailureURL(defaultFailureURL);
+            SimpleUrlAuthenticationFailureHandler authenticationFailureHandler = createDefaultFailureHandler();
             authenticationFailureHandler.setDefaultFailureUrl(defaultFailureURL);
             failureHandler = postProcess(authenticationFailureHandler);
         }
+        endpoints.setDefaultFailureURL(defaultFailureURL);
 
 
-        SAMLProcessingFilter ssoFilter = new SAMLProcessingFilter();
+        SAMLProcessingFilter ssoFilter = createDefaultSamlProcessingFilter();
         ssoFilter.setAuthenticationManager(authenticationManager);
         ssoFilter.setAuthenticationSuccessHandler(successHandler);
         ssoFilter.setAuthenticationFailureHandler(failureHandler);
@@ -95,13 +97,16 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
 
         SAMLWebSSOHoKProcessingFilter ssoHoKFilter = null;
         if (Optional.ofNullable(enableSsoHoK).orElseGet(config::isEnableSsoHoK)) {
-            ssoHoKFilter = new SAMLWebSSOHoKProcessingFilter();
+            ssoHoKFilter = createDefaultSamlHoKProcessingFilter();
             ssoHoKFilter.setAuthenticationSuccessHandler(successHandler);
             ssoHoKFilter.setAuthenticationManager(authenticationManager);
             ssoHoKFilter.setAuthenticationFailureHandler(failureHandler);
+            ssoHoKProcessingURL = Optional.ofNullable(ssoHoKProcessingURL).orElseGet(config::getSsoHoKProcessingURL);
+            endpoints.setSsoHoKProcessingURL(ssoHoKProcessingURL);
+            ssoHoKFilter.setFilterProcessesUrl(ssoHoKProcessingURL);
         }
 
-        SAMLDiscovery discoveryFilter = new SAMLDiscovery();
+        SAMLDiscovery discoveryFilter = createDefaultSamlDiscoveryFilter();
         discoveryProcessingURL = Optional.ofNullable(discoveryProcessingURL).orElseGet(config::getDiscoveryProcessingURL);
         endpoints.setDiscoveryProcessingURL(discoveryProcessingURL);
         discoveryFilter.setFilterProcessesUrl(discoveryProcessingURL);
@@ -109,7 +114,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         endpoints.setIdpSelectionPageURL(idpSelectionPageURL);
         discoveryFilter.setIdpSelectionPath(idpSelectionPageURL);
 
-        SAMLEntryPoint entryPoint = new SAMLEntryPoint();
+        SAMLEntryPoint entryPoint = createDefaultSamlEntryPoint();
         entryPoint.setDefaultProfileOptions(Optional.ofNullable(profileOptions).orElseGet(config::getProfileOptions));
         ssoLoginURL = Optional.ofNullable(ssoLoginURL).orElseGet(config::getSsoLoginURL);
         endpoints.setSsoLoginURL(ssoLoginURL);
@@ -119,6 +124,36 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         builder.setSharedObject(SAMLWebSSOHoKProcessingFilter.class, ssoHoKFilter);
         builder.setSharedObject(SAMLDiscovery.class, discoveryFilter);
         builder.setSharedObject(SAMLEntryPoint.class, entryPoint);
+    }
+
+    @VisibleForTesting
+    protected SAMLWebSSOHoKProcessingFilter createDefaultSamlHoKProcessingFilter() {
+        return new SAMLWebSSOHoKProcessingFilter();
+    }
+
+    @VisibleForTesting
+    protected SAMLEntryPoint createDefaultSamlEntryPoint() {
+        return new SAMLEntryPoint();
+    }
+
+    @VisibleForTesting
+    protected SAMLDiscovery createDefaultSamlDiscoveryFilter() {
+        return new SAMLDiscovery();
+    }
+
+    @VisibleForTesting
+    protected SAMLProcessingFilter createDefaultSamlProcessingFilter() {
+        return new SAMLProcessingFilter();
+    }
+
+    @VisibleForTesting
+    protected SimpleUrlAuthenticationFailureHandler createDefaultFailureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler();
+    }
+
+    @VisibleForTesting
+    protected SavedRequestAwareAuthenticationSuccessHandler createDefaultSuccessHandler() {
+        return new SavedRequestAwareAuthenticationSuccessHandler();
     }
 
     /**
@@ -200,6 +235,24 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      */
     public SSOConfigurer ssoProcessingURL(String ssoProcessingURL) {
         this.ssoProcessingURL = ssoProcessingURL;
+        return this;
+    }
+
+    /**
+     * The URL that the {@link SAMLWebSSOHoKProcessingFilter} will be listening to.
+     * Default is {@code "/saml/HoKSSO"}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.ssoHoKProcessingURL
+     * </pre>
+     * </p>
+     *
+     * @param ssoHoKProcessingURL the URL that the {@link SAMLWebSSOHoKProcessingFilter} will be listening to.
+     * @return this configurer for further customization
+     */
+    public SSOConfigurer ssoHoKProcessingURL(String ssoHoKProcessingURL) {
+        this.ssoHoKProcessingURL = ssoHoKProcessingURL;
         return this;
     }
 

@@ -3,6 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
+import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 
@@ -48,12 +49,17 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
 
     @Override
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
-        TLSProtocolConfigurer configurer = new TLSProtocolConfigurer();
+        TLSProtocolConfigurer configurer = createDefaultTlsProtocolConfigurer();
         configurer.setProtocolName(Optional.ofNullable(protocolName).orElseGet(config::getProtocolName));
         configurer.setProtocolPort(Optional.ofNullable(protocolPort).orElseGet(config::getProtocolPort));
         configurer.setSslHostnameVerification(Optional.ofNullable(sslHostnameVerification).orElseGet(config::getSslHostnameVerification));
         configurer.setTrustedKeys(Optional.ofNullable(trustedKeys).orElseGet(config::getTrustedKeys));
         builder.setSharedObject(TLSProtocolConfigurer.class, configurer);
+    }
+
+    @VisibleForTesting
+    protected TLSProtocolConfigurer createDefaultTlsProtocolConfigurer() {
+        return new TLSProtocolConfigurer();
     }
 
     /**

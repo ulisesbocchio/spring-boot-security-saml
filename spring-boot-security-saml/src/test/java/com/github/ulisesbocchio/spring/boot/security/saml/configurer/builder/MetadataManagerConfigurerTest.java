@@ -145,7 +145,7 @@ public class MetadataManagerConfigurerTest {
         verify(delegate).setForceMetadataRevocationCheck(eq(extendedMetadataDelegateConfiguration.isForceMetadataRevocationCheck()));
         verify(delegate).setMetadataRequireSignature(eq(extendedMetadataDelegateConfiguration.isMetadataRequireSignature()));
         verify(delegate).setMetadataTrustCheck(eq(extendedMetadataDelegateConfiguration.isMetadataTrustCheck()));
-        verify(delegate).setMetadataTrustedKeys((Set<String>) argThat(containsInAnyOrder(extendedMetadataDelegateConfiguration.getMetadataTrustedKeys().toArray())));
+        verify(delegate).setMetadataTrustedKeys(eq(extendedMetadataDelegateConfiguration.getMetadataTrustedKeys()));
         verify(delegate).setRequireValidMetadata(eq(extendedMetadataDelegateConfiguration.isRequireValidMetadata()));
         verify(delegate).setMetadataFilter((MetadataFilter) isNull());
     }
