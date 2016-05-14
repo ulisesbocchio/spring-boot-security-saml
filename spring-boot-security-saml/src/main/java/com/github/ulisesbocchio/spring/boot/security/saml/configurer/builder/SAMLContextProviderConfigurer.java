@@ -2,6 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
+import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.context.SAMLContextProvider;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
@@ -40,9 +41,14 @@ public class SAMLContextProviderConfigurer extends SecurityConfigurerAdapter<Ser
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (samlContextProviderBean == null) {
             if (samlContextProvider == null) {
-                samlContextProvider = new SAMLContextProviderImpl();
+                samlContextProvider = createDefaultSamlContextProvider();
             }
             builder.setSharedObject(SAMLContextProvider.class, samlContextProvider);
         }
+    }
+
+    @VisibleForTesting
+    protected SAMLContextProvider createDefaultSamlContextProvider() {
+        return new SAMLContextProviderImpl();
     }
 }

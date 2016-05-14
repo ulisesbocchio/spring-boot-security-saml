@@ -38,9 +38,13 @@ public class WebSSOProfileHoKConfigurer extends SecurityConfigurerAdapter<Servic
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (hokProfileBean == null) {
             if (hokProfile == null) {
-                hokProfile = new WebSSOProfileHoKImpl();
+                hokProfile = createDefaultWebSSOProfileHoK();
             }
             builder.setSharedObject(WebSSOProfileHoKImpl.class, hokProfile);
         }
+    }
+
+    protected WebSSOProfileHoKImpl createDefaultWebSSOProfileHoK() {
+        return new WebSSOProfileHoKImpl();
     }
 }

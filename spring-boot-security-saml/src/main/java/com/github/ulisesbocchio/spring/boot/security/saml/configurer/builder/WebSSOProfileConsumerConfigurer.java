@@ -40,9 +40,13 @@ public class WebSSOProfileConsumerConfigurer extends SecurityConfigurerAdapter<S
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (webSSOProfileConsumerBean == null) {
             if (webSSOProfileConsumer == null) {
-                webSSOProfileConsumer = new WebSSOProfileConsumerImpl();
+                webSSOProfileConsumer = createWebSSOProfileConsumer();
             }
             builder.setSharedObject(WebSSOProfileConsumer.class, webSSOProfileConsumer);
         }
+    }
+
+    protected WebSSOProfileConsumer createWebSSOProfileConsumer() {
+        return new WebSSOProfileConsumerImpl();
     }
 }

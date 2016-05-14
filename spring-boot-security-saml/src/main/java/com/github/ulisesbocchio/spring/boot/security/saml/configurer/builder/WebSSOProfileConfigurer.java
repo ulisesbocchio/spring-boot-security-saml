@@ -2,6 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
+import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.WebSSOProfile;
 import org.springframework.security.saml.websso.WebSSOProfileImpl;
@@ -40,9 +41,14 @@ public class WebSSOProfileConfigurer extends SecurityConfigurerAdapter<ServicePr
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (webSSOProfileBean == null) {
             if (webSSOProfile == null) {
-                webSSOProfile = new WebSSOProfileImpl();
+                webSSOProfile = createDefaultWebSSOProfile();
             }
             builder.setSharedObject(WebSSOProfile.class, webSSOProfile);
         }
+    }
+
+    @VisibleForTesting
+    protected WebSSOProfile createDefaultWebSSOProfile() {
+        return new WebSSOProfileImpl();
     }
 }
