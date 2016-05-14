@@ -1,0 +1,13 @@
+language: java
+jdk:
+  - oraclejdk8
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/cdc89ccd2fd268e4389e
+    on_success: always  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: false     # default: false
+after_success:
+  - coveralls
+install: mvn install -Dgpg.skip=true
