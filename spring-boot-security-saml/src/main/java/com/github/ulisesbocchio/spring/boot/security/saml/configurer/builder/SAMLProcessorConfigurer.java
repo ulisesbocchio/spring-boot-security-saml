@@ -6,6 +6,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProp
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.velocity.app.VelocityEngine;
+import org.assertj.core.util.VisibleForTesting;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.processor.*;
@@ -84,41 +85,71 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
                 if (redirectBinding != null) {
                     bindings.add(redirectBinding);
                 } else if (Optional.ofNullable(redirect).orElseGet(processorConfig::isRedirect)) {
-                    bindings.add(postProcess(new HTTPRedirectDeflateBinding(parserPool)));
+                    bindings.add(postProcess(createDefaultRedirectBinding()));
                 }
 
                 if (postBinding != null) {
                     bindings.add(postBinding);
                 } else if (Optional.ofNullable(post).orElseGet(processorConfig::isPost)) {
-                    bindings.add(postProcess(new HTTPPostBinding(parserPool, getVelocityEngine())));
+                    bindings.add(postProcess(createDefaultPostBinding()));
                 }
 
                 if (artifactBinding != null) {
                     bindings.add(artifactBinding);
                 } else if (Optional.ofNullable(artifact).orElseGet(processorConfig::isArtifact)) {
-                    HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
-                    ArtifactResolutionProfileImpl artifactResolutionProfile = new ArtifactResolutionProfileImpl(httpClient);
-                    HTTPSOAP11Binding soapBinding = new HTTPSOAP11Binding(parserPool);
-                    artifactResolutionProfile.setProcessor(new SAMLProcessorImpl(soapBinding));
-                    bindings.add(postProcess(new HTTPArtifactBinding(parserPool, getVelocityEngine(), artifactResolutionProfile)));
+                    bindings.add(postProcess(createDefaultArtifactBinding()));
                 }
 
                 if (soapBinding != null) {
                     bindings.add(soapBinding);
                 } else if (Optional.ofNullable(soap).orElseGet(processorConfig::isSoap)) {
-                    bindings.add(postProcess(new HTTPSOAP11Binding(parserPool)));
+                    bindings.add(postProcess(createDefaultSoapBinding()));
                 }
 
                 if (paosBinding != null) {
                     bindings.add(paosBinding);
                 } else if (Optional.ofNullable(paos).orElseGet(processorConfig::isPaos)) {
-                    bindings.add(postProcess(new HTTPPAOS11Binding(parserPool)));
+                    bindings.add(postProcess(createDefaultPaosBinding()));
                 }
-                sAMLProcessor = new SAMLProcessorImpl(bindings);
+                sAMLProcessor = createDefaultSamlProcessor(bindings);
             }
 
             builder.setSharedObject(SAMLProcessor.class, sAMLProcessor);
         }
+    }
+
+    @VisibleForTesting
+    protected HTTPPAOS11Binding createDefaultPaosBinding() {
+        return new HTTPPAOS11Binding(parserPool);
+    }
+
+    @VisibleForTesting
+    protected HTTPSOAP11Binding createDefaultSoapBinding() {
+        return new HTTPSOAP11Binding(parserPool);
+    }
+
+    @VisibleForTesting
+    protected HTTPArtifactBinding createDefaultArtifactBinding() {
+        HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+        ArtifactResolutionProfileImpl artifactResolutionProfile = new ArtifactResolutionProfileImpl(httpClient);
+        HTTPSOAP11Binding soapBinding = new HTTPSOAP11Binding(parserPool);
+        artifactResolutionProfile.setProcessor(new SAMLProcessorImpl(soapBinding));
+        return new HTTPArtifactBinding(parserPool, getVelocityEngine(), artifactResolutionProfile);
+    }
+
+    @VisibleForTesting
+    protected HTTPPostBinding createDefaultPostBinding() {
+        return new HTTPPostBinding(parserPool, getVelocityEngine());
+    }
+
+    @VisibleForTesting
+    protected HTTPRedirectDeflateBinding createDefaultRedirectBinding() {
+        return new HTTPRedirectDeflateBinding(parserPool);
+    }
+
+    @VisibleForTesting
+    protected SAMLProcessorImpl createDefaultSamlProcessor(List<SAMLBinding> bindings) {
+        return new SAMLProcessorImpl(bindings);
     }
 
     private VelocityEngine getVelocityEngine() {

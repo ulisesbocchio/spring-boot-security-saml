@@ -3,7 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.saml.websso.WebSSOProfileConsumer;
+import org.springframework.security.saml.websso.WebSSOProfile;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -22,41 +22,41 @@ public class WebSSOProfileConfigurerTest {
 
     @Test
     public void init() throws Exception {
-        WebSSOProfileConsumerConfigurer configurer = new WebSSOProfileConsumerConfigurer();
+        WebSSOProfileConfigurer configurer = new WebSSOProfileConfigurer();
         configurer.init(builder);
-        verify(builder).getSharedObject(eq(WebSSOProfileConsumer.class));
+        verify(builder).getSharedObject(eq(WebSSOProfile.class));
     }
 
     @Test
     public void configure() throws Exception {
-        WebSSOProfileConsumerConfigurer configurer = spy(new WebSSOProfileConsumerConfigurer());
-        WebSSOProfileConsumer profile = mock(WebSSOProfileConsumer.class);
-        when(configurer.createWebSSOProfileConsumer()).thenReturn(profile);
+        WebSSOProfileConfigurer configurer = spy(new WebSSOProfileConfigurer());
+        WebSSOProfile profile = mock(WebSSOProfile.class);
+        when(configurer.createDefaultWebSSOProfile()).thenReturn(profile);
         configurer.init(builder);
         configurer.configure(builder);
-        verify(builder).setSharedObject(eq(WebSSOProfileConsumer.class), eq(profile));
+        verify(builder).setSharedObject(eq(WebSSOProfile.class), eq(profile));
     }
 
     @Test
     public void configure_forBean() throws Exception {
-        WebSSOProfileConsumerConfigurer configurer = spy(new WebSSOProfileConsumerConfigurer());
-        WebSSOProfileConsumer profile = mock(WebSSOProfileConsumer.class);
-        when(builder.getSharedObject(WebSSOProfileConsumer.class)).thenReturn(profile);
+        WebSSOProfileConfigurer configurer = spy(new WebSSOProfileConfigurer());
+        WebSSOProfile profile = mock(WebSSOProfile.class);
+        when(builder.getSharedObject(WebSSOProfile.class)).thenReturn(profile);
         configurer.init(builder);
         configurer.configure(builder);
-        verify(configurer, never()).createWebSSOProfileConsumer();
+        verify(configurer, never()).createDefaultWebSSOProfile();
         verify(builder, never()).setSharedObject(any(), any());
         verifyZeroInteractions(profile);
     }
 
     @Test
     public void configure_forConstructor() throws Exception {
-        WebSSOProfileConsumer profile = mock(WebSSOProfileConsumer.class);
-        WebSSOProfileConsumerConfigurer configurer = spy(new WebSSOProfileConsumerConfigurer(profile));
+        WebSSOProfile profile = mock(WebSSOProfile.class);
+        WebSSOProfileConfigurer configurer = spy(new WebSSOProfileConfigurer(profile));
         configurer.init(builder);
         configurer.configure(builder);
-        verify(configurer, never()).createWebSSOProfileConsumer();
-        verify(builder).setSharedObject(WebSSOProfileConsumer.class, profile);
+        verify(configurer, never()).createDefaultWebSSOProfile();
+        verify(builder).setSharedObject(WebSSOProfile.class, profile);
         verifyZeroInteractions(profile);
     }
 }

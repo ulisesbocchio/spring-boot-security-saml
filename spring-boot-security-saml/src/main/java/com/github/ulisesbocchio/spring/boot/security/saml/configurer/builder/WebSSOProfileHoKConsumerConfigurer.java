@@ -2,6 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
+import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
 
@@ -38,9 +39,14 @@ public class WebSSOProfileHoKConsumerConfigurer extends SecurityConfigurerAdapte
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (hokProfileConsumerBean == null) {
             if (hokProfileConsumer == null) {
-                hokProfileConsumer = new WebSSOProfileConsumerHoKImpl();
+                hokProfileConsumer = createDefaultWebSSOProfileConsumerHoK();
             }
             builder.setSharedObject(WebSSOProfileConsumerHoKImpl.class, hokProfileConsumer);
         }
+    }
+
+    @VisibleForTesting
+    protected WebSSOProfileConsumerHoKImpl createDefaultWebSSOProfileConsumerHoK() {
+        return new WebSSOProfileConsumerHoKImpl();
     }
 }

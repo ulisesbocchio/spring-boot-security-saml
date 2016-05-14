@@ -3,10 +3,8 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.saml.websso.WebSSOProfileECPImpl;
 import org.springframework.security.saml.websso.WebSSOProfileHoKImpl;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
