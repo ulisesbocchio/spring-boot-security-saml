@@ -114,7 +114,8 @@ public class ServiceProviderSecurityBuilder extends
 
     private void reorderConfigurers() {
         //Order of configurers is established by the following stream.
-        Stream.of(
+        //JDK compiler complains it cannot infer type of stream if generic parameters are not explicit.
+        Stream.<Class<? extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>>>of(
                 KeyManagerConfigurer.class,
                 ExtendedMetadataConfigurer.class,
                 MetadataManagerConfigurer.class,
