@@ -6,12 +6,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SamlServiceProviderApplication.class)
-@WebAppConfiguration
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@SpringApplicationConfiguration(classes = SamlServiceProviderApplication.class)
+//@WebAppConfiguration
 public class SamlSpSampleApplicationTests {
 
-	@Test
+	//@Test
 	public void contextLoads() {
 	}
 
