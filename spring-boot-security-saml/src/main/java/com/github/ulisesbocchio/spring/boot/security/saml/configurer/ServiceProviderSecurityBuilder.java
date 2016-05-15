@@ -5,6 +5,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProp
 import com.github.ulisesbocchio.spring.boot.security.saml.util.AutowiringObjectPostProcessor;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.BeanRegistry;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.CompositeObjectPostProcessor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -76,8 +77,9 @@ public class ServiceProviderSecurityBuilder extends
         }
     }
 
+    @SneakyThrows
     private <C extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>> C getOrApply(
-            C configurer) throws Exception {
+            C configurer) {
         C existingConfig = (C) getConfigurer(configurer.getClass());
         if (existingConfig != null) {
             return existingConfig;
@@ -133,7 +135,7 @@ public class ServiceProviderSecurityBuilder extends
                 MetadataGeneratorConfigurer.class)
                 .stream()
                 .map(this::removeConfigurerAdapter)
-                .forEach(unchecked(this::getOrApply));
+                .forEach(this::getOrApply);
     }
 
     @Override
