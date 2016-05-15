@@ -1,9 +1,9 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.util.BeanRegistry;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder.*;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.AutowiringObjectPostProcessor;
+import com.github.ulisesbocchio.spring.boot.security.saml.util.BeanRegistry;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.CompositeObjectPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
@@ -21,7 +21,7 @@ import org.springframework.security.saml.processor.SAMLProcessorImpl;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 import org.springframework.security.saml.websso.*;
 
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 import static com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.unchecked;
 
@@ -114,8 +114,7 @@ public class ServiceProviderSecurityBuilder extends
 
     private void reorderConfigurers() {
         //Order of configurers is established by the following stream.
-        //JDK compiler complains it cannot infer type of stream if generic parameters are not explicit.
-        Stream.<Class<? extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>>>of(
+        Arrays.asList(
                 KeyManagerConfigurer.class,
                 ExtendedMetadataConfigurer.class,
                 MetadataManagerConfigurer.class,
@@ -132,6 +131,7 @@ public class ServiceProviderSecurityBuilder extends
                 SSOConfigurer.class,
                 TLSConfigurer.class,
                 MetadataGeneratorConfigurer.class)
+                .stream()
                 .map(this::removeConfigurerAdapter)
                 .forEach(unchecked(this::getOrApply));
     }
