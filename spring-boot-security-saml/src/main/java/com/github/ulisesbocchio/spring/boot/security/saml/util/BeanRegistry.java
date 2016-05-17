@@ -1,6 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.util.VisibleForTesting;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,9 @@ import java.util.Optional;
 @Slf4j
 public class BeanRegistry implements DisposableBean {
     private Map<String, Object> singletons = new HashMap<>();
+
     private Map<Class<?>, Object> registeredBeans = new HashMap<>();
     private DefaultListableBeanFactory beanFactory;
-
     public BeanRegistry(DefaultListableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
@@ -52,6 +53,7 @@ public class BeanRegistry implements DisposableBean {
                 .orElse(false);
     }
 
+    @Override
     public void destroy() throws Exception {
         singletons.keySet()
                 .stream()
@@ -61,5 +63,15 @@ public class BeanRegistry implements DisposableBean {
     private void destroySingleton(String beanName) {
         log.debug("Destroying singleton: {}", beanName);
         beanFactory.destroySingleton(beanName);
+    }
+
+    @VisibleForTesting
+    protected Map<String, Object> getSingletons() {
+        return singletons;
+    }
+
+    @VisibleForTesting
+    protected Map<Class<?>, Object> getRegisteredBeans() {
+        return registeredBeans;
     }
 }

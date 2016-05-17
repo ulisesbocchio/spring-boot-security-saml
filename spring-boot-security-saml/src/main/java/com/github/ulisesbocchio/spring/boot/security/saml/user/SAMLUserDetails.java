@@ -1,9 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.user;
 
 import org.opensaml.saml2.core.Attribute;
-import org.opensaml.xml.XMLObject;
-import org.opensaml.xml.schema.XSAny;
-import org.opensaml.xml.schema.XSString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +9,6 @@ import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -71,27 +67,25 @@ public class SAMLUserDetails implements UserDetails {
         return samlCredential.getAttributeAsString(name);
     }
 
+    public String[] getAttributeArray(String name) {
+        return samlCredential.getAttributeAsStringArray(name);
+    }
+
     public Map<String, String> getAttributes() {
         return samlCredential.getAttributes().stream()
                 .collect(Collectors.toMap(Attribute::getName, this::getValue));
     }
 
-    private String getValue(Attribute attribute) {
-        List<XMLObject> attributeValues = attribute.getAttributeValues();
-        if (attributeValues == null || attributeValues.size() == 0) {
-            return null;
-        }
-        XMLObject xmlValue = attributeValues.iterator().next();
-        return getString(xmlValue);
+    public Map<String, String[]> getAttributesArrays() {
+        return samlCredential.getAttributes().stream()
+                .collect(Collectors.toMap(Attribute::getName, this::getValueArray));
     }
 
-    private String getString(XMLObject xmlValue) {
-        if (xmlValue instanceof XSString) {
-            return ((XSString) xmlValue).getValue();
-        } else if (xmlValue instanceof XSAny) {
-            return ((XSAny) xmlValue).getTextContent();
-        } else {
-            return null;
-        }
+    private String getValue(Attribute attribute) {
+        return getAttribute(attribute.getName());
+    }
+
+    private String[] getValueArray(Attribute attribute) {
+        return getAttributeArray(attribute.getName());
     }
 }

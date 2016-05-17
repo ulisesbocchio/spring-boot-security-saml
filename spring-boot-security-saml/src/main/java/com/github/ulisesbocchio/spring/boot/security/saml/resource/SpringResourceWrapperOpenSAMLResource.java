@@ -20,7 +20,10 @@ public class SpringResourceWrapperOpenSAMLResource implements org.opensaml.util.
 
     public SpringResourceWrapperOpenSAMLResource(Resource springDelegate) throws ResourceException {
         this.springDelegate = springDelegate;
-        exists();
+        if (!exists()) {
+            throw new ResourceException("Wrapper resource does not exist: " + springDelegate);
+        }
+
     }
 
     @Override
@@ -52,10 +55,13 @@ public class SpringResourceWrapperOpenSAMLResource implements org.opensaml.util.
         }
     }
 
+    @Override
     public int hashCode() {
         return getLocation().hashCode();
     }
 
+
+    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
