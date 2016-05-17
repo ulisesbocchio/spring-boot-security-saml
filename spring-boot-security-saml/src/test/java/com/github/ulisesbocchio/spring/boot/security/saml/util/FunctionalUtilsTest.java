@@ -1,6 +1,5 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.util;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.io.IOException;
