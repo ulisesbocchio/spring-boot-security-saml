@@ -1,18 +1,13 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.annotation.EnableSAMLSSO;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.ConfigFileApplicationContextInitializer;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * @author Ulises Bocchio
@@ -31,27 +26,29 @@ public class ServiceProviderSecurityBuilderTest {
         public static class MyServiceProviderConfig extends ServiceProviderConfigurerAdapter {
             @Override
             public void configure(ServiceProviderSecurityBuilder serviceProvider) throws Exception {
+                // @formatter:off
                 serviceProvider
                         .metadataGenerator()
-                        .entityId("localhost-demo")
+                            .entityId("localhost-demo")
                         .and()
-                        .sso()
-                        .defaultSuccessURL("/home")
-                        .idpSelectionPageURL("/idpselection")
+                            .sso()
+                                .defaultSuccessURL("/home")
+                                .idpSelectionPageURL("/idpselection")
                         .and()
-                        .logout()
-                        .defaultTargetURL("/")
+                            .logout()
+                                .defaultTargetURL("/")
                         .and()
-                        .metadataManager()
-                        .metadataLocations("classpath:/idp-metadata.xml")
-                        .refreshCheckInterval(0)
+                            .metadataManager()
+                                .metadataLocations("classpath:/idp-metadata.xml")
+                                .refreshCheckInterval(0)
                         .and()
-                        .extendedMetadata()
-                        .idpDiscoveryEnabled(true)
+                            .extendedMetadata()
+                                .idpDiscoveryEnabled(true)
                         .and()
                         .keyManager()
-                        .privateKeyDERLocation("classpath:/localhost.key.der")
-                        .publicKeyPEMLocation("classpath:/localhost.cert");
+                            .privateKeyDERLocation("classpath:/localhost.key.der")
+                            .publicKeyPEMLocation("classpath:/localhost.cert");
+                // @formatter:on
 
             }
         }
