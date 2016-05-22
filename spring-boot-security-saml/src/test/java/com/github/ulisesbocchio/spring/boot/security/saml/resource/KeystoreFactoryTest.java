@@ -1,9 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 
@@ -14,7 +12,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateParsingException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Enumeration;
 
 /**
  * @author Ulises Bocchio, Sergio.U.Bocchio@Disney.com (BOCCS002)
