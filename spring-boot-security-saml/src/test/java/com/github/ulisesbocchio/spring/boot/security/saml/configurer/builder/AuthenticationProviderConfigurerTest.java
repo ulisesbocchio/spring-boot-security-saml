@@ -2,7 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.AuthenticationProviderConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.AuthenticationProviderProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.user.SimpleSAMLUserDetailsService;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,12 +23,12 @@ import static org.mockito.Mockito.*;
 public class AuthenticationProviderConfigurerTest {
 
     private ServiceProviderSecurityBuilder builder;
-    private AuthenticationProviderConfiguration authProviderProperties;
+    private AuthenticationProviderProperties authProviderProperties;
 
     @Before
     public void setup() {
         SAMLSSOProperties properties = mock(SAMLSSOProperties.class);
-        authProviderProperties = mock(AuthenticationProviderConfiguration.class);
+        authProviderProperties = mock(AuthenticationProviderProperties.class);
         when(properties.getAuthenticationProvider()).thenReturn(authProviderProperties);
         when(authProviderProperties.isExcludeCredential()).thenReturn(false);
         when(authProviderProperties.isForcePrincipalAsString()).thenReturn(false);

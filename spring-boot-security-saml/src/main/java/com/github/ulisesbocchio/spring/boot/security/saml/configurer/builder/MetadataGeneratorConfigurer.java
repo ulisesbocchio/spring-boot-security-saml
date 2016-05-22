@@ -3,6 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataGeneratorProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -35,7 +36,7 @@ import java.util.Optional;
  *     saml.sso.metadataGenerator.nameId
  *     saml.sso.metadataGenerator.entityBaseURL
  *     saml.sso.metadataGenerator.bindingsSSO
- *     saml.sso.metadataGenerator.bindingsHoKSSO
+ *     saml.sso.metadataGenerator.bindingsHokSSO
  *     saml.sso.metadataGenerator.bindingsSLO
  *     saml.sso.metadataGenerator.assertionConsumerIndex
  *     saml.sso.metadataGenerator.includeDiscoveryExtension
@@ -58,7 +59,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     private Collection<String> bindingsSSO;
     private Integer assertionConsumerIndex;
     private Boolean includeDiscoveryExtension;
-    private SAMLSSOProperties.MetadataGeneratorConfiguration config;
+    private MetadataGeneratorProperties config;
     private ServiceProviderEndpoints endpoints;
     private ExtendedMetadata extendedMetadata;
 
@@ -84,7 +85,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
         metadataGenerator.setRequestSigned(Optional.ofNullable(requestSigned).orElseGet(config::isRequestSigned));
         metadataGenerator.setNameID(Optional.ofNullable(nameId).orElseGet(config::getNameId));
         metadataGenerator.setEntityBaseURL(Optional.ofNullable(entityBaseURL).orElseGet(config::getEntityBaseURL));
-        metadataGenerator.setBindingsHoKSSO(Optional.ofNullable(bindingsHoKSSO).orElseGet(config::getBindingsHoKSSO));
+        metadataGenerator.setBindingsHoKSSO(Optional.ofNullable(bindingsHoKSSO).orElseGet(config::getBindingsHokSSO));
         metadataGenerator.setBindingsSLO(Optional.ofNullable(bindingsSLO).orElseGet(config::getBindingsSLO));
         metadataGenerator.setBindingsSSO(Optional.ofNullable(bindingsSSO).orElseGet(config::getBindingsSSO));
         metadataGenerator.setAssertionConsumerIndex(Optional.ofNullable(assertionConsumerIndex).orElseGet(config::getAssertionConsumerIndex));
@@ -229,7 +230,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.bindingsHoKSSO
+     *      saml.sso.metadataGenerator.bindingsHokSSO
      * </pre>
      * </p>
      *

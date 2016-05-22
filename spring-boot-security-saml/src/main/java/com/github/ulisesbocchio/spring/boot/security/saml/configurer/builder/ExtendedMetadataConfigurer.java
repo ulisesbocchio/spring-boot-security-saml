@@ -2,6 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.ExtendedMetadataProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
@@ -54,7 +55,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
 
     private ExtendedMetadata extendedMetadataBean;
     private ExtendedMetadata extendedMetadata;
-    private ExtendedMetadata extendedMetadataConfig;
+    private ExtendedMetadataProperties extendedMetadataConfig;
 
     private Boolean local;
     private Boolean idpDiscoveryEnabled;

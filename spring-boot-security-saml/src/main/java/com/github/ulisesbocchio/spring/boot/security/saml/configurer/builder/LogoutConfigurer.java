@@ -3,6 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.LogoutProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -48,7 +49,7 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
     private LogoutSuccessHandler successHandler;
     private LogoutHandler localHandler;
     private LogoutHandler globalHandler;
-    private SAMLSSOProperties.LogoutConfiguration config;
+    private LogoutProperties config;
     private ServiceProviderEndpoints endpoints;
 
     @Override

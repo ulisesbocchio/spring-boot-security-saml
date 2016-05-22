@@ -2,9 +2,10 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.IdentityProvidersProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.ExtendedMetadataDelegateConfiguration;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.MetadataManagerConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.ExtendedMetadataDelegateProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataManagerProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.SpringResourceWrapperOpenSAMLResource;
 import lombok.SneakyThrows;
 import org.assertj.core.util.VisibleForTesting;
@@ -39,7 +40,7 @@ import static java.util.stream.Collectors.toSet;
  * following properties:
  * <pre>
  *     saml.sso.metadataManager.defaultIDP
- *     saml.sso.metadataManager.hostedSPName
+ *     saml.sso.metadataManager.hostedSpName
  *     saml.sso.metadataManager.refreshCheckInterval
  *     saml.sso.extendedDelegate.metadataTrustedKeys
  *     saml.sso.extendedDelegate.metadataTrustCheck
@@ -69,9 +70,9 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
     private MetadataManager metadataManager;
     private MetadataManager metadataManagerBean;
     private ResourceLoader resourceLoader;
-    private ExtendedMetadataDelegateConfiguration extendedDelegateConfig;
-    private MetadataManagerConfiguration managerConfig;
-    private SAMLSSOProperties.IdentityProvidersConfiguration idpConfig;
+    private ExtendedMetadataDelegateProperties extendedDelegateConfig;
+    private MetadataManagerProperties managerConfig;
+    private IdentityProvidersProperties idpConfig;
 
     public MetadataManagerConfigurer(MetadataManager metadataManager) {
         this.metadataManager = metadataManager;
@@ -97,7 +98,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
             if (metadataManager == null) {
                 metadataManager = createDefaultMetadataManager();
                 metadataManager.setDefaultIDP(Optional.ofNullable(defaultIDP).orElseGet(managerConfig::getDefaultIDP));
-                metadataManager.setHostedSPName(Optional.ofNullable(hostedSPName).orElseGet(managerConfig::getHostedSPName));
+                metadataManager.setHostedSPName(Optional.ofNullable(hostedSPName).orElseGet(managerConfig::getHostedSpName));
                 metadataManager.setRefreshCheckInterval(Optional.ofNullable(refreshCheckInterval).orElseGet(managerConfig::getRefreshCheckInterval));
             }
 
@@ -207,7 +208,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataManager.hostedSPName
+     *      saml.sso.metadataManager.hostedSpName
      * </pre>
      * </p>
      *

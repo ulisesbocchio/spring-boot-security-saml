@@ -2,7 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.KeyManagerConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.KeyManagerProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.KeystoreFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,17 +22,17 @@ import static org.mockito.Mockito.*;
  */
 public class KeyManagerConfigurerTest {
     private ServiceProviderSecurityBuilder builder;
-    private KeyManagerConfiguration keyManagerProperties;
+    private KeyManagerProperties keyManagerProperties;
 
     @Before
     public void setup() {
         SAMLSSOProperties properties = mock(SAMLSSOProperties.class);
-        keyManagerProperties = mock(KeyManagerConfiguration.class);
+        keyManagerProperties = mock(KeyManagerProperties.class);
         when(properties.getKeyManager()).thenReturn(keyManagerProperties);
 //        when(keyManagerProperties.getDefaultKey()).thenReturn("default");
 //        when(keyManagerProperties.getKeyPasswords()).thenReturn(Collections.singletonMap("default", "password"));
-//        when(keyManagerProperties.getPrivateKeyDERLocation()).thenReturn("classpath:localhost:key.der");
-//        when(keyManagerProperties.getPublicKeyPEMLocation()).thenReturn("classpath:localhost.cert");
+//        when(keyManagerProperties.getPrivateKeyDerLocation()).thenReturn("classpath:localhost:key.der");
+//        when(keyManagerProperties.getPublicKeyPemLocation()).thenReturn("classpath:localhost.cert");
 //        when(keyManagerProperties.getStoreLocation()).thenReturn("classpath:KeyStore.jks");
 //        when(keyManagerProperties.getStorePass()).thenReturn("storePass");
         builder = mock(ServiceProviderSecurityBuilder.class);
@@ -89,8 +89,8 @@ public class KeyManagerConfigurerTest {
         verify(builder).setSharedObject(eq(KeyManager.class), providerCaptor.capture());
         verify(keyManagerProperties).getDefaultKey();
         verify(keyManagerProperties).getKeyPasswords();
-        verify(keyManagerProperties).getPrivateKeyDERLocation();
-        verify(keyManagerProperties).getPublicKeyPEMLocation();
+        verify(keyManagerProperties).getPrivateKeyDerLocation();
+        verify(keyManagerProperties).getPublicKeyPemLocation();
         verify(keyManagerProperties).getStoreLocation();
         verify(keyManagerProperties).getStorePass();
         assertThat(providerCaptor.getValue()).isNotNull();
@@ -114,8 +114,8 @@ public class KeyManagerConfigurerTest {
         verify(keyManagerProperties, never()).getKeyPasswords();
         verify(keyManagerProperties, never()).getStoreLocation();
         verify(keyManagerProperties, never()).getStorePass();
-        verify(keyManagerProperties).getPrivateKeyDERLocation();
-        verify(keyManagerProperties).getPublicKeyPEMLocation();
+        verify(keyManagerProperties).getPrivateKeyDerLocation();
+        verify(keyManagerProperties).getPublicKeyPemLocation();
         assertThat(providerCaptor.getValue()).isNotNull();
         KeyManager keyManager = providerCaptor.getValue();
         assertThat(keyManager.getAvailableCredentials()).containsExactly("default");
@@ -137,8 +137,8 @@ public class KeyManagerConfigurerTest {
         verify(builder).setSharedObject(eq(KeyManager.class), providerCaptor.capture());
         verify(keyManagerProperties, never()).getDefaultKey();
         verify(keyManagerProperties, never()).getKeyPasswords();
-        verify(keyManagerProperties, never()).getPrivateKeyDERLocation();
-        verify(keyManagerProperties, never()).getPublicKeyPEMLocation();
+        verify(keyManagerProperties, never()).getPrivateKeyDerLocation();
+        verify(keyManagerProperties, never()).getPublicKeyPemLocation();
         verify(keyManagerProperties).getStoreLocation();
         verify(keyManagerProperties).getStorePass();
         assertThat(providerCaptor.getValue()).isNotNull();
@@ -160,8 +160,8 @@ public class KeyManagerConfigurerTest {
         verify(builder).setSharedObject(eq(KeyManager.class), providerCaptor.capture());
         verify(keyManagerProperties, never()).getDefaultKey();
         verify(keyManagerProperties, never()).getKeyPasswords();
-        verify(keyManagerProperties, never()).getPrivateKeyDERLocation();
-        verify(keyManagerProperties, never()).getPublicKeyPEMLocation();
+        verify(keyManagerProperties, never()).getPrivateKeyDerLocation();
+        verify(keyManagerProperties, never()).getPublicKeyPemLocation();
         verify(keyManagerProperties).getStoreLocation();
         verify(keyManagerProperties).getStorePass();
         assertThat(providerCaptor.getValue()).isNotNull();

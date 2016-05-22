@@ -46,8 +46,8 @@ import java.lang.annotation.*;
  *                 .idpDiscoveryEnabled(true)
  *             .and()
  *                 .keyManager()
- *                 .privateKeyDERLocation("classpath:/localhost.key.der")
- *                 .publicKeyPEMLocation("classpath:/localhost.cert");
+ *                 .privateKeyDerLocation("classpath:/localhost.key.der")
+ *                 .publicKeyPemLocation("classpath:/localhost.cert");
  *         }
  *     }
  * </pre>

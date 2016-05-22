@@ -4,6 +4,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.WebSSOProfileOptionProperties;
 import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -36,7 +37,7 @@ import java.util.Optional;
  *     saml.sso.defaultSuccessURL
  *     saml.sso.defaultFailureURL
  *     saml.sso.ssoProcessingURL
- *     saml.sso.enableSsoHoK
+ *     saml.sso.enableSsoHok
  *     saml.sso.discoveryProcessingURL
  *     saml.sso.idpSelectionPageURL
  *     saml.sso.ssoLoginURL
@@ -96,12 +97,12 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         ssoFilter.setFilterProcessesUrl(ssoProcessingURL);
 
         SAMLWebSSOHoKProcessingFilter ssoHoKFilter = null;
-        if (Optional.ofNullable(enableSsoHoK).orElseGet(config::isEnableSsoHoK)) {
+        if (Optional.ofNullable(enableSsoHoK).orElseGet(config::isEnableSsoHok)) {
             ssoHoKFilter = createDefaultSamlHoKProcessingFilter();
             ssoHoKFilter.setAuthenticationSuccessHandler(successHandler);
             ssoHoKFilter.setAuthenticationManager(authenticationManager);
             ssoHoKFilter.setAuthenticationFailureHandler(failureHandler);
-            ssoHoKProcessingURL = Optional.ofNullable(ssoHoKProcessingURL).orElseGet(config::getSsoHoKProcessingURL);
+            ssoHoKProcessingURL = Optional.ofNullable(ssoHoKProcessingURL).orElseGet(config::getSsoHokProcessingURL);
             endpoints.setSsoHoKProcessingURL(ssoHoKProcessingURL);
             ssoHoKFilter.setFilterProcessesUrl(ssoHoKProcessingURL);
         }
@@ -115,7 +116,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         discoveryFilter.setIdpSelectionPath(idpSelectionPageURL);
 
         SAMLEntryPoint entryPoint = createDefaultSamlEntryPoint();
-        entryPoint.setDefaultProfileOptions(Optional.ofNullable(profileOptions).orElseGet(config::getProfileOptions));
+        entryPoint.setDefaultProfileOptions(Optional.ofNullable(profileOptions).orElseGet(this::getProfileOptions));
         ssoLoginURL = Optional.ofNullable(ssoLoginURL).orElseGet(config::getSsoLoginURL);
         endpoints.setSsoLoginURL(ssoLoginURL);
         entryPoint.setFilterProcessesUrl(ssoLoginURL);
@@ -124,6 +125,25 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         builder.setSharedObject(SAMLWebSSOHoKProcessingFilter.class, ssoHoKFilter);
         builder.setSharedObject(SAMLDiscovery.class, discoveryFilter);
         builder.setSharedObject(SAMLEntryPoint.class, entryPoint);
+    }
+
+    private WebSSOProfileOptions getProfileOptions() {
+        WebSSOProfileOptionProperties properties = config.getProfileOptions();
+        WebSSOProfileOptions options = new WebSSOProfileOptions();
+        options.setAllowCreate(properties.getAllowCreate());
+        options.setAllowedIDPs(properties.getAllowedIDPs());
+        options.setAssertionConsumerIndex(properties.getAssertionConsumerIndex());
+        options.setAuthnContextComparison(properties.getAuthnContextComparison());
+        options.setAuthnContexts(properties.getAuthnContexts());
+        options.setBinding(properties.getBinding());
+        options.setForceAuthN(properties.getForceAuthn());
+        options.setIncludeScoping(properties.getIncludeScoping());
+        options.setNameID(properties.getNameID());
+        options.setPassive(properties.getPassive());
+        options.setProviderName(properties.getProviderName());
+        options.setProxyCount(properties.getProxyCount());
+        options.setRelayState(properties.getRelayState());
+        return options;
     }
 
     @VisibleForTesting
@@ -244,7 +264,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.ssoHoKProcessingURL
+     *      saml.sso.ssoHokProcessingURL
      * </pre>
      * </p>
      *
@@ -262,7 +282,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.enableSsoHoK
+     *      saml.sso.enableSsoHok
      * </pre>
      * </p>
      *

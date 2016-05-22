@@ -3,7 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.LogoutConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.LogoutProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -21,16 +21,16 @@ import static org.mockito.Mockito.*;
 public class LogoutConfigurerTest {
 
     private ServiceProviderSecurityBuilder builder;
-    private LogoutConfiguration logoutConfiguration;
+    private LogoutProperties logoutProperties;
     private ServiceProviderEndpoints serviceProviderEndpoints;
     private SAMLSSOProperties properties;
 
     @Before
     public void setup() {
         properties = mock(SAMLSSOProperties.class);
-        logoutConfiguration = spy(new LogoutConfiguration());
+        logoutProperties = spy(new LogoutProperties());
         serviceProviderEndpoints = spy(new ServiceProviderEndpoints());
-        when(properties.getLogout()).thenReturn(logoutConfiguration);
+        when(properties.getLogout()).thenReturn(logoutProperties);
         builder = mock(ServiceProviderSecurityBuilder.class);
         when(builder.getSharedObject(ServiceProviderEndpoints.class)).thenReturn(serviceProviderEndpoints);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
@@ -60,24 +60,24 @@ public class LogoutConfigurerTest {
         ArgumentCaptor<SAMLLogoutProcessingFilter> logoutProcessingFilterCaptor = ArgumentCaptor.forClass(SAMLLogoutProcessingFilter.class);
         verify(builder).setSharedObject(eq(SAMLLogoutFilter.class), logoutFilterCaptor.capture());
         verify(builder).setSharedObject(eq(SAMLLogoutProcessingFilter.class), logoutProcessingFilterCaptor.capture());
-        verify(logoutConfiguration).getDefaultTargetURL();
-        verify(logoutConfiguration, times(2)).isInvalidateSession();
-        verify(logoutConfiguration, times(2)).isClearAuthentication();
-        verify(logoutConfiguration).getLogoutURL();
-        verify(logoutConfiguration).getSingleLogoutURL();
-        verify(successHandler).setDefaultTargetUrl(eq(logoutConfiguration.getDefaultTargetURL()));
-        verify(localHandler).setClearAuthentication(eq(logoutConfiguration.isClearAuthentication()));
-        verify(localHandler).setInvalidateHttpSession(eq(logoutConfiguration.isInvalidateSession()));
-        verify(globalHandler).setClearAuthentication(eq(logoutConfiguration.isClearAuthentication()));
-        verify(globalHandler).setInvalidateHttpSession(eq(logoutConfiguration.isInvalidateSession()));
+        verify(logoutProperties).getDefaultTargetURL();
+        verify(logoutProperties, times(2)).isInvalidateSession();
+        verify(logoutProperties, times(2)).isClearAuthentication();
+        verify(logoutProperties).getLogoutURL();
+        verify(logoutProperties).getSingleLogoutURL();
+        verify(successHandler).setDefaultTargetUrl(eq(logoutProperties.getDefaultTargetURL()));
+        verify(localHandler).setClearAuthentication(eq(logoutProperties.isClearAuthentication()));
+        verify(localHandler).setInvalidateHttpSession(eq(logoutProperties.isInvalidateSession()));
+        verify(globalHandler).setClearAuthentication(eq(logoutProperties.isClearAuthentication()));
+        verify(globalHandler).setInvalidateHttpSession(eq(logoutProperties.isInvalidateSession()));
         SAMLLogoutFilter logoutFilter = logoutFilterCaptor.getValue();
         SAMLLogoutProcessingFilter logoutProcessingFilter = logoutProcessingFilterCaptor.getValue();
         assertThat(logoutFilter).isNotNull();
         assertThat(logoutProcessingFilter).isNotNull();
-        assertThat(logoutFilter.getFilterProcessesUrl()).isEqualTo(logoutConfiguration.getLogoutURL());
-        assertThat(logoutProcessingFilter.getFilterProcessesUrl()).isEqualTo(logoutConfiguration.getSingleLogoutURL());
-        assertThat(serviceProviderEndpoints.getLogoutURL()).isEqualTo(logoutConfiguration.getLogoutURL());
-        assertThat(serviceProviderEndpoints.getSingleLogoutURL()).isEqualTo(logoutConfiguration.getSingleLogoutURL());
+        assertThat(logoutFilter.getFilterProcessesUrl()).isEqualTo(logoutProperties.getLogoutURL());
+        assertThat(logoutProcessingFilter.getFilterProcessesUrl()).isEqualTo(logoutProperties.getSingleLogoutURL());
+        assertThat(serviceProviderEndpoints.getLogoutURL()).isEqualTo(logoutProperties.getLogoutURL());
+        assertThat(serviceProviderEndpoints.getSingleLogoutURL()).isEqualTo(logoutProperties.getSingleLogoutURL());
     }
 
     @Test
@@ -96,20 +96,20 @@ public class LogoutConfigurerTest {
         ArgumentCaptor<SAMLLogoutProcessingFilter> logoutProcessingFilterCaptor = ArgumentCaptor.forClass(SAMLLogoutProcessingFilter.class);
         verify(builder).setSharedObject(eq(SAMLLogoutFilter.class), logoutFilterCaptor.capture());
         verify(builder).setSharedObject(eq(SAMLLogoutProcessingFilter.class), logoutProcessingFilterCaptor.capture());
-        verify(logoutConfiguration, never()).getDefaultTargetURL();
-        verify(logoutConfiguration, never()).isInvalidateSession();
-        verify(logoutConfiguration, never()).isClearAuthentication();
-        verify(logoutConfiguration).getLogoutURL();
-        verify(logoutConfiguration).getSingleLogoutURL();
+        verify(logoutProperties, never()).getDefaultTargetURL();
+        verify(logoutProperties, never()).isInvalidateSession();
+        verify(logoutProperties, never()).isClearAuthentication();
+        verify(logoutProperties).getLogoutURL();
+        verify(logoutProperties).getSingleLogoutURL();
         verifyZeroInteractions(successHandler, localHandler, globalHandler);
         SAMLLogoutFilter logoutFilter = logoutFilterCaptor.getValue();
         SAMLLogoutProcessingFilter logoutProcessingFilter = logoutProcessingFilterCaptor.getValue();
         assertThat(logoutFilter).isNotNull();
         assertThat(logoutProcessingFilter).isNotNull();
-        assertThat(logoutFilter.getFilterProcessesUrl()).isEqualTo(logoutConfiguration.getLogoutURL());
-        assertThat(logoutProcessingFilter.getFilterProcessesUrl()).isEqualTo(logoutConfiguration.getSingleLogoutURL());
-        assertThat(serviceProviderEndpoints.getLogoutURL()).isEqualTo(logoutConfiguration.getLogoutURL());
-        assertThat(serviceProviderEndpoints.getSingleLogoutURL()).isEqualTo(logoutConfiguration.getSingleLogoutURL());
+        assertThat(logoutFilter.getFilterProcessesUrl()).isEqualTo(logoutProperties.getLogoutURL());
+        assertThat(logoutProcessingFilter.getFilterProcessesUrl()).isEqualTo(logoutProperties.getSingleLogoutURL());
+        assertThat(serviceProviderEndpoints.getLogoutURL()).isEqualTo(logoutProperties.getLogoutURL());
+        assertThat(serviceProviderEndpoints.getSingleLogoutURL()).isEqualTo(logoutProperties.getSingleLogoutURL());
     }
 
     @Test
@@ -133,11 +133,11 @@ public class LogoutConfigurerTest {
         ArgumentCaptor<SAMLLogoutProcessingFilter> logoutProcessingFilterCaptor = ArgumentCaptor.forClass(SAMLLogoutProcessingFilter.class);
         verify(builder).setSharedObject(eq(SAMLLogoutFilter.class), logoutFilterCaptor.capture());
         verify(builder).setSharedObject(eq(SAMLLogoutProcessingFilter.class), logoutProcessingFilterCaptor.capture());
-        verify(logoutConfiguration, never()).getDefaultTargetURL();
-        verify(logoutConfiguration, never()).isInvalidateSession();
-        verify(logoutConfiguration, never()).isClearAuthentication();
-        verify(logoutConfiguration, never()).getLogoutURL();
-        verify(logoutConfiguration, never()).getSingleLogoutURL();
+        verify(logoutProperties, never()).getDefaultTargetURL();
+        verify(logoutProperties, never()).isInvalidateSession();
+        verify(logoutProperties, never()).isClearAuthentication();
+        verify(logoutProperties, never()).getLogoutURL();
+        verify(logoutProperties, never()).getSingleLogoutURL();
         verify(successHandler).setDefaultTargetUrl(eq("/default"));
         verify(localHandler).setClearAuthentication(eq(false));
         verify(localHandler).setInvalidateHttpSession(eq(true));

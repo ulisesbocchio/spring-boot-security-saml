@@ -3,6 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.TLSProperties;
 import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
@@ -40,7 +41,7 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     private Integer protocolPort;
     private String sslHostnameVerification;
     private Set<String> trustedKeys;
-    private SAMLSSOProperties.TLSConfiguration config;
+    private TLSProperties config;
 
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {

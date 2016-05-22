@@ -2,7 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.SAMLProcessorConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLProcessorProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,12 +24,12 @@ public class SAMLProcessorConfigurerTest {
     private ServiceProviderSecurityBuilder builder;
     private ParserPool parserPool;
     private SAMLSSOProperties properties;
-    private SAMLProcessorConfiguration samlProcessorConfig;
+    private SAMLProcessorProperties samlProcessorConfig;
 
     @Before
     public void setup() {
         properties = mock(SAMLSSOProperties.class);
-        samlProcessorConfig = spy(new SAMLProcessorConfiguration());
+        samlProcessorConfig = spy(new SAMLProcessorProperties());
         when(properties.getSamlProcessor()).thenReturn(samlProcessorConfig);
         builder = mock(ServiceProviderSecurityBuilder.class);
         parserPool = mock(ParserPool.class);

@@ -2,6 +2,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLProcessorProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -58,7 +59,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
     private HTTPArtifactBinding artifactBinding;
     private HTTPSOAP11Binding soapBinding;
     private HTTPPAOS11Binding paosBinding;
-    private SAMLSSOProperties.SAMLProcessorConfiguration processorConfig;
+    private SAMLProcessorProperties processorConfig;
     private ParserPool parserPool;
 
     public SAMLProcessorConfigurer(SAMLProcessor sAMLProcessor) {

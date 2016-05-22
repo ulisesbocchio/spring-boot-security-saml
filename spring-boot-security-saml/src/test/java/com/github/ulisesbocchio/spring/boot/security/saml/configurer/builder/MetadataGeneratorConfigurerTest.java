@@ -3,7 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.MetadataGeneratorConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataGeneratorProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 public class MetadataGeneratorConfigurerTest {
 
     private ServiceProviderSecurityBuilder builder;
-    private MetadataGeneratorConfiguration metadataGeneratorConfig;
+    private MetadataGeneratorProperties metadataGeneratorConfig;
     private ServiceProviderEndpoints serviceProviderEndpoints;
     private SAMLSSOProperties properties;
     private ExtendedMetadata extendedMetadata;
@@ -30,7 +30,7 @@ public class MetadataGeneratorConfigurerTest {
     @Before
     public void setup() {
         properties = mock(SAMLSSOProperties.class);
-        metadataGeneratorConfig = spy(new MetadataGeneratorConfiguration());
+        metadataGeneratorConfig = spy(new MetadataGeneratorProperties());
         serviceProviderEndpoints = spy(new ServiceProviderEndpoints());
         extendedMetadata = spy(new ExtendedMetadata());
         when(properties.getMetadataGenerator()).thenReturn(metadataGeneratorConfig);
@@ -66,7 +66,7 @@ public class MetadataGeneratorConfigurerTest {
         assertThat(displayFilter.getFilterProcessesUrl()).isEqualTo(metadataGeneratorConfig.getMetadataURL());
         assertThat(serviceProviderEndpoints.getMetadataURL()).isEqualTo(metadataGeneratorConfig.getMetadataURL());
         assertThat(generator.getAssertionConsumerIndex()).isEqualTo(metadataGeneratorConfig.getAssertionConsumerIndex());
-        assertThat(generator.getBindingsHoKSSO()).containsExactlyElementsOf(metadataGeneratorConfig.getBindingsHoKSSO());
+        assertThat(generator.getBindingsHoKSSO()).containsExactlyElementsOf(metadataGeneratorConfig.getBindingsHokSSO());
         assertThat(generator.getBindingsSLO()).containsExactlyElementsOf(metadataGeneratorConfig.getBindingsSLO());
         assertThat(generator.getBindingsSSO()).containsExactlyElementsOf(metadataGeneratorConfig.getBindingsSSO());
         assertThat(generator.getEntityBaseURL()).isEqualTo(metadataGeneratorConfig.getEntityBaseURL());

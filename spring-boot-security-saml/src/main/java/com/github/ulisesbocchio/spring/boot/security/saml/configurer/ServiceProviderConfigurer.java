@@ -3,6 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.annotation.EnableSAMLSSO;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
@@ -36,8 +37,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  *                 .idpDiscoveryEnabled(true)
  *             .and()
  *                 .keyManager()
- *                 .privateKeyDERLocation("classpath:/localhost.key.der")
- *                 .publicKeyPEMLocation("classpath:/localhost.cert");
+ *                 .privateKeyDerLocation("classpath:/localhost.key.der")
+ *                 .publicKeyPemLocation("classpath:/localhost.cert");
  *         }
  *     }
  * </pre>
@@ -71,4 +72,12 @@ public interface ServiceProviderConfigurer {
      * @throws Exception Any exception coming from {@link WebSecurityConfigurerAdapter}.
      */
     void configure(HttpSecurity http) throws Exception;
+
+    /**
+     * Allows for customization of the {@link WebSecurity} object exposed by {@link WebSecurityConfigurerAdapter}.
+     *
+     * @param web the WebSecurity object.
+     * @throws Exception Any exception coming from {@link WebSecurityConfigurerAdapter}.
+     */
+    void configure(WebSecurity web);
 }

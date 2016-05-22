@@ -14,6 +14,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.context.SAMLContextProvider;
@@ -104,6 +105,13 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
     @Autowired(required = false)
     SAMLAuthenticationProvider samlAuthenticationProvider;
 
+    private WebSecurity webSecurity;
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        webSecurity = web;
+    }
+
     /**
      * Configures Spring Security as a SAML 2.0 Service provider using a {@link ServiceProviderSecurityBuilder}, user
      * provided {@link ServiceProviderConfigurer}s, and {@link ServiceProviderSecurityConfigurer}
@@ -138,8 +146,9 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
         //BeanRegistry bean. A custom inner type of this class.
         markBeansAsRegistered(securityConfigurerBuilder.getSharedObjects());
 
-        //For each configurer found, we allow further customization of the HttpSecurity Object, and we expose the
+        //For each configurer found, we allow further customization of the HttpSecurity and WebSecurity Object, and we expose the
         //ServiceProviderSecurityBuilder to the configurer of customization of the service provider.
+        serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(webSecurity)));
         serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(http)));
         serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(securityConfigurerBuilder)));
 

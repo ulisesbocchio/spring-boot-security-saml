@@ -3,7 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties.KeyManagerConfiguration;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.KeyManagerProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.KeystoreFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -30,8 +30,8 @@ import java.util.Optional;
  * is provided, for some DSL methods if they are not used. In other words, the user is able to configure the KeyManager
  * through the following properties:
  * <pre>
- *     saml.sso.keyManager.publicKeyPEMLocation
- *     saml.sso.keyManager.privateKeyDERLocation
+ *     saml.sso.keyManager.publicKeyPemLocation
+ *     saml.sso.keyManager.privateKeyDerLocation
  *     saml.sso.keyManager.storeLocation
  *     saml.sso.keyManager.storePass
  *     saml.sso.keyManager.keyPasswords
@@ -52,7 +52,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
     private String storePass;
     private Map<String, String> keyPasswords;
     private String defaultKey;
-    private KeyManagerConfiguration config;
+    private KeyManagerProperties config;
     private KeystoreFactory keystoreFactory;
     private ResourceLoader resourceLoader;
 
@@ -76,8 +76,8 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (keyManagerBean == null) {
             if (keyManager == null) {
-                privateKeyDERLocation = Optional.ofNullable(privateKeyDERLocation).orElseGet(config::getPrivateKeyDERLocation);
-                publicKeyPEMLocation = Optional.ofNullable(publicKeyPEMLocation).orElseGet(config::getPublicKeyPEMLocation);
+                privateKeyDERLocation = Optional.ofNullable(privateKeyDERLocation).orElseGet(config::getPrivateKeyDerLocation);
+                publicKeyPEMLocation = Optional.ofNullable(publicKeyPEMLocation).orElseGet(config::getPublicKeyPemLocation);
                 defaultKey = Optional.ofNullable(defaultKey).orElseGet(config::getDefaultKey);
                 keyPasswords = Optional.ofNullable(keyPasswords).orElseGet(config::getKeyPasswords);
                 storePass = Optional.ofNullable(storePass).orElseGet(config::getStorePass);
@@ -130,7 +130,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.keyManager.publicKeyPEMLocation
+     *      saml.sso.keyManager.publicKeyPemLocation
      * </pre>
      * </p>
      *
@@ -148,7 +148,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.keyManager.privateKeyDERLocation
+     *      saml.sso.keyManager.privateKeyDerLocation
      * </pre>
      * </p>
      *
