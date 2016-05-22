@@ -4,7 +4,7 @@
 
 	<groupId>com.github.ulisesbocchio.demo</groupId>
 	<artifactId>spring-boot-security-saml-demo-dsl</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Spring Boot Security SAML Demo with Java DSL</name>
@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>com.github.ulisesbocchio</groupId>
 			<artifactId>spring-boot-security-saml</artifactId>
-			<version>1.0</version>
+			<version>1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -56,10 +56,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	
-
-
-  <scm>
-    <tag>spring-boot-security-saml-parent-1.0</tag>
-  </scm>
 </project>
