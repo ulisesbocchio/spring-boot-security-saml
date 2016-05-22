@@ -25,11 +25,11 @@ import static java.util.stream.Collectors.toSet;
  * This configurer also reads the values from {@link SAMLSSOProperties#getTls()} for some the DSL methods if they are
  * not used. In other words, the user is able to configure the TLSProtocolConfigurer through the following properties:
  * <pre>
- *     saml.sso.tls.protocolName
- *     saml.sso.tls.protocolPort
- *     saml.sso.tls.keyManager
- *     saml.sso.tls.sslHostnameVerification
- *     saml.sso.tls.trustedKeys
+ *     saml.sso.tls.protocol-name
+ *     saml.sso.tls.protocol-port
+ *     saml.sso.tls.key-manager
+ *     saml.sso.tls.ssl-hostname-verification
+ *     saml.sso.tls.trusted-keys
  * </pre>
  * </p>
  *
@@ -69,7 +69,7 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.tls.protocolName
+     *      saml.sso.tls.protocol-name
      * </pre>
      * </p>
      *
@@ -87,7 +87,7 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.tls.protocolPort
+     *      saml.sso.tls.protocol-port
      * </pre>
      * </p>
      *
@@ -107,7 +107,7 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.tls.sslHostnameVerification
+     *      saml.sso.tls.ssl-hostname-verification
      * </pre>
      * </p>
      *
@@ -126,7 +126,7 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.tls.trustedKeys
+     *      saml.sso.tls.trusted-keys
      * </pre>
      * </p>
      *

@@ -30,11 +30,11 @@ import java.util.Optional;
  * are
  * not used. In other words, the user is able to configure the filters through the following properties:
  * <pre>
- *     saml.sso.logout.defaultTargetURL
- *     saml.sso.logout.logoutURL
- *     saml.sso.logout.singleLogoutURL
- *     saml.sso.logout.clearAuthentication
- *     saml.sso.logout.invalidateSession
+ *     saml.sso.logout.default-target-url
+ *     saml.sso.logout.logout-url
+ *     saml.sso.logout.single-logout-url
+ *     saml.sso.logout.clear-authentication
+ *     saml.sso.logout.invalidate-session
  * </pre>
  * </p>
  *
@@ -121,7 +121,7 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.logout.defaultTargetURL
+     *      saml.sso.logout.default-target-url
      * </pre>
      * </p>
      *
@@ -139,7 +139,7 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.logout.logoutURL
+     *      saml.sso.logout.logout-url
      * </pre>
      * </p>
      *
@@ -157,7 +157,7 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.logout.singleLogoutURL
+     *      saml.sso.logout.single-logout-url
      * </pre>
      * </p>
      *
@@ -175,7 +175,7 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.logout.clearAuthentication
+     *      saml.sso.logout.clear-authentication
      * </pre>
      * </p>
      *
@@ -195,7 +195,7 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.logout.invalidateSession
+     *      saml.sso.logout.invalidate-session
      * </pre>
      * </p>
      *

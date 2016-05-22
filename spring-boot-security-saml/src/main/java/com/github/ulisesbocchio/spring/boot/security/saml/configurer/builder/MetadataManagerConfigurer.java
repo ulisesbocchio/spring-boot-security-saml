@@ -39,15 +39,15 @@ import static java.util.stream.Collectors.toSet;
  * MetadataManager through the
  * following properties:
  * <pre>
- *     saml.sso.metadataManager.defaultIDP
- *     saml.sso.metadataManager.hostedSpName
- *     saml.sso.metadataManager.refreshCheckInterval
- *     saml.sso.extendedDelegate.metadataTrustedKeys
- *     saml.sso.extendedDelegate.metadataTrustCheck
- *     saml.sso.extendedDelegate.forceMetadataRevocationCheck
- *     saml.sso.extendedDelegate.metadataRequireSignature
- *     saml.sso.extendedDelegate.requireValidMetadata
- *     saml.sso.idp.metadataLocation
+ *     saml.sso.metadata-manager.default-idp
+ *     saml.sso.metadata-manager.hosted-sp-name
+ *     saml.sso.metadata-manager.refresh-check-interval
+ *     saml.sso.extended-delegate.metadata-trusted-keys
+ *     saml.sso.extended-delegate.metadata-trust-check
+ *     saml.sso.extended-delegate.force-metadata-revocation-check
+ *     saml.sso.extended-delegate.metadata-require-signature
+ *     saml.sso.extended-delegate.require-valid-metadata
+ *     saml.sso.idp.metadata-location
  * </pre>
  * </p>
  *
@@ -190,7 +190,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataManager.defaultIDP
+     *      saml.sso.metadata-manager.default-idp
      * </pre>
      * </p>
      *
@@ -208,7 +208,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataManager.hostedSpName
+     *      saml.sso.metadata-manager.hosted-sp-name
      * </pre>
      * </p>
      *
@@ -231,7 +231,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataManager.refreshCheckInterval
+     *      saml.sso.metadata-manager.refresh-check-interval
      * </pre>
      * </p>
      *
@@ -275,7 +275,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.idp.metadataLocation
+     *      saml.sso.idp.metadata-location
      * </pre>
      * </p>
      *
@@ -320,7 +320,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedDelegate.forceMetadataRevocationCheck
+     *      saml.sso.extended-delegate.force-metadata-revocation-check
      * </pre>
      * </p>
      *
@@ -340,7 +340,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedDelegate.metadataRequireSignature
+     *      saml.sso.extended-delegate.metadata-require-signature
      * </pre>
      * </p>
      *
@@ -359,7 +359,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedDelegate.metadataTrustCheck
+     *      saml.sso.extended-delegate.metadata-trust-check
      * </pre>
      * </p>
      *
@@ -377,7 +377,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedDelegate.metadataTrustedKeys
+     *      saml.sso.extended-delegate.metadata-trusted-keys
      * </pre>
      * </p>
      *
@@ -395,7 +395,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedDelegate.requireValidMetadata
+     *      saml.sso.extended-delegate.require-valid-metadata
      * </pre>
      * </p>
      *

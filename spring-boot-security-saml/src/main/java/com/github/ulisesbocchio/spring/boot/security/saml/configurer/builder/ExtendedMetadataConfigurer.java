@@ -27,25 +27,25 @@ import static java.util.stream.Collectors.toSet;
  * Metadata is provided, for some DSL methods if they that are not used. In other words, the user is able to configure
  * the Extended Metadata through the following properties:
  * <pre>
- *     saml.sso.extendedMetadata.local
- *     saml.sso.extendedMetadata.alias
- *     saml.sso.extendedMetadata.idpDiscoveryEnabled
- *     saml.sso.extendedMetadata.idpDiscoveryURL
- *     saml.sso.extendedMetadata.idpDiscoveryResponseURL
- *     saml.sso.extendedMetadata.ecpEnabled
- *     saml.sso.extendedMetadata.securityProfile
- *     saml.sso.extendedMetadata.sslSecurityProfile
- *     saml.sso.extendedMetadata.sslHostnameVerification
- *     saml.sso.extendedMetadata.signingKey
- *     saml.sso.extendedMetadata.signMetadata
- *     saml.sso.extendedMetadata.keyInfoGeneratorName
- *     saml.sso.extendedMetadata.encryptionKey
- *     saml.sso.extendedMetadata.tlsKey
- *     saml.sso.extendedMetadata.trustedKeys
- *     saml.sso.extendedMetadata.requireLogoutRequestSigned
- *     saml.sso.extendedMetadata.requireLogoutResponseSigned
- *     saml.sso.extendedMetadata.requireArtifactResolveSigned
- *     saml.sso.extendedMetadata.supportUnsolicitedResponse
+ *     saml.sso.extended-metadata.local
+ *     saml.sso.extended-metadata.alias
+ *     saml.sso.extended-metadata.idp-discovery-enabled
+ *     saml.sso.extended-metadata.idp-discovery-url
+ *     saml.sso.extended-metadata.idp-discovery-response-url
+ *     saml.sso.extended-metadata.ecp-enabled
+ *     saml.sso.extended-metadata.security-profile
+ *     saml.sso.extended-metadata.ssl-security-profile
+ *     saml.sso.extended-metadata.ssl-hostname-verification
+ *     saml.sso.extended-metadata.signing-key
+ *     saml.sso.extended-metadata.sign-metadata
+ *     saml.sso.extended-metadata.key-info-generator-name
+ *     saml.sso.extended-metadata.encryption-key
+ *     saml.sso.extended-metadata.tls-key
+ *     saml.sso.extended-metadata.trusted-keys
+ *     saml.sso.extended-metadata.require-logout-request-signed
+ *     saml.sso.extended-metadata.require-logout-response-signed
+ *     saml.sso.extended-metadata.require-artifact-resolve-signed
+ *     saml.sso.extended-metadata.support-unsolicited-response
  * </pre>
  * </p>
  *
@@ -131,7 +131,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.local
+     *      saml.sso.extended-metadata.local
      * </pre>
      * </p>
      *
@@ -150,7 +150,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.idpDiscoveryEnabled
+     *      saml.sso.extended-metadata.idp-discovery-enabled
      * </pre>
      * </p>
      *
@@ -169,7 +169,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.ecpEnabled
+     *      saml.sso.extended-metadata.ecp-enabled
      * </pre>
      * </p>
      *
@@ -187,7 +187,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.signMetadata
+     *      saml.sso.extended-metadata.sign-metadata
      * </pre>
      * </p>
      *
@@ -205,7 +205,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.requireLogoutRequestSigned
+     *      saml.sso.extended-metadata.require-logout-request-signed
      * </pre>
      * </p>
      *
@@ -223,7 +223,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.requireLogoutResponseSigned
+     *      saml.sso.extended-metadata.require-logout-response-signed
      * </pre>
      * </p>
      *
@@ -241,7 +241,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.requireArtifactResolveSigned
+     *      saml.sso.extended-metadata.require-artifact-resolve-signed
      * </pre>
      * </p>
      *
@@ -260,7 +260,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.supportUnsolicitedResponse
+     *      saml.sso.extended-metadata.support-unsolicited-response
      * </pre>
      * </p>
      *
@@ -278,7 +278,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.alias
+     *      saml.sso.extended-metadata.alias
      * </pre>
      * </p>
      *
@@ -296,7 +296,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.idpDiscoveryURL
+     *      saml.sso.extended-metadata.idp-discovery-url
      * </pre>
      * </p>
      *
@@ -314,7 +314,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.idpDiscoveryResponseURL
+     *      saml.sso.extended-metadata.idp-discovery-response-url
      * </pre>
      * </p>
      *
@@ -331,7 +331,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.securityProfile
+     *      saml.sso.extended-metadata.security-profile
      * </pre>
      * </p>
      *
@@ -348,7 +348,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.sslSecurityProfile
+     *      saml.sso.extended-metadata.ssl-security-profile
      * </pre>
      * </p>
      *
@@ -366,7 +366,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.sslHostnameVerification
+     *      saml.sso.extended-metadata.ssl-hostname-verification
      * </pre>
      * </p>
      *
@@ -384,7 +384,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.signingKey
+     *      saml.sso.extended-metadata.signing-key
      * </pre>
      * </p>
      *
@@ -403,7 +403,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.signingAlgorithm
+     *      saml.sso.extended-metadata.signing-algorithm
      * </pre>
      * </p>
      *
@@ -422,7 +422,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.keyInfoGeneratorName
+     *      saml.sso.extended-metadata.key-info-generator-name
      * </pre>
      * </p>
      *
@@ -440,7 +440,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.encryptionKey
+     *      saml.sso.extended-metadata.encryption-key
      * </pre>
      * </p>
      *
@@ -460,7 +460,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.tlsKey
+     *      saml.sso.extended-metadata.tls-key
      * </pre>
      * </p>
      *
@@ -478,7 +478,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.extendedMetadata.trustedKeys
+     *      saml.sso.extended-metadata.trusted-keys
      * </pre>
      * </p>
      *

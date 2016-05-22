@@ -25,8 +25,8 @@ import java.util.Optional;
  * Authentication Provider is provided, for some DSL methods if they are not used. In other words, the user is able to
  * configure the Authentication Provider through the following properties:
  * <pre>
- *     saml.sso.authenticationProvider.forcePrincipalAsString
- *     saml.sso.authenticationProvider.excludeCredential
+ *     saml.sso.authentication-provider.force-principal-as-string
+ *     saml.sso.authentication-provider.exclude-credential
  * </pre>
  * <p/>
  *
@@ -89,7 +89,7 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.authenticationProvider.excludeCredential
+     *      saml.sso.authentication-provider.exclude-credential
      * </pre>
      *
      * @param excludeCredential false to include credential in the Authentication object, true to exclude it
@@ -108,7 +108,7 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.authenticationProvider.forcePrincipalAsString
+     *      saml.sso.authentication-provider.force-principal-as-string
      * </pre>
      *
      * @param forcePrincipalAsString true to force principal to be a String

@@ -29,17 +29,17 @@ import java.util.Optional;
  * This configurer also reads the values from {@link SAMLSSOProperties#getMetadataGenerator()} for some DSL methods if
  * they are not used. In other words, the user is able to configure the filters through the following properties:
  * <pre>
- *     saml.sso.metadataGenerator.metadataURL
- *     saml.sso.metadataGenerator.entityId
- *     saml.sso.metadataGenerator.wantAssertionSigned
- *     saml.sso.metadataGenerator.requestSigned
- *     saml.sso.metadataGenerator.nameId
- *     saml.sso.metadataGenerator.entityBaseURL
- *     saml.sso.metadataGenerator.bindingsSSO
- *     saml.sso.metadataGenerator.bindingsHokSSO
- *     saml.sso.metadataGenerator.bindingsSLO
- *     saml.sso.metadataGenerator.assertionConsumerIndex
- *     saml.sso.metadataGenerator.includeDiscoveryExtension
+ *     saml.sso.metadata-generator.metadata-url
+ *     saml.sso.metadata-generator.entity-id
+ *     saml.sso.metadata-generator.want-assertion-signed
+ *     saml.sso.metadata-generator.request-signed
+ *     saml.sso.metadata-generator.name-id
+ *     saml.sso.metadata-generator.entity-base-url
+ *     saml.sso.metadata-generator.bindings-sso
+ *     saml.sso.metadata-generator.bindings-hok-sso
+ *     saml.sso.metadata-generator.bindings-slo
+ *     saml.sso.metadata-generator.assertion-consumer-index
+ *     saml.sso.metadata-generator.include-discovery-extension
  * </pre>
  * </p>
  *
@@ -104,7 +104,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.metadataURL
+     *      saml.sso.metadata-generator.metadata-url
      * </pre>
      * </p>
      *
@@ -122,7 +122,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.entityId
+     *      saml.sso.metadata-generator.entity-id
      * </pre>
      * </p>
      *
@@ -140,7 +140,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.id
+     *      saml.sso.metadata-generator.id
      * </pre>
      * </p>
      *
@@ -158,7 +158,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.wantAssertionSigned
+     *      saml.sso.metadata-generator.want-assertion-signed
      * </pre>
      * </p>
      *
@@ -175,7 +175,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.requestSigned
+     *      saml.sso.metadata-generator.request-signed
      * </pre>
      * </p>
      *
@@ -192,7 +192,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.nameId
+     *      saml.sso.metadata-generator.name-id
      * </pre>
      * </p>
      *
@@ -210,7 +210,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.entityBaseURL
+     *      saml.sso.metadata-generator.entity-base-url
      * </pre>
      * </p>
      *
@@ -230,7 +230,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.bindingsHokSSO
+     *      saml.sso.metadata-generator.bindings-hok-sso
      * </pre>
      * </p>
      *
@@ -250,7 +250,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.bindingsSLO
+     *      saml.sso.metadata-generator.bindings-slo
      * </pre>
      * </p>
      *
@@ -270,7 +270,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.bindingsSSO
+     *      saml.sso.metadata-generator.bindings-sso
      * </pre>
      * </p>
      *
@@ -289,7 +289,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.assertionConsumerIndex
+     *      saml.sso.metadata-generator.assertion-consumer-index
      * </pre>
      * </p>
      *
@@ -307,7 +307,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.metadataGenerator.includeDiscoveryExtension
+     *      saml.sso.metadata-generator.include-discovery-extension
      * </pre>
      * </p>
      *

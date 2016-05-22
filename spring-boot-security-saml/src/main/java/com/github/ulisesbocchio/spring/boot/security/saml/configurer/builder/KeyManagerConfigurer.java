@@ -30,12 +30,12 @@ import java.util.Optional;
  * is provided, for some DSL methods if they are not used. In other words, the user is able to configure the KeyManager
  * through the following properties:
  * <pre>
- *     saml.sso.keyManager.publicKeyPemLocation
- *     saml.sso.keyManager.privateKeyDerLocation
- *     saml.sso.keyManager.storeLocation
- *     saml.sso.keyManager.storePass
- *     saml.sso.keyManager.keyPasswords
- *     saml.sso.keyManager.defaultKey
+ *     saml.sso.key-manager.public-key-pem-location
+ *     saml.sso.key-manager.private-key-der-location
+ *     saml.sso.key-manager.store-location
+ *     saml.sso.key-manager.store-pass
+ *     saml.sso.key-manager.key-passwords
+ *     saml.sso.key-manager.default-key
  * </pre>
  * </p>
  *
@@ -130,7 +130,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.keyManager.publicKeyPemLocation
+     *      saml.sso.key-manager.public-key-pem-location
      * </pre>
      * </p>
      *
@@ -148,7 +148,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.keyManager.privateKeyDerLocation
+     *      saml.sso.key-manager.private-key-der-location
      * </pre>
      * </p>
      *
@@ -167,7 +167,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.keyManager.storeLocation
+     *      saml.sso.key-manager.store-location
      * </pre>
      * </p>
      *
@@ -185,7 +185,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.keyManager.storePass
+     *      saml.sso.key-manager.store-pass
      * </pre>
      * </p>
      *
@@ -204,7 +204,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.keyManager.keyPasswords
+     *      saml.sso.key-manager.key-passwords
      * </pre>
      * </p>
      *
@@ -221,7 +221,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.keyManager.keyPasswords
+     *      saml.sso.key-manager.key-passwords
      * </pre>
      * </p>
      *
@@ -243,7 +243,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.keyManager.defaultKey
+     *      saml.sso.key-manager.default-key
      * </pre>
      * </p>
      *

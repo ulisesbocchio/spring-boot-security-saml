@@ -34,14 +34,27 @@ import java.util.Optional;
  * This configurer also reads the values from {@link SAMLSSOProperties} for some DSL methods if they are not used.
  * In other words, the user is able to configure the filters through the following properties:
  * <pre>
- *     saml.sso.defaultSuccessURL
- *     saml.sso.defaultFailureURL
- *     saml.sso.ssoProcessingURL
- *     saml.sso.enableSsoHok
- *     saml.sso.discoveryProcessingURL
- *     saml.sso.idpSelectionPageURL
- *     saml.sso.ssoLoginURL
- *     saml.sso.profileOptions
+ *     saml.sso.default-success-url
+ *     saml.sso.default-failure-url
+ *     saml.sso.sso-processing-url
+ *     saml.sso.enable-sso-hok
+ *     saml.sso.discovery-processing-url
+ *     saml.sso.idp-selection-page-url
+ *     saml.sso.sso-login-url
+ *     saml.sso.profile-options.binding
+ *     saml.sso.profile-options.allowed-idps
+ *     saml.sso.profile-options.provider-name
+ *     saml.sso.profile-options.assertion-consumer-index
+ *     saml.sso.profile-options.name-id
+ *     saml.sso.profile-options.allow-create
+ *     saml.sso.profile-options.passive
+ *     saml.sso.profile-options.force-authn
+ *     saml.sso.profile-options.include-scoping
+ *     saml.sso.profile-options.proxy-count
+ *     saml.sso.profile-options.relay-state
+ *     saml.sso.profile-options.authn-contexts
+ *     saml.sso.profile-options.authn-context-comparison
+ *
  * </pre>
  * </p>
  *
@@ -185,7 +198,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.defaultSuccessURL
+     *      saml.sso.default-success-url
      * </pre>
      * </p>
      *
@@ -216,7 +229,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.defaultFailureURL
+     *      saml.sso.default-failure-url
      * </pre>
      * </p>
      *
@@ -246,7 +259,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.ssoProcessingURL
+     *      saml.sso.sso-processing-url
      * </pre>
      * </p>
      *
@@ -264,7 +277,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.ssoHokProcessingURL
+     *      saml.sso.sso-hok-Processing-url
      * </pre>
      * </p>
      *
@@ -282,7 +295,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.enableSsoHok
+     *      saml.sso.enable-sso-hok
      * </pre>
      * </p>
      *
@@ -300,7 +313,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.discoveryProcessingURL
+     *      saml.sso.discovery-processing-url
      * </pre>
      * </p>
      *
@@ -319,7 +332,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.idpSelectionPageURL
+     *      saml.sso.idp-selection-page-url
      * </pre>
      * </p>
      *
@@ -337,7 +350,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.ssoLoginURL
+     *      saml.sso.sso-login-url
      * </pre>
      * </p>
      *
@@ -354,19 +367,19 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
      * <p>
      * Alternatively use properties:
      * <pre>
-     *      saml.sso.profileOptions.binding
-     *      saml.sso.profileOptions.allowedIDPs
-     *      saml.sso.profileOptions.providerName
-     *      saml.sso.profileOptions.assertionConsumerIndex
-     *      saml.sso.profileOptions.nameID
-     *      saml.sso.profileOptions.allowCreate
-     *      saml.sso.profileOptions.passive
-     *      saml.sso.profileOptions.forceAuthn
-     *      saml.sso.profileOptions.includeScoping
-     *      saml.sso.profileOptions.proxyCount
-     *      saml.sso.profileOptions.relayState
-     *      saml.sso.profileOptions.authnContexts
-     *      saml.sso.profileOptions.authnContextComparison
+     *      saml.sso.profile-options.binding
+     *      saml.sso.profile-options.allowed-idps
+     *      saml.sso.profile-options.provider-name
+     *      saml.sso.profile-options.assertion-consumer-index
+     *      saml.sso.profile-options.name-id
+     *      saml.sso.profile-options.allow-create
+     *      saml.sso.profile-options.passive
+     *      saml.sso.profile-options.force-authn
+     *      saml.sso.profile-options.include-scoping
+     *      saml.sso.profile-options.proxy-count
+     *      saml.sso.profile-options.relay-state
+     *      saml.sso.profile-options.authn-contexts
+     *      saml.sso.profile-options.authn-context-comparison
      * </pre>
      * </p>
      *

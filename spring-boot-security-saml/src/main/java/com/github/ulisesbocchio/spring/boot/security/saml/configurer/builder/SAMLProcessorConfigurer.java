@@ -33,11 +33,11 @@ import java.util.Optional;
  * SAMLProcessor through the
  * following properties:
  * <pre>
- *     saml.sso.samlProcessor.redirect
- *     saml.sso.samlProcessor.post
- *     saml.sso.samlProcessor.artifact
- *     saml.sso.samlProcessor.soap
- *     saml.sso.samlProcessor.paos
+ *     saml.sso.saml-processor.redirect
+ *     saml.sso.saml-processor.post
+ *     saml.sso.saml-processor.artifact
+ *     saml.sso.saml-processor.soap
+ *     saml.sso.saml-processor.paos
  * </pre>
  * </p>
  *
@@ -166,7 +166,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.samlProcessor.redirect
+     *      saml.sso.saml-processor.redirect
      * </pre>
      * </p>
      *
@@ -196,7 +196,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.samlProcessor.post
+     *      saml.sso.saml-processor.post
      * </pre>
      * </p>
      *
@@ -225,7 +225,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.samlProcessor.artifact
+     *      saml.sso.saml-processor.artifact
      * </pre>
      * </p>
      *
@@ -255,7 +255,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.samlProcessor.soap
+     *      saml.sso.saml-processor.soap
      * </pre>
      * </p>
      *
@@ -284,7 +284,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
      * <p>
      * Alternatively use property:
      * <pre>
-     *      saml.sso.samlProcessor.paos
+     *      saml.sso.saml-processor.paos
      * </pre>
      * </p>
      *
