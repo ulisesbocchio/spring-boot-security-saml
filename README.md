@@ -238,9 +238,9 @@ public static class MvcConfig extends WebMvcConfigurerAdapter {
 In the other hand, `idpSelection.html` and `home.html` under `resources/templates/` in the Demo apps are implicitly defined as view controllers by Spring Boot's Thymeleaf auto-configuration.
 For more information on how to configure Spring MVC please visit Spring MVC's [Documentation](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html) page and Spring Boot's Web Applications [Documentation](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-developing-web-applications).
 
-## Check out the spring-boot-security-saml Demo App
+## Check out the spring-boot-security-saml Demo Apps
 
-In [spring-boot-security-saml-demo](spring-boot-security-saml-demo) there's a fully working Spring Boot app integrated with Spring Boot Security SAML and several IdPs (SSOCircle, Ping Identity, OKTA, OpenLogin). This showcases the differences (configuration wise) between the `spring-boot-security-saml` plugin and plain `spring-security-saml` configuration. 
+In [spring-boot-security-saml-demo-dsl](spring-boot-security-saml-demo-dsl) and [spring-boot-security-saml-demo-props](spring-boot-security-saml-demo-props) there are working demos of this plugin using the Java DSL style and Configuration Properties style respectively. 
 
 ## Check out the spring-security-saml-sample Sample App
 
