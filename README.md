@@ -29,14 +29,15 @@ This project targets a smooth integration between [spring-security-saml](http://
     }
     ```
 
-3. Start configuring your SAML 2.0 Service provider (see [below](#configure-your-saml-2.0-service-provider)).
+3. Start configuring your SAML 2.0 Service provider (see [below](#configure-your-saml-20-service-provider)).
 
 ## Configure your SAML 2.0 Service Provider
 
 For those familiar with `spring-security-saml` this plugin exposes most of it configuration points through 2 different forms that are fully interchangeable and combine-able except when providing custom implementations and instances.
 The two configuration flavors are:
-1. Configuration Properties
-2. a Java DSL
+
+1. [Configuration Properties](#configuration-properties)
+2. [Java DSL](#java-dsl)
 
 ### Configuration Properties
 
@@ -130,7 +131,41 @@ The following table shows all the available properties (Parsed from Spring Confi
 |saml.sso.tls.ssl-hostname-verification	|default	|Hostname verifier to use for verification of SSL connections, e.g. for ArtifactResolution.	|
 |saml.sso.tls.trusted-keys	|null	|Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is  null all keys in the keyStore will be treated as trusted.	|
 
-For a more thorough description of the properties please see JavaDoc of class `SAMLSSOProperties`. For configuration examples, see [Configuration Cookbook](#configuration-cookbook).
+The following properties snippet is a sample configuration through `application.yml`.
+ 
+```yaml
+ saml:
+     sso:
+         default-success-url: /home    #(1)
+         idp-selection-page-url: /idpSelection    #(2)
+         metadata-generator:
+             entity-id: localhost-demo    #(3)
+         logout:
+             default-target-url: /    #(4)
+         idps:
+             metadata-location: classpath:/idp-ssocircle.xml    #(5) 
+         metadata-manager:
+             refresh-check-interval: 0    #(6)
+         extended-metadata:
+             idp-discovery-enabled: true    #(7)
+         key-manager:
+             private-key-der-location: classpath:/localhost.key.der    #(8)
+             public-key-pem-location: classpath:/localhost.cert    #(9)
+```
+ 
+ In the above example, you can see how the following items are specified:
+ 
+ 1. The default success URL (redirect after successful login through the IDP if not saved request present) and
+ 2. A custom IDP Selection page URL for selecting and Identity Provider before login.
+ 3. The Service Provider entity ID
+ 4. The default logout URL, basically the URL to be redirected after successful logout.
+ 5. The IDP metadata to be used to send requests to the IDP and validate incoming calls from the IDP,
+ 6. And metadata reflesh interval (0 means never).
+ 7. Enable IDP discovery, so when SAML SSO kicks in, we'll be presented with an IDP selection page before the actual login, (set to false to use default IDP).
+ 8. Provide a custom private key (DER format)
+ 9. And public cert (PEM format) to be used for signing outgoing requests. (To be configured in the IDP side also).
+
+For a more thorough description of the properties please see JavaDoc of class `SAMLSSOProperties` and `ServiceProviderSecurityBuilder`. For configuration examples, see [Configuration Cookbook](#configuration-cookbook).
 
 ### Java DSL
 
@@ -180,10 +215,28 @@ In the above example, you can see how the following items are specified:
 5. Enable IDP discovery, so when SAML SSO kicks in, we'll be presented with an IDP selection page before the actual login, (set to false to use default IDP).
 6. And we provide a custom private key (DER format) and public cert (PEM format) to be used for signing outgoing requests. (To be configured in the IDP side also).
 
+This configuration is equivalent to the one showcased in the [Configuration Properties](#configuration-properties) section.
 For more documentation and available options, please see the JavaDoc  of `ServiceProviderSecurityBuilder` and read the [Configuration Cookbook](#configuration-cookbook). 
 
 ## Spring MVC Configuration
 
+No default templates are provided with `spring-boot-security-saml` for IDP selection page, home page, or default logout page. Developers need to configure the desired template engine and make sure that the URLs configured for this plugin are resolvable through Spring MVC.
+For instance, the following configuration is used in the Demo apps to specify the index page that is also mapped to the logout page:
+
+```java
+@Configuration
+public static class MvcConfig extends WebMvcConfigurerAdapter {
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("index");
+
+    }
+}
+```
+
+In the other hand, `idpSelection.html` and `home.html` under `resources/templates/` in the Demo apps are implicitly defined as view controllers by Spring Boot's Thymeleaf auto-configuration.
+For more information on how to configure Spring MVC please visit Spring MVC's [Documentation](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html) page and Spring Boot's Web Applications [Documentation](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-developing-web-applications).
 
 ## Check out the spring-boot-security-saml Demo App
 
@@ -195,6 +248,8 @@ In [spring-security-saml-sample](spring-security-saml-sample) there's a fully wo
 
 ## Configuration Cookbook
 These examples are intended to cover some usual Spring Security SAML configuration scenarios through this plugin to showcase the dynamics of the new configuration style. It is not meant as extensive documentation of Spring Security SAML or the SAML 2.0 standard. For documentation regarding Spring Security SAML and SAML 2.0 please see [Further Documentation](#further-documentation) section.
+
+*** Coming Soon ***
 
 ## Further Documentation
 

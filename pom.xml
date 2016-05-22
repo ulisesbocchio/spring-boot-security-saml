@@ -23,7 +23,8 @@
     <modules>
         <module>spring-boot-security-saml</module>
         <module>spring-security-saml-sample</module>
-        <module>spring-boot-security-saml-demo</module>
+        <module>spring-boot-security-saml-demo-dsl</module>
+        <module>spring-boot-security-saml-demo-props</module>
     </modules>
 
     <issueManagement>
