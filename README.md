@@ -240,11 +240,12 @@ For more information on how to configure Spring MVC please visit Spring MVC's [D
 
 ## Check out the spring-boot-security-saml Demo Apps
 
-In [spring-boot-security-saml-demo-dsl](spring-boot-security-saml-demo-dsl) and [spring-boot-security-saml-demo-props](spring-boot-security-saml-demo-props) there are working demos of this plugin using the Java DSL style and Configuration Properties style respectively. 
+In [spring-boot-security-saml-demo-dsl](spring-boot-security-saml-demo-dsl), [spring-boot-security-saml-demo-props](spring-boot-security-saml-demo-props) there are working demos of this plugin using the Java DSL style and Configuration Properties style respectively.
+Also, checkout [spring-boot-security-saml-demo-okta](spring-boot-security-saml-demo-okta) for a working demo using [Okta](https://www.okta.com) as IDP.
 
 ## Check out the spring-security-saml-sample Sample App
 
-In [spring-security-saml-sample](spring-security-saml-sample) there's a fully working Spring Boot app integrated with regular Spring Security SAML and several IdPs (SSOCircle, Ping Identity, OKTA, OpenLogin). In this sample you can check the amount of configuration required to integrate `spring-security-saml` with Spring Boot.
+In [spring-security-saml-sample](spring-security-saml-sample) there's a fully working Spring Boot app integrated with regular Spring Security SAML and several IdPs (SSOCircle, Ping Identity, OKTA, OneLogin). In this sample you can check the amount of configuration required to integrate `spring-security-saml` with Spring Boot.
 
 ## Configuration Cookbook
 These examples are intended to cover some usual Spring Security SAML configuration scenarios through this plugin to showcase the dynamics of the new configuration style. It is not meant as extensive documentation of Spring Security SAML or the SAML 2.0 standard. For documentation regarding Spring Security SAML and SAML 2.0 please see [Further Documentation](#further-documentation) section.
