@@ -36,8 +36,59 @@ This project targets a smooth integration between [spring-security-saml](http://
 For those familiar with `spring-security-saml` this plugin exposes most of it configuration points through 2 different forms that are fully interchangeable and combine-able except when providing custom implementations and instances.
 The two configuration flavors are:
 
-1. [Configuration Properties](#configuration-properties)
 2. [Java DSL](#java-dsl)
+1. [Configuration Properties](#configuration-properties)
+
+### Java DSL
+
+Configuring your Service Provider through the JAVA DSL is also pretty straight forward, and it follows the configurer/adapter/builder style that Spring Security currently has. A specific Interface and Adapter class are provided for the configuration, these are: `ServiceProviderConfigurer` and `ServiceProviderConfigurerAdapter` respectively.
+In most scenarios, you should be good with simply extending `ServiceProviderConfigurerAdapter` and overriding the `#configure(ServiceProviderSecurityBuilder serviceProvider)` method. This is an example:
+
+```java
+@Configuration
+public static class MyServiceProviderConfig extends ServiceProviderConfigurerAdapter {
+    @Override
+    public void configure(ServiceProviderSecurityBuilder serviceProvider) throws Exception {
+        // @formatter:off
+        serviceProvider 
+            .metadataGenerator() //(1)
+            .entityId("localhost-demo")
+        .and()
+            .sso() //(2)
+            .defaultSuccessURL("/home")
+            .idpSelectionPageURL("/idpselection")
+        .and()
+            .logout() //(3)
+            .defaultTargetURL("/")
+        .and()
+            .metadataManager() //(4)
+            .metadataLocations("classpath:/idp-ssocircle.xml")
+            .refreshCheckInterval(0)
+        .and()
+            .extendedMetadata() //(5)
+            .idpDiscoveryEnabled(true)
+        .and()
+            .keyManager() //(6)
+            .privateKeyDERLocation("classpath:/localhost.key.der")
+            .publicKeyPEMLocation("classpath:/localhost.cert");
+        // @formatter:on
+    }
+}
+```
+
+It is not strictly necessary for this class to be a `@Configuration` class, it could also be a Spring Bean. As far as it is exposed in the Application Context, the plugin will pick it up and configure the Service Provider accordingly.
+The other two methods in the Configurer/Adapter, `#configure(HttpSecurity http)` and `#configure(WebSecurity web)` allow for in-place customization of Spring Security's `HttpSecurity` and `WebSecurity` objects, without requiring extending other configurers/adapters to be implemented/extended, basically a shortcut.
+In the above example, you can see how the following items are specified:
+
+1. The Service Provider entity ID
+2. The default success URL (redirect after successful login through the IDP if not saved request present) and a custom IDP Selection page URL for selecting and Identity Provider before login.
+3. The default logout URL, basically the URL to be redirected after successful logout.
+4. The IDP metadata to be used to send requests to the IDP and validate incoming calls from the IDP, and metadata reflesh interval (0 means never).
+5. Enable IDP discovery, so when SAML SSO kicks in, we'll be presented with an IDP selection page before the actual login, (set to false to use default IDP).
+6. And we provide a custom private key (DER format) and public cert (PEM format) to be used for signing outgoing requests. (To be configured in the IDP side also).
+
+This configuration is equivalent to the one showcased in the [Configuration Properties](#configuration-properties) section.
+For more documentation and available options, please see the JavaDoc  of `ServiceProviderSecurityBuilder` and read the [Configuration Cookbook](#configuration-cookbook). 
 
 ### Configuration Properties
 
@@ -166,57 +217,6 @@ The following properties snippet is a sample configuration through `application.
  9. And public cert (PEM format) to be used for signing outgoing requests. (To be configured in the IDP side also).
 
 For a more thorough description of the properties please see JavaDoc of class `SAMLSSOProperties` and `ServiceProviderSecurityBuilder`. For configuration examples, see [Configuration Cookbook](#configuration-cookbook).
-
-### Java DSL
-
-Configuring your Service Provider through the JAVA DSL is also pretty straight forward, and it follows the configurer/adapter/builder style that Spring Security currently has. A specific Interface and Adapter class are provided for the configuration, these are: `ServiceProviderConfigurer` and `ServiceProviderConfigurerAdapter` respectively.
-In most scenarios, you should be good with simply extending `ServiceProviderConfigurerAdapter` and overriding the `#configure(ServiceProviderSecurityBuilder serviceProvider)` method. This is an example:
-
-```java
-@Configuration
-public static class MyServiceProviderConfig extends ServiceProviderConfigurerAdapter {
-    @Override
-    public void configure(ServiceProviderSecurityBuilder serviceProvider) throws Exception {
-        // @formatter:off
-        serviceProvider 
-            .metadataGenerator() //(1)
-            .entityId("localhost-demo")
-        .and()
-            .sso() //(2)
-            .defaultSuccessURL("/home")
-            .idpSelectionPageURL("/idpselection")
-        .and()
-            .logout() //(3)
-            .defaultTargetURL("/")
-        .and()
-            .metadataManager() //(4)
-            .metadataLocations("classpath:/idp-ssocircle.xml")
-            .refreshCheckInterval(0)
-        .and()
-            .extendedMetadata() //(5)
-            .idpDiscoveryEnabled(true)
-        .and()
-            .keyManager() //(6)
-            .privateKeyDERLocation("classpath:/localhost.key.der")
-            .publicKeyPEMLocation("classpath:/localhost.cert");
-        // @formatter:on
-    }
-}
-```
-
-It is not strictly necessary for this class to be a `@Configuration` class, it could also be a Spring Bean. As far as it is exposed in the Application Context, the plugin will pick it up and configure the Service Provider accordingly.
-The other two methods in the Configurer/Adapter, `#configure(HttpSecurity http)` and `#configure(WebSecurity web)` allow for in-place customization of Spring Security's `HttpSecurity` and `WebSecurity` objects, without requiring extending other configurers/adapters to be implemented/extended, basically a shortcut.
-In the above example, you can see how the following items are specified:
-
-1. The Service Provider entity ID
-2. The default success URL (redirect after successful login through the IDP if not saved request present) and a custom IDP Selection page URL for selecting and Identity Provider before login.
-3. The default logout URL, basically the URL to be redirected after successful logout.
-4. The IDP metadata to be used to send requests to the IDP and validate incoming calls from the IDP, and metadata reflesh interval (0 means never).
-5. Enable IDP discovery, so when SAML SSO kicks in, we'll be presented with an IDP selection page before the actual login, (set to false to use default IDP).
-6. And we provide a custom private key (DER format) and public cert (PEM format) to be used for signing outgoing requests. (To be configured in the IDP side also).
-
-This configuration is equivalent to the one showcased in the [Configuration Properties](#configuration-properties) section.
-For more documentation and available options, please see the JavaDoc  of `ServiceProviderSecurityBuilder` and read the [Configuration Cookbook](#configuration-cookbook). 
 
 ## Spring MVC Configuration
 
