@@ -15,6 +15,9 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.Filter;
+import java.util.List;
+
+import static com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.unchecked;
 
 /**
  * Class for internal usage of this Spring Boot Plugin. This configurer wires Spring Security's {@link HttpSecurity}
@@ -45,57 +48,36 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
     private ServiceProviderEndpoints endpoints;
     private Class<? extends Filter> lastFilterClass = BasicAuthenticationFilter.class;
 
-    public ServiceProviderSecurityConfigurer(SAMLSSOProperties config, MetadataManager metadataManager, SAMLAuthenticationProvider authenticationProvider,
-                                             SAMLProcessor samlProcessor, SAMLLogoutFilter samlLogoutFilter, SAMLLogoutProcessingFilter samlLogoutProcessingFilter,
-                                             MetadataDisplayFilter metadataDisplayFilter, MetadataGeneratorFilter metadataGeneratorFilter,
-                                             SAMLProcessingFilter sAMLProcessingFilter, SAMLWebSSOHoKProcessingFilter sAMLWebSSOHoKProcessingFilter,
-                                             SAMLDiscovery sAMLDiscovery, SAMLEntryPoint sAMLEntryPoint, KeyManager keyManager, TLSProtocolConfigurer tlsProtocolConfigurer,
-                                             ServiceProviderEndpoints endpoints) {
-        this.config = config;
-        this.metadataManager = metadataManager;
-        this.authenticationProvider = authenticationProvider;
-        this.samlProcessor = samlProcessor;
-        this.samlLogoutFilter = samlLogoutFilter;
-        this.samlLogoutProcessingFilter = samlLogoutProcessingFilter;
-        this.metadataDisplayFilter = metadataDisplayFilter;
-        this.metadataGeneratorFilter = metadataGeneratorFilter;
-        this.sAMLProcessingFilter = sAMLProcessingFilter;
-        this.sAMLWebSSOHoKProcessingFilter = sAMLWebSSOHoKProcessingFilter;
-        this.sAMLDiscovery = sAMLDiscovery;
-        this.sAMLEntryPoint = sAMLEntryPoint;
-        this.keyManager = keyManager;
-        this.tlsProtocolConfigurer = tlsProtocolConfigurer;
-        this.endpoints = endpoints;
+    private ServiceProviderSecurityBuilder securityConfigurerBuilder;
+    private List<ServiceProviderConfigurer> serviceProviderConfigurers;
+
+
+    public ServiceProviderSecurityConfigurer(ServiceProviderSecurityBuilder securityConfigurerBuilder, List<ServiceProviderConfigurer> serviceProviderConfigurers) {
+
+        this.securityConfigurerBuilder = securityConfigurerBuilder;
+        this.serviceProviderConfigurers = serviceProviderConfigurers;
     }
 
     @Override
-    public void init(HttpSecurity builder) throws Exception {
-        metadataManager.setRefreshRequired(true);
-        postProcess(metadataManager);
-        postProcess(authenticationProvider);
-        postProcess(samlProcessor);
-        postProcess(samlLogoutFilter);
-        postProcess(samlLogoutProcessingFilter);
-        postProcess(metadataDisplayFilter);
-        postProcess(metadataGeneratorFilter);
-        postProcess(sAMLProcessingFilter);
-        if (sAMLWebSSOHoKProcessingFilter != null) {
-            postProcess(sAMLWebSSOHoKProcessingFilter);
-        }
-        postProcess(sAMLDiscovery);
-        postProcess(sAMLEntryPoint);
-        postProcess(keyManager);
-        postProcess(tlsProtocolConfigurer);
-    }
+    public void init(HttpSecurity http) throws Exception {
+        serviceProviderConfigurers.forEach(unchecked(spc -> spc.configure(securityConfigurerBuilder)));
+        setFields(securityConfigurerBuilder.build());
 
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
         http
                 .httpBasic()
                 .disable();
         http
                 .csrf()
                 .disable();
+        http
+                .exceptionHandling()
+                .authenticationEntryPoint(sAMLEntryPoint);
+        http
+                .logout()
+                .disable();
+        http.
+                authenticationProvider(authenticationProvider);
+
         //http
         addFilterAfter(http, metadataGeneratorFilter);
         addFilterAfter(http, metadataDisplayFilter);
@@ -105,18 +87,18 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
         addFilterAfter(http, samlLogoutProcessingFilter);
         addFilterAfter(http, sAMLDiscovery);
         addFilterAfter(http, samlLogoutFilter);
+
         http
                 .authorizeRequests()
                 .requestMatchers(endpoints.getRequestMatcher()).permitAll()
                 .anyRequest().authenticated();
-        http
-                .exceptionHandling()
-                .authenticationEntryPoint(sAMLEntryPoint);
-        http
-                .logout()
-                .disable();
-        http.
-                authenticationProvider(authenticationProvider);
+
+        serviceProviderConfigurers.forEach(unchecked(spc -> spc.configure(http)));
+    }
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+
     }
 
     private void addFilterAfter(HttpSecurity http, Filter filterBeingAdded) {
@@ -124,5 +106,23 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
             http.addFilterAfter(filterBeingAdded, lastFilterClass);
             lastFilterClass = filterBeingAdded.getClass();
         }
+    }
+
+    public void setFields(ServiceProviderSecurityConfigurerBeans beans) {
+        this.config = beans.getConfig();
+        this.metadataManager = beans.getMetadataManager();
+        this.authenticationProvider = beans.getAuthenticationProvider();
+        this.samlProcessor = beans.getSamlProcessor();
+        this.samlLogoutFilter = beans.getSamlLogoutFilter();
+        this.samlLogoutProcessingFilter = beans.getSamlLogoutProcessingFilter();
+        this.metadataDisplayFilter = beans.getMetadataDisplayFilter();
+        this.metadataGeneratorFilter = beans.getMetadataGeneratorFilter();
+        this.sAMLProcessingFilter = beans.getSAMLProcessingFilter();
+        this.sAMLWebSSOHoKProcessingFilter = beans.getSAMLWebSSOHoKProcessingFilter();
+        this.sAMLDiscovery = beans.getSAMLDiscovery();
+        this.sAMLEntryPoint = beans.getSAMLEntryPoint();
+        this.keyManager = beans.getKeyManager();
+        this.tlsProtocolConfigurer = beans.getTlsProtocolConfigurer();
+        this.endpoints = beans.getEndpoints();
     }
 }

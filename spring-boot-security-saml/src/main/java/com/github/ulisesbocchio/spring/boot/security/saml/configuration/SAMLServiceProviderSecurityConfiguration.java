@@ -57,22 +57,22 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
     private ResourceLoader resourceLoader;
 
     @Autowired
-    DefaultListableBeanFactory beanFactory;
+    private DefaultListableBeanFactory beanFactory;
 
     @Autowired(required = false)
     private ExtendedMetadata extendedMetadata;
 
     @Autowired(required = false)
-    SAMLContextProvider samlContextProvider;
+    private SAMLContextProvider samlContextProvider;
 
     @Autowired(required = false)
-    KeyManager keyManager;
+    private KeyManager keyManager;
 
     @Autowired(required = false)
-    MetadataManager metadataManager;
+    private MetadataManager metadataManager;
 
     @Autowired(required = false)
-    SAMLProcessor samlProcessor;
+    private SAMLProcessor samlProcessor;
 
     @Autowired(required = false)
     @Qualifier("webSSOprofileConsumer")
@@ -82,34 +82,36 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
     @Autowired(required = false)
     @Qualifier("hokWebSSOprofileConsumer")
     @SuppressWarnings("SpringJavaAutowiringInspection")
-    WebSSOProfileConsumerHoKImpl hokWebSSOProfileConsumer;
+    private WebSSOProfileConsumerHoKImpl hokWebSSOProfileConsumer;
 
     @Autowired(required = false)
     @Qualifier("webSSOprofile")
     @SuppressWarnings("SpringJavaAutowiringInspection")
-    WebSSOProfile webSSOProfile;
+    private WebSSOProfile webSSOProfile;
 
     @Autowired(required = false)
     @Qualifier("ecpProfile")
     @SuppressWarnings("SpringJavaAutowiringInspection")
-    WebSSOProfileECPImpl ecpProfile;
+    private WebSSOProfileECPImpl ecpProfile;
 
     @Autowired(required = false)
     @Qualifier("hokWebSSOProfile")
     @SuppressWarnings("SpringJavaAutowiringInspection")
-    WebSSOProfileHoKImpl hokWebSSOProfile;
+    private WebSSOProfileHoKImpl hokWebSSOProfile;
 
     @Autowired(required = false)
-    SingleLogoutProfile sloProfile;
+    private SingleLogoutProfile sloProfile;
 
     @Autowired(required = false)
-    SAMLAuthenticationProvider samlAuthenticationProvider;
+    private SAMLAuthenticationProvider samlAuthenticationProvider;
 
-    private WebSecurity webSecurity;
+    public SAMLServiceProviderSecurityConfiguration() {
+        super(false);
+    }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        webSecurity = web;
+        serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(web)));
     }
 
     /**
@@ -146,17 +148,10 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
         //BeanRegistry bean. A custom inner type of this class.
         markBeansAsRegistered(securityConfigurerBuilder.getSharedObjects());
 
-        //For each configurer found, we allow further customization of the HttpSecurity and WebSecurity Object, and we expose the
-        //ServiceProviderSecurityBuilder to the configurer of customization of the service provider.
-        serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(webSecurity)));
-        serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(http)));
-        serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(securityConfigurerBuilder)));
-
         //After the builder has been customized by the configurer(s) provided, it's time to build the builder,
         //which builds a SecurityConfigurer that will wire spring security with the Service Provider configuration
-        ServiceProviderSecurityConfigurer securityConfigurer = securityConfigurerBuilder.build();
-        securityConfigurer.init(http);
-        securityConfigurer.configure(http);
+        ServiceProviderSecurityConfigurer securityConfigurer = new ServiceProviderSecurityConfigurer(securityConfigurerBuilder, serviceProviderConfigurers);
+        http.apply(securityConfigurer);
     }
 
     /**
