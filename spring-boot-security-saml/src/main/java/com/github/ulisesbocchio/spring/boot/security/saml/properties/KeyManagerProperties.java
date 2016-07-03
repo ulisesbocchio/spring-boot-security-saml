@@ -4,6 +4,10 @@ import lombok.Data;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Configuration Properties for {@link org.springframework.security.saml.key.KeyManager}
@@ -35,7 +39,7 @@ public class KeyManagerProperties {
     /**
      * They KeyStore private key passwords by key name.
      */
-    Map<String, String> keyPasswords = Collections.singletonMap("localhost", "");
+    Map<String, String> keyPasswords = Collections.singletonMap("localhost", "").entrySet().stream().collect(toMap(Entry::getKey, Entry::getValue));
 
     /**
      * The default key name to use for encryption.

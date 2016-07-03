@@ -3,6 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.properties;
 import lombok.Data;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -17,7 +18,7 @@ public class ExtendedMetadataDelegateProperties {
      * Keys stored in the KeyManager which can be used to verify whether signature of the metadata is trusted.
      * If not set any key stored in the keyManager is considered as trusted.
      */
-    private Set<String> metadataTrustedKeys = Collections.EMPTY_SET;
+    private Set<String> metadataTrustedKeys = new HashSet<>();
 
     /**
      * When true metadata signature will be verified for trust using PKIX with metadataTrustedKeys

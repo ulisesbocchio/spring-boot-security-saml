@@ -3,6 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.properties;
 import lombok.Data;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -31,5 +32,5 @@ public class TLSProperties {
      * Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is
      * null all keys in the keyStore will be treated as trusted.
      */
-    private Set<String> trustedKeys = Collections.EMPTY_SET;
+    private Set<String> trustedKeys = new HashSet<>();
 }
