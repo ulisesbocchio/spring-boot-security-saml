@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.security.saml.metadata.MetadataDisplayFilter;
 import org.springframework.security.saml.metadata.MetadataGenerator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -67,7 +68,7 @@ public class MetadataGeneratorProperties {
      * "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact") and "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").
      * By default there are no included bindings for the profile.
      */
-    private Collection<String> bindingsHokSSO = Arrays.asList();
+    private Collection<String> bindingsHokSSO = new ArrayList<>();
 
     /**
      * List of bindings to be included in the generated metadata for Single Logout. Ordering of bindings affects

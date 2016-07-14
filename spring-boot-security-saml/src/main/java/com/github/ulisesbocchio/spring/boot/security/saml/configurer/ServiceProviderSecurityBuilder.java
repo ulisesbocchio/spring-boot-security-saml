@@ -42,8 +42,8 @@ import static com.github.ulisesbocchio.spring.boot.security.saml.util.Functional
  * @author Ulises Bocchio
  */
 public class ServiceProviderSecurityBuilder extends
-        AbstractConfiguredSecurityBuilder<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>
-        implements SecurityBuilder<ServiceProviderSecurityConfigurer> {
+        AbstractConfiguredSecurityBuilder<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder>
+        implements SecurityBuilder<ServiceProviderSecurityConfigurerBeans> {
 
     private CompositeObjectPostProcessor compositePostProcessor = new CompositeObjectPostProcessor();
     private DefaultListableBeanFactory beanFactory;
@@ -78,7 +78,7 @@ public class ServiceProviderSecurityBuilder extends
     }
 
     @SneakyThrows
-    private <C extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>> C getOrApply(
+    private <C extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder>> C getOrApply(
             C configurer) {
         C existingConfig = (C) getConfigurer(configurer.getClass());
         if (existingConfig != null) {
@@ -87,7 +87,7 @@ public class ServiceProviderSecurityBuilder extends
         return apply(configurer);
     }
 
-    private <C extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurer, ServiceProviderSecurityBuilder>> C removeConfigurerAdapter(Class<C> configurer) {
+    private <C extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder>> C removeConfigurerAdapter(Class<C> configurer) {
         return removeConfigurer(configurer);
     }
 
@@ -139,7 +139,7 @@ public class ServiceProviderSecurityBuilder extends
     }
 
     @Override
-    protected ServiceProviderSecurityConfigurer performBuild() throws Exception {
+    protected ServiceProviderSecurityConfigurerBeans performBuild() throws Exception {
         //Some shared objects need to be registered as Spring Beans for proper Autowiring and initialization.
         //Some shared objects need to be registered as Spring Bean with specific names, as they are autowired by other
         //beans with name qualifiers.
@@ -210,12 +210,28 @@ public class ServiceProviderSecurityBuilder extends
         metadataGenerator.setSamlWebSSOHoKFilter(sAMLWebSSOHoKProcessingFilter);
         postProcess(metadataGenerator);
 
-        ServiceProviderSecurityConfigurer httpSecurityConfigurer = new ServiceProviderSecurityConfigurer(config, metadataManager, authenticationProvider, samlProcessor,
+        metadataManager.setRefreshRequired(true);
+        postProcess(metadataManager);
+        postProcess(authenticationProvider);
+        postProcess(samlProcessor);
+        postProcess(samlLogoutFilter);
+        postProcess(samlLogoutProcessingFilter);
+        postProcess(metadataDisplayFilter);
+        postProcess(metadataGeneratorFilter);
+        postProcess(sAMLProcessingFilter);
+        if (sAMLWebSSOHoKProcessingFilter != null) {
+            postProcess(sAMLWebSSOHoKProcessingFilter);
+        }
+        postProcess(sAMLDiscovery);
+        postProcess(sAMLEntryPoint);
+        postProcess(keyManager);
+        postProcess(tlsProtocolConfigurer);
+
+        ServiceProviderSecurityConfigurerBeans securityConfigurerBeans = new ServiceProviderSecurityConfigurerBeans(config, metadataManager, authenticationProvider, samlProcessor,
                 samlLogoutFilter, samlLogoutProcessingFilter, metadataDisplayFilter, metadataGeneratorFilter,
                 sAMLProcessingFilter, sAMLWebSSOHoKProcessingFilter, sAMLDiscovery, sAMLEntryPoint, keyManager,
                 tlsProtocolConfigurer, endpoints);
-        httpSecurityConfigurer.addObjectPostProcessor(compositePostProcessor);
-        return httpSecurityConfigurer;
+        return securityConfigurerBeans;
     }
 
     /**
