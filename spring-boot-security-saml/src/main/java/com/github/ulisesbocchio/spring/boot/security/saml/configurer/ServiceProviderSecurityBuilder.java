@@ -685,6 +685,30 @@ public class ServiceProviderSecurityBuilder extends
     }
 
     /**
+     * Provide a specific {@link MetadataGenerator}. Either use this method or {@link #sloProfile()}.
+     * Alternatively define a {@link MetadataGenerator} bean.
+     *
+     * Returns a {@link MetadataGeneratorConfigurer} for customization of the {@link MetadataGenerator}, {@link
+     * MetadataGeneratorFilter} and
+     * {@link MetadataDisplayFilter}.
+     * Alternatively use properties exposed at {@link SAMLSSOProperties#getMetadataGenerator()}.
+     * <p>
+     * Metadata Generator is for generation of service provider metadata describing the application in the current
+     * deployment environment. All the URLs in the metadata will be derived from information in the
+     * ServletContext.<br/>
+     * Metadata Generator Filter and Metadata Display Filter expect calls on configured URL and presents user with
+     * SAML2 metadata representing this application deployment. In case the application is configured to automatically
+     * generate metadata, the generation occurs upon first invocation of this filter (first request made to the server).
+     * </p>
+     *
+     * @return the {@link MetadataGeneratorConfigurer}
+     * @throws Exception Any exception during configuration.
+     */
+    public MetadataGeneratorConfigurer metadataGenerator(MetadataGenerator metadataGenerator) throws Exception {
+        return getOrApply(new MetadataGeneratorConfigurer(metadataGenerator));
+    }
+
+    /**
      * Returns a {@link MetadataGeneratorConfigurer} for customization of the {@link SAMLEntryPoint}, {@link
      * SAMLProcessingFilter},
      * {@link SAMLWebSSOHoKProcessingFilter} and {@link SAMLDiscovery}.
@@ -703,7 +727,7 @@ public class ServiceProviderSecurityBuilder extends
      * http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-idp-discovery.pdf.
      * </p>
      *
-     * @return the {@link MetadataGeneratorConfigurer}
+     * @return the {@link SSOConfigurer}
      * @throws Exception Any exception during configuration.
      */
     public SSOConfigurer sso() throws Exception {

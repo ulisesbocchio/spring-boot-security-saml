@@ -63,11 +63,21 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     private MetadataGeneratorProperties config;
     private ServiceProviderEndpoints endpoints;
     private ExtendedMetadata extendedMetadata;
+    private MetadataGenerator metadataGenerator;
+    private MetadataGenerator metadataGeneratorBean;
+
+    public MetadataGeneratorConfigurer() {
+    }
+
+    public MetadataGeneratorConfigurer(MetadataGenerator metadataGenerator) {
+        this.metadataGenerator = metadataGenerator;
+    }
 
     @Override
     public void init(ServiceProviderSecurityBuilder builder) throws Exception {
         config = builder.getSharedObject(SAMLSSOProperties.class).getMetadataGenerator();
         endpoints = builder.getSharedObject(ServiceProviderEndpoints.class);
+        metadataGeneratorBean = builder.getSharedObject(MetadataGenerator.class);
     }
 
     @Override
@@ -78,23 +88,30 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
         endpoints.setMetadataURL(metadataURL);
         metadataDisplayFilter.setFilterProcessesUrl(metadataURL);
 
-        MetadataGenerator metadataGenerator = new MetadataGenerator();
-        metadataGenerator.setEntityId(Optional.ofNullable(entityId).orElseGet(config::getEntityId));
-        metadataGenerator.setId(Optional.ofNullable(id).orElseGet(config::getId));
-        metadataGenerator.setExtendedMetadata(extendedMetadata);
-        metadataGenerator.setWantAssertionSigned(Optional.ofNullable(wantAssertionSigned).orElseGet(config::isWantAssertionSigned));
-        metadataGenerator.setRequestSigned(Optional.ofNullable(requestSigned).orElseGet(config::isRequestSigned));
-        metadataGenerator.setNameID(Optional.ofNullable(nameId).orElseGet(config::getNameId));
-        metadataGenerator.setEntityBaseURL(Optional.ofNullable(entityBaseURL).orElseGet(config::getEntityBaseURL));
-        metadataGenerator.setBindingsHoKSSO(Optional.ofNullable(bindingsHoKSSO).orElseGet(config::getBindingsHokSSO));
-        metadataGenerator.setBindingsSLO(Optional.ofNullable(bindingsSLO).orElseGet(config::getBindingsSLO));
-        metadataGenerator.setBindingsSSO(Optional.ofNullable(bindingsSSO).orElseGet(config::getBindingsSSO));
-        metadataGenerator.setAssertionConsumerIndex(Optional.ofNullable(assertionConsumerIndex).orElseGet(config::getAssertionConsumerIndex));
-        metadataGenerator.setIncludeDiscoveryExtension(Optional.ofNullable(includeDiscoveryExtension).orElseGet(config::isIncludeDiscoveryExtension));
+        MetadataGenerator actualMetadataGenerator = metadataGeneratorBean;
+        if(actualMetadataGenerator == null) {
+            if(this.metadataGenerator != null) {
+                actualMetadataGenerator = this.metadataGenerator;
+            } else {
+                actualMetadataGenerator = new MetadataGenerator();
+            }
+            actualMetadataGenerator.setEntityId(Optional.ofNullable(entityId).orElseGet(config::getEntityId));
+            actualMetadataGenerator.setId(Optional.ofNullable(id).orElseGet(config::getId));
+            actualMetadataGenerator.setExtendedMetadata(extendedMetadata);
+            actualMetadataGenerator.setWantAssertionSigned(Optional.ofNullable(wantAssertionSigned).orElseGet(config::isWantAssertionSigned));
+            actualMetadataGenerator.setRequestSigned(Optional.ofNullable(requestSigned).orElseGet(config::isRequestSigned));
+            actualMetadataGenerator.setNameID(Optional.ofNullable(nameId).orElseGet(config::getNameId));
+            actualMetadataGenerator.setEntityBaseURL(Optional.ofNullable(entityBaseURL).orElseGet(config::getEntityBaseURL));
+            actualMetadataGenerator.setBindingsHoKSSO(Optional.ofNullable(bindingsHoKSSO).orElseGet(config::getBindingsHokSSO));
+            actualMetadataGenerator.setBindingsSLO(Optional.ofNullable(bindingsSLO).orElseGet(config::getBindingsSLO));
+            actualMetadataGenerator.setBindingsSSO(Optional.ofNullable(bindingsSSO).orElseGet(config::getBindingsSSO));
+            actualMetadataGenerator.setAssertionConsumerIndex(Optional.ofNullable(assertionConsumerIndex).orElseGet(config::getAssertionConsumerIndex));
+            actualMetadataGenerator.setIncludeDiscoveryExtension(Optional.ofNullable(includeDiscoveryExtension).orElseGet(config::isIncludeDiscoveryExtension));
+        }
 
-        MetadataGeneratorFilter metadataGeneratorFilter = new MetadataGeneratorFilter(metadataGenerator);
+        MetadataGeneratorFilter metadataGeneratorFilter = new MetadataGeneratorFilter(actualMetadataGenerator);
 
-        builder.setSharedObject(MetadataGenerator.class, metadataGenerator);
+        builder.setSharedObject(MetadataGenerator.class, actualMetadataGenerator);
         builder.setSharedObject(MetadataDisplayFilter.class, metadataDisplayFilter);
         builder.setSharedObject(MetadataGeneratorFilter.class, metadataGeneratorFilter);
     }

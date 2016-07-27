@@ -20,6 +20,7 @@ import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.context.SAMLContextProvider;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
+import org.springframework.security.saml.metadata.MetadataGenerator;
 import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.security.saml.parser.ParserPoolHolder;
 import org.springframework.security.saml.processor.SAMLProcessor;
@@ -70,6 +71,9 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
 
     @Autowired(required = false)
     private MetadataManager metadataManager;
+
+    @Autowired(required = false)
+    private MetadataGenerator metadataGenerator;
 
     @Autowired(required = false)
     private SAMLProcessor samlProcessor;
@@ -136,6 +140,7 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
         securityConfigurerBuilder.setSharedObject(SAMLContextProvider.class, samlContextProvider);
         securityConfigurerBuilder.setSharedObject(KeyManager.class, keyManager);
         securityConfigurerBuilder.setSharedObject(MetadataManager.class, metadataManager);
+        securityConfigurerBuilder.setSharedObject(MetadataGenerator.class, metadataGenerator);
         securityConfigurerBuilder.setSharedObject(SAMLProcessor.class, samlProcessor);
         securityConfigurerBuilder.setSharedObject(WebSSOProfile.class, webSSOProfile);
         securityConfigurerBuilder.setSharedObject(WebSSOProfileECPImpl.class, ecpProfile);

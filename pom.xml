@@ -22,10 +22,6 @@
 
     <modules>
         <module>spring-boot-security-saml</module>
-        <module>spring-security-saml-sample</module>
-        <module>spring-boot-security-saml-demo-dsl</module>
-        <module>spring-boot-security-saml-demo-okta</module>
-        <module>spring-boot-security-saml-demo-props</module>
     </modules>
 
     <issueManagement>
@@ -172,6 +168,20 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>no-release</id>
+            <activation>
+                <property>
+                    <name>!release</name>
+                </property>
+            </activation>
+            <modules>
+                <module>spring-security-saml-sample</module>
+                <module>spring-boot-security-saml-demo-dsl</module>
+                <module>spring-boot-security-saml-demo-okta</module>
+                <module>spring-boot-security-saml-demo-props</module>
+            </modules>
         </profile>
     </profiles>
 
