@@ -158,7 +158,7 @@ public class ServiceProviderSecurityBuilder extends
         WebSSOProfile webSSOProfile = getSharedObject(WebSSOProfile.class);
         registerBean("webSSOprofile", webSSOProfile);
         WebSSOProfileECPImpl ecpProfile = getSharedObject(WebSSOProfileECPImpl.class);
-        registerBean("ecpProfile", ecpProfile);
+        registerBean("ecpprofile", ecpProfile);
         WebSSOProfileHoKImpl hokWebSSOProfile = getSharedObject(WebSSOProfileHoKImpl.class);
         registerBean("hokWebSSOProfile", hokWebSSOProfile);
         SingleLogoutProfile sloProfile = getSharedObject(SingleLogoutProfile.class);
