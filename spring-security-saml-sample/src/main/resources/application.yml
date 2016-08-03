@@ -1,6 +1,0 @@
-management:
-  security:
-    enabled: false
-  context-path: "/manage"
-
-logging.level.org.springframework.security.saml: DEBUG
