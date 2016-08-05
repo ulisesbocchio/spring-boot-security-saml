@@ -14,7 +14,7 @@ This project targets a smooth integration between [spring-security-saml](http://
     <dependency>
         <groupId>com.github.ulisesbocchio</groupId>
         <artifactId>spring-boot-security-saml</artifactId>
-        <version>1.4</version>
+        <version>1.5</version>
     </dependency>
     
     ```
