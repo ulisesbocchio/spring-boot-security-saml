@@ -7,6 +7,7 @@ import org.springframework.security.saml.metadata.MetadataGenerator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Configuration Properties for {@link MetadataGenerator} {@link org.springframework.security.saml.metadata.MetadataGeneratorFilter}
@@ -60,7 +61,7 @@ public class MetadataGeneratorProperties {
      * and "paos" (or "urn:oasis:names:tc:SAML:2.0:bindings:PAOS"). The following bindings are included by default:
      * "artifact", "post".
      */
-    private Collection<String> bindingsSSO = Arrays.asList("post", "artifact");
+    private List<String> bindingsSSO = Arrays.asList("post", "artifact");
 
     /**
      * List of bindings to be included in the generated metadata for Web Single Sign-On Holder of Key. Ordering of
@@ -68,7 +69,7 @@ public class MetadataGeneratorProperties {
      * "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact") and "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").
      * By default there are no included bindings for the profile.
      */
-    private Collection<String> bindingsHokSSO = new ArrayList<>();
+    private List<String> bindingsHokSSO = new ArrayList<>();
 
     /**
      * List of bindings to be included in the generated metadata for Single Logout. Ordering of bindings affects
@@ -77,7 +78,7 @@ public class MetadataGeneratorProperties {
      * included
      * by default: "post", "redirect".
      */
-    private Collection<String> bindingsSLO = Arrays.asList("post", "redirect");
+    private List<String> bindingsSLO = Arrays.asList("post", "redirect");
 
     /**
      * Generated assertion consumer service with the index equaling set value will be marked as default. Use

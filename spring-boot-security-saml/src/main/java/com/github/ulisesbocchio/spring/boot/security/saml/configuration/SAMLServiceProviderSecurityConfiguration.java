@@ -7,6 +7,7 @@ import org.opensaml.xml.parse.ParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -43,6 +44,7 @@ import static com.github.ulisesbocchio.spring.boot.security.saml.util.Functional
  * @author Ulises Bocchio
  */
 @Configuration
+@EnableConfigurationProperties(SAMLSSOProperties.class)
 @Order(-17)
 public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigurerAdapter {
 

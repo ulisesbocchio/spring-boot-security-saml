@@ -66,7 +66,6 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@EnableConfigurationProperties(SAMLSSOProperties.class)
 @Import({DefaultSAMLConfiguration.class, SAMLServiceProviderSecurityConfiguration.class})
 public @interface EnableSAMLSSO {
 }
