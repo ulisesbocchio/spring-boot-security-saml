@@ -96,7 +96,7 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
     private WebSSOProfile webSSOProfile;
 
     @Autowired(required = false)
-    @Qualifier("ecpProfile")
+    @Qualifier("ecpprofile")
     @SuppressWarnings("SpringJavaAutowiringInspection")
     private WebSSOProfileECPImpl ecpProfile;
 

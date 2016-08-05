@@ -1,10 +1,19 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
+import static com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.unchecked;
+
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.saml.*;
+import org.springframework.security.saml.SAMLAuthenticationProvider;
+import org.springframework.security.saml.SAMLDiscovery;
+import org.springframework.security.saml.SAMLEntryPoint;
+import org.springframework.security.saml.SAMLLogoutFilter;
+import org.springframework.security.saml.SAMLLogoutProcessingFilter;
+import org.springframework.security.saml.SAMLProcessingFilter;
+import org.springframework.security.saml.SAMLWebSSOHoKProcessingFilter;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.metadata.MetadataDisplayFilter;
 import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
@@ -14,10 +23,9 @@ import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import javax.servlet.Filter;
 import java.util.List;
 
-import static com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.unchecked;
+import javax.servlet.Filter;
 
 /**
  * Class for internal usage of this Spring Boot Plugin. This configurer wires Spring Security's {@link HttpSecurity}
@@ -63,20 +71,21 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
         serviceProviderConfigurers.forEach(unchecked(spc -> spc.configure(securityConfigurerBuilder)));
         setFields(securityConfigurerBuilder.build());
 
+        // @formatter:off
         http
-                .httpBasic()
-                .disable();
+            .httpBasic()
+            .disable();
         http
-                .csrf()
-                .disable();
+            .csrf()
+            .disable();
         http
-                .exceptionHandling()
-                .authenticationEntryPoint(sAMLEntryPoint);
+            .exceptionHandling()
+            .authenticationEntryPoint(sAMLEntryPoint);
         http
-                .logout()
-                .disable();
+            .logout()
+            .disable();
         http.
-                authenticationProvider(authenticationProvider);
+            authenticationProvider(authenticationProvider);
 
         //http
         addFilterAfter(http, metadataGeneratorFilter);
@@ -89,11 +98,15 @@ public class ServiceProviderSecurityConfigurer extends SecurityConfigurerAdapter
         addFilterAfter(http, samlLogoutFilter);
 
         http
-                .authorizeRequests()
-                .requestMatchers(endpoints.getRequestMatcher()).permitAll()
-                .anyRequest().authenticated();
+            .authorizeRequests()
+            .requestMatchers(endpoints.getRequestMatcher()).permitAll();
 
         serviceProviderConfigurers.forEach(unchecked(spc -> spc.configure(http)));
+
+        http
+            .authorizeRequests()
+            .anyRequest()
+            .authenticated();
     }
 
     @Override
