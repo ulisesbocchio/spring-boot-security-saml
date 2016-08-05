@@ -99,7 +99,7 @@ public class MetadataManagerConfigurerTest {
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer).createDefaultMetadataProvider(eq(idpConfiguration.getMetadataLocation()));
         verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
-        verify(metadataManagerProperties, never()).getDefaultIDP();
+        verify(metadataManagerProperties, never()).getDefaultIdp();
         verify(metadataManagerProperties, never()).getHostedSpName();
         verify(metadataManagerProperties, never()).getRefreshCheckInterval();
         verify(extendedMetadataDelegateProperties).isForceMetadataRevocationCheck();
@@ -128,7 +128,7 @@ public class MetadataManagerConfigurerTest {
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer).createDefaultMetadataProvider(eq(idpConfiguration.getMetadataLocation()));
         verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
-        verify(metadataManagerProperties).getDefaultIDP();
+        verify(metadataManagerProperties).getDefaultIdp();
         verify(metadataManagerProperties).getHostedSpName();
         verify(metadataManagerProperties).getRefreshCheckInterval();
         verify(extendedMetadataDelegateProperties).isForceMetadataRevocationCheck();
@@ -139,7 +139,7 @@ public class MetadataManagerConfigurerTest {
         List<MetadataProvider> providers = providersCaptor.getValue();
         assertThat(providers).hasSize(1);
         assertThat(providers.get(0)).isEqualTo(delegate);
-        verify(metadataManager).setDefaultIDP(eq(metadataManagerProperties.getDefaultIDP()));
+        verify(metadataManager).setDefaultIDP(eq(metadataManagerProperties.getDefaultIdp()));
         verify(metadataManager).setHostedSPName(eq(metadataManagerProperties.getHostedSpName()));
         verify(metadataManager).setRefreshCheckInterval(eq(metadataManagerProperties.getRefreshCheckInterval()));
         verify(delegate).setForceMetadataRevocationCheck(eq(extendedMetadataDelegateProperties.isForceMetadataRevocationCheck()));
@@ -166,7 +166,7 @@ public class MetadataManagerConfigurerTest {
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer, never()).createDefaultMetadataProvider(eq(idpConfiguration.getMetadataLocation()));
         verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
-        verify(metadataManagerProperties).getDefaultIDP();
+        verify(metadataManagerProperties).getDefaultIdp();
         verify(metadataManagerProperties).getHostedSpName();
         verify(metadataManagerProperties).getRefreshCheckInterval();
         verify(extendedMetadataDelegateProperties).isForceMetadataRevocationCheck();
@@ -195,7 +195,7 @@ public class MetadataManagerConfigurerTest {
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer, never()).createDefaultMetadataProvider(eq(idpConfiguration.getMetadataLocation()));
         verify(configurer, never()).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
-        verify(metadataManagerProperties).getDefaultIDP();
+        verify(metadataManagerProperties).getDefaultIdp();
         verify(metadataManagerProperties).getHostedSpName();
         verify(metadataManagerProperties).getRefreshCheckInterval();
         verify(extendedMetadataDelegateProperties, never()).isForceMetadataRevocationCheck();
@@ -223,7 +223,7 @@ public class MetadataManagerConfigurerTest {
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer).createDefaultMetadataProvider(eq("classpath:idp-provided.xml"));
         verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
-        verify(metadataManagerProperties).getDefaultIDP();
+        verify(metadataManagerProperties).getDefaultIdp();
         verify(metadataManagerProperties).getHostedSpName();
         verify(metadataManagerProperties).getRefreshCheckInterval();
         verify(extendedMetadataDelegateProperties).isForceMetadataRevocationCheck();
@@ -266,7 +266,7 @@ public class MetadataManagerConfigurerTest {
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer).createDefaultMetadataProvider(eq("classpath:idp-provided.xml"));
         verify(configurer).createDefaultExtendedMetadataDelegate(eq(provider));
-        verify(metadataManagerProperties, never()).getDefaultIDP();
+        verify(metadataManagerProperties, never()).getDefaultIdp();
         verify(metadataManagerProperties, never()).getHostedSpName();
         verify(metadataManagerProperties, never()).getRefreshCheckInterval();
         verify(extendedMetadataDelegateProperties, never()).isForceMetadataRevocationCheck();

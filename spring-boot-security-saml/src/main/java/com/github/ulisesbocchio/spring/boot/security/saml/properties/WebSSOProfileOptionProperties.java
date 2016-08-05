@@ -21,12 +21,12 @@ public class WebSSOProfileOptionProperties {
 
     /**
      * List of IDPs which are allowed to process the created AuthnRequest. IDP the request will be sent to is added
-     * automatically. In case value is null the allowedIDPs will not be included in the Scoping element.
+     * automatically. In case value is null the allowedIdps will not be included in the Scoping element.
      * <p>
      * Property includeScoping must be enabled for this value to take any effect.
      * </p>
      */
-    private Set<String> allowedIDPs;
+    private Set<String> allowedIdps;
 
     /**
      * Human readable name of the local entity.
@@ -42,7 +42,7 @@ public class WebSSOProfileOptionProperties {
     /**
      * NameID to used or null to omit NameIDPolicy from request.
      */
-    private String nameID;
+    private String nameId;
 
     /**
      * Flag indicating whether IDP can create new user based on the current authentication request. Null value will

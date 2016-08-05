@@ -70,51 +70,51 @@ public class SSOConfigurerTest {
         configurer.init(builder);
         configurer.configure(builder);
 
-        verify(properties).getDefaultFailureURL();
-        verify(properties).getDefaultSuccessURL();
-        verify(properties).getDiscoveryProcessingURL();
-        verify(properties).getIdpSelectionPageURL();
-        verify(properties).getSsoHokProcessingURL();
-        verify(properties).getSsoLoginURL();
-        verify(properties).getSsoProcessingURL();
+        verify(properties).getDefaultFailureUrl();
+        verify(properties).getDefaultSuccessUrl();
+        verify(properties).getDiscoveryProcessingUrl();
+        verify(properties).getIdpSelectionPageUrl();
+        verify(properties).getSsoHokProcessingUrl();
+        verify(properties).getSsoLoginUrl();
+        verify(properties).getSsoProcessingUrl();
         verify(properties).getProfileOptions();
 
-        verify(successHandler).setDefaultTargetUrl(eq(properties.getDefaultSuccessURL()));
-        verify(failureHandler).setDefaultFailureUrl(eq(properties.getDefaultFailureURL()));
+        verify(successHandler).setDefaultTargetUrl(eq(properties.getDefaultSuccessUrl()));
+        verify(failureHandler).setDefaultFailureUrl(eq(properties.getDefaultFailureUrl()));
 
         verify(ssoFilter).setAuthenticationManager(eq(authenticationManager));
         verify(ssoFilter).setAuthenticationSuccessHandler(eq(successHandler));
         verify(ssoFilter).setAuthenticationFailureHandler(eq(failureHandler));
-        verify(ssoFilter).setFilterProcessesUrl(eq(properties.getSsoProcessingURL()));
+        verify(ssoFilter).setFilterProcessesUrl(eq(properties.getSsoProcessingUrl()));
 
         verify(ssoHoKFilter).setAuthenticationManager(eq(authenticationManager));
         verify(ssoHoKFilter).setAuthenticationSuccessHandler(eq(successHandler));
         verify(ssoHoKFilter).setAuthenticationFailureHandler(eq(failureHandler));
-        verify(ssoHoKFilter).setFilterProcessesUrl(eq(properties.getSsoHokProcessingURL()));
+        verify(ssoHoKFilter).setFilterProcessesUrl(eq(properties.getSsoHokProcessingUrl()));
 
-        verify(serviceProviderEndpoints).setSsoProcessingURL(properties.getSsoProcessingURL());
-        verify(serviceProviderEndpoints).setSsoHoKProcessingURL(properties.getSsoHokProcessingURL());
-        verify(serviceProviderEndpoints).setDefaultFailureURL(properties.getDefaultFailureURL());
-        verify(serviceProviderEndpoints).setDiscoveryProcessingURL(properties.getDiscoveryProcessingURL());
-        verify(serviceProviderEndpoints).setIdpSelectionPageURL(properties.getIdpSelectionPageURL());
-        verify(serviceProviderEndpoints).setSsoLoginURL(properties.getSsoLoginURL());
+        verify(serviceProviderEndpoints).setSsoProcessingURL(properties.getSsoProcessingUrl());
+        verify(serviceProviderEndpoints).setSsoHoKProcessingURL(properties.getSsoHokProcessingUrl());
+        verify(serviceProviderEndpoints).setDefaultFailureURL(properties.getDefaultFailureUrl());
+        verify(serviceProviderEndpoints).setDiscoveryProcessingURL(properties.getDiscoveryProcessingUrl());
+        verify(serviceProviderEndpoints).setIdpSelectionPageURL(properties.getIdpSelectionPageUrl());
+        verify(serviceProviderEndpoints).setSsoLoginURL(properties.getSsoLoginUrl());
 
-        verify(discoveryFilter).setFilterProcessesUrl(eq(properties.getDiscoveryProcessingURL()));
-        verify(discoveryFilter).setIdpSelectionPath(eq(properties.getIdpSelectionPageURL()));
+        verify(discoveryFilter).setFilterProcessesUrl(eq(properties.getDiscoveryProcessingUrl()));
+        verify(discoveryFilter).setIdpSelectionPath(eq(properties.getIdpSelectionPageUrl()));
 
-        verify(entryPoint).setFilterProcessesUrl(eq(properties.getSsoLoginURL()));
+        verify(entryPoint).setFilterProcessesUrl(eq(properties.getSsoLoginUrl()));
         ArgumentCaptor<WebSSOProfileOptions> optionsCaptor = ArgumentCaptor.forClass(WebSSOProfileOptions.class);
         verify(entryPoint).setDefaultProfileOptions(optionsCaptor.capture());
         WebSSOProfileOptions options = optionsCaptor.getValue();
         Assertions.assertThat(options.isAllowCreate()).isEqualTo(properties.getProfileOptions().getAllowCreate());
-        Assertions.assertThat(options.getAllowedIDPs()).isEqualTo(properties.getProfileOptions().getAllowedIDPs());
+        Assertions.assertThat(options.getAllowedIDPs()).isEqualTo(properties.getProfileOptions().getAllowedIdps());
         Assertions.assertThat(options.getAssertionConsumerIndex()).isEqualTo(properties.getProfileOptions().getAssertionConsumerIndex());
         Assertions.assertThat(options.getAuthnContextComparison()).isEqualTo(properties.getProfileOptions().getAuthnContextComparison());
         Assertions.assertThat(options.getAuthnContexts()).isEqualTo(properties.getProfileOptions().getAuthnContexts());
         Assertions.assertThat(options.getBinding()).isEqualTo(properties.getProfileOptions().getBinding());
         Assertions.assertThat(options.getForceAuthN()).isEqualTo(properties.getProfileOptions().getForceAuthn());
         Assertions.assertThat(options.isIncludeScoping()).isEqualTo(properties.getProfileOptions().getIncludeScoping());
-        Assertions.assertThat(options.getNameID()).isEqualTo(properties.getProfileOptions().getNameID());
+        Assertions.assertThat(options.getNameID()).isEqualTo(properties.getProfileOptions().getNameId());
         Assertions.assertThat(options.getPassive()).isEqualTo(properties.getProfileOptions().getPassive());
         Assertions.assertThat(options.getProviderName()).isEqualTo(properties.getProfileOptions().getProviderName());
         Assertions.assertThat(options.getProxyCount()).isEqualTo(properties.getProfileOptions().getProxyCount());
@@ -142,14 +142,14 @@ public class SSOConfigurerTest {
         SimpleUrlAuthenticationFailureHandler failureHandler = mock(SimpleUrlAuthenticationFailureHandler.class);
         WebSSOProfileOptions profileOptions = new WebSSOProfileOptions();
         profileOptions.setAllowCreate(true);
-        profileOptions.setAllowedIDPs(Collections.singleton("allowedIDPs"));
+        profileOptions.setAllowedIDPs(Collections.singleton("allowedIdps"));
         profileOptions.setAssertionConsumerIndex(999);
         profileOptions.setAuthnContextComparison(AuthnContextComparisonTypeEnumeration.MINIMUM);
         profileOptions.setAuthnContexts(Collections.singleton("contexts"));
         profileOptions.setBinding("binding");
         profileOptions.setForceAuthN(true);
         profileOptions.setIncludeScoping(true);
-        profileOptions.setNameID("nameID");
+        profileOptions.setNameID("nameId");
         profileOptions.setPassive(true);
         profileOptions.setProviderName("providerName");
         profileOptions.setProxyCount(null);
@@ -170,13 +170,13 @@ public class SSOConfigurerTest {
                 .ssoProcessingURL("/sso");
         configurer.configure(builder);
 
-        verify(properties, never()).getDefaultFailureURL();
-        verify(properties, never()).getDefaultSuccessURL();
-        verify(properties, never()).getDiscoveryProcessingURL();
-        verify(properties, never()).getIdpSelectionPageURL();
-        verify(properties, never()).getSsoHokProcessingURL();
-        verify(properties, never()).getSsoLoginURL();
-        verify(properties, never()).getSsoProcessingURL();
+        verify(properties, never()).getDefaultFailureUrl();
+        verify(properties, never()).getDefaultSuccessUrl();
+        verify(properties, never()).getDiscoveryProcessingUrl();
+        verify(properties, never()).getIdpSelectionPageUrl();
+        verify(properties, never()).getSsoHokProcessingUrl();
+        verify(properties, never()).getSsoLoginUrl();
+        verify(properties, never()).getSsoProcessingUrl();
         verify(properties, never()).getProfileOptions();
 
         verify(successHandler, never()).setDefaultTargetUrl(eq("/success"));
@@ -207,14 +207,14 @@ public class SSOConfigurerTest {
         verify(entryPoint).setDefaultProfileOptions(optionsCaptor.capture());
         WebSSOProfileOptions options = optionsCaptor.getValue();
         Assertions.assertThat(options.isAllowCreate()).isEqualTo(true);
-        Assertions.assertThat(options.getAllowedIDPs()).containsExactly("allowedIDPs");
+        Assertions.assertThat(options.getAllowedIDPs()).containsExactly("allowedIdps");
         Assertions.assertThat(options.getAssertionConsumerIndex()).isEqualTo(999);
         Assertions.assertThat(options.getAuthnContextComparison()).isEqualTo(AuthnContextComparisonTypeEnumeration.MINIMUM);
         Assertions.assertThat(options.getAuthnContexts()).containsExactly("contexts");
         Assertions.assertThat(options.getBinding()).isEqualTo("binding");
         Assertions.assertThat(options.getForceAuthN()).isEqualTo(true);
         Assertions.assertThat(options.isIncludeScoping()).isEqualTo(true);
-        Assertions.assertThat(options.getNameID()).isEqualTo("nameID");
+        Assertions.assertThat(options.getNameID()).isEqualTo("nameId");
         Assertions.assertThat(options.getPassive()).isEqualTo(true);
         Assertions.assertThat(options.getProviderName()).isEqualTo("providerName");
         Assertions.assertThat(options.getProxyCount()).isEqualTo(null);
@@ -257,13 +257,13 @@ public class SSOConfigurerTest {
                 .ssoProcessingURL("/sso");
         configurer.configure(builder);
 
-        verify(properties, never()).getDefaultFailureURL();
-        verify(properties, never()).getDefaultSuccessURL();
-        verify(properties, never()).getDiscoveryProcessingURL();
-        verify(properties, never()).getIdpSelectionPageURL();
-        verify(properties, never()).getSsoHokProcessingURL();
-        verify(properties, never()).getSsoLoginURL();
-        verify(properties, never()).getSsoProcessingURL();
+        verify(properties, never()).getDefaultFailureUrl();
+        verify(properties, never()).getDefaultSuccessUrl();
+        verify(properties, never()).getDiscoveryProcessingUrl();
+        verify(properties, never()).getIdpSelectionPageUrl();
+        verify(properties, never()).getSsoHokProcessingUrl();
+        verify(properties, never()).getSsoLoginUrl();
+        verify(properties, never()).getSsoProcessingUrl();
         verify(properties, never()).getProfileOptions();
 
         verify(successHandler, never()).setDefaultTargetUrl(eq("/success"));

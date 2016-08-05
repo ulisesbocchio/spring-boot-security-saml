@@ -39,8 +39,8 @@ public class ExtendedMetadataConfigurerTest {
         when(extendedMetadataProperties.isRequireArtifactResolveSigned()).thenReturn(false);
         when(extendedMetadataProperties.isSupportUnsolicitedResponse()).thenReturn(false);
         when(extendedMetadataProperties.getAlias()).thenReturn("default");
-        when(extendedMetadataProperties.getIdpDiscoveryURL()).thenReturn("default");
-        when(extendedMetadataProperties.getIdpDiscoveryResponseURL()).thenReturn("default");
+        when(extendedMetadataProperties.getIdpDiscoveryUrl()).thenReturn("default");
+        when(extendedMetadataProperties.getIdpDiscoveryResponseUrl()).thenReturn("default");
         when(extendedMetadataProperties.getSecurityProfile()).thenReturn("default");
         when(extendedMetadataProperties.getSslSecurityProfile()).thenReturn("default");
         when(extendedMetadataProperties.getSslHostnameVerification()).thenReturn("default");
@@ -160,8 +160,8 @@ public class ExtendedMetadataConfigurerTest {
         verify(extendedMetadataProperties).isRequireArtifactResolveSigned();
         verify(extendedMetadataProperties).isSupportUnsolicitedResponse();
         verify(extendedMetadataProperties).getAlias();
-        verify(extendedMetadataProperties).getIdpDiscoveryURL();
-        verify(extendedMetadataProperties).getIdpDiscoveryResponseURL();
+        verify(extendedMetadataProperties).getIdpDiscoveryUrl();
+        verify(extendedMetadataProperties).getIdpDiscoveryResponseUrl();
         verify(extendedMetadataProperties).getSecurityProfile();
         verify(extendedMetadataProperties).getSslSecurityProfile();
         verify(extendedMetadataProperties).getSslHostnameVerification();

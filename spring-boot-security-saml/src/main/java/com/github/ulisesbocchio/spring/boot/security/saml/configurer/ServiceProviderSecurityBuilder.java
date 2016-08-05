@@ -183,8 +183,11 @@ public class ServiceProviderSecurityBuilder extends
 
         SAMLProcessingFilter sAMLProcessingFilter = getSharedObject(SAMLProcessingFilter.class);
         registerBean(sAMLProcessingFilter);
+
         SAMLWebSSOHoKProcessingFilter sAMLWebSSOHoKProcessingFilter = getSharedObject(SAMLWebSSOHoKProcessingFilter.class);
-        registerBean(sAMLWebSSOHoKProcessingFilter);
+        if(sAMLWebSSOHoKProcessingFilter != null) {
+            registerBean(sAMLWebSSOHoKProcessingFilter);
+        }
         SAMLDiscovery sAMLDiscovery = getSharedObject(SAMLDiscovery.class);
         registerBean(sAMLDiscovery);
         SAMLEntryPoint sAMLEntryPoint = getSharedObject(SAMLEntryPoint.class);

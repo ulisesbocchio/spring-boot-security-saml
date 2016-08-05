@@ -1,7 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.ExtendedMetadataProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
@@ -108,8 +107,8 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Servic
                 extendedMetadata.setRequireArtifactResolveSigned(Optional.ofNullable(requireArtifactResolveSigned).orElseGet(extendedMetadataConfig::isRequireArtifactResolveSigned));
                 extendedMetadata.setSupportUnsolicitedResponse(Optional.ofNullable(supportUnsolicitedResponse).orElseGet(extendedMetadataConfig::isSupportUnsolicitedResponse));
                 extendedMetadata.setAlias(Optional.ofNullable(alias).orElseGet(extendedMetadataConfig::getAlias));
-                extendedMetadata.setIdpDiscoveryURL(Optional.ofNullable(idpDiscoveryURL).orElseGet(extendedMetadataConfig::getIdpDiscoveryURL));
-                extendedMetadata.setIdpDiscoveryResponseURL(Optional.ofNullable(idpDiscoveryResponseURL).orElseGet(extendedMetadataConfig::getIdpDiscoveryResponseURL));
+                extendedMetadata.setIdpDiscoveryURL(Optional.ofNullable(idpDiscoveryURL).orElseGet(extendedMetadataConfig::getIdpDiscoveryUrl));
+                extendedMetadata.setIdpDiscoveryResponseURL(Optional.ofNullable(idpDiscoveryResponseURL).orElseGet(extendedMetadataConfig::getIdpDiscoveryResponseUrl));
                 extendedMetadata.setSecurityProfile(Optional.ofNullable(securityProfile).orElseGet(extendedMetadataConfig::getSecurityProfile));
                 extendedMetadata.setSslSecurityProfile(Optional.ofNullable(sslSecurityProfile).orElseGet(extendedMetadataConfig::getSslSecurityProfile));
                 extendedMetadata.setSslHostnameVerification(Optional.ofNullable(sslHostnameVerification).orElseGet(extendedMetadataConfig::getSslHostnameVerification));

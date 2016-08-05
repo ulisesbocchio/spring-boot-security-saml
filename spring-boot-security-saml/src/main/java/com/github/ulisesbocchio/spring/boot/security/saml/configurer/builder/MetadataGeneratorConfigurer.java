@@ -2,7 +2,6 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataGeneratorProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
@@ -84,7 +83,7 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         extendedMetadata = builder.getSharedObject(ExtendedMetadata.class);
         MetadataDisplayFilter metadataDisplayFilter = new MetadataDisplayFilter();
-        metadataURL = Optional.ofNullable(metadataURL).orElseGet(config::getMetadataURL);
+        metadataURL = Optional.ofNullable(metadataURL).orElseGet(config::getMetadataUrl);
         endpoints.setMetadataURL(metadataURL);
         metadataDisplayFilter.setFilterProcessesUrl(metadataURL);
 
@@ -101,10 +100,10 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
             actualMetadataGenerator.setWantAssertionSigned(Optional.ofNullable(wantAssertionSigned).orElseGet(config::isWantAssertionSigned));
             actualMetadataGenerator.setRequestSigned(Optional.ofNullable(requestSigned).orElseGet(config::isRequestSigned));
             actualMetadataGenerator.setNameID(Optional.ofNullable(nameId).orElseGet(config::getNameId));
-            actualMetadataGenerator.setEntityBaseURL(Optional.ofNullable(entityBaseURL).orElseGet(config::getEntityBaseURL));
-            actualMetadataGenerator.setBindingsHoKSSO(Optional.ofNullable(bindingsHoKSSO).orElseGet(config::getBindingsHokSSO));
-            actualMetadataGenerator.setBindingsSLO(Optional.ofNullable(bindingsSLO).orElseGet(config::getBindingsSLO));
-            actualMetadataGenerator.setBindingsSSO(Optional.ofNullable(bindingsSSO).orElseGet(config::getBindingsSSO));
+            actualMetadataGenerator.setEntityBaseURL(Optional.ofNullable(entityBaseURL).orElseGet(config::getEntityBaseUrl));
+            actualMetadataGenerator.setBindingsHoKSSO(Optional.ofNullable(bindingsHoKSSO).orElseGet(config::getBindingsHokSso));
+            actualMetadataGenerator.setBindingsSLO(Optional.ofNullable(bindingsSLO).orElseGet(config::getBindingsSlo));
+            actualMetadataGenerator.setBindingsSSO(Optional.ofNullable(bindingsSSO).orElseGet(config::getBindingsSso));
             actualMetadataGenerator.setAssertionConsumerIndex(Optional.ofNullable(assertionConsumerIndex).orElseGet(config::getAssertionConsumerIndex));
             actualMetadataGenerator.setIncludeDiscoveryExtension(Optional.ofNullable(includeDiscoveryExtension).orElseGet(config::isIncludeDiscoveryExtension));
         }

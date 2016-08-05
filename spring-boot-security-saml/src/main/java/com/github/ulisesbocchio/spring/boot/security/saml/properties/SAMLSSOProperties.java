@@ -95,23 +95,23 @@ public class SAMLSSOProperties {
      * the web-app's context path, and should include the leading /. Alternatively, inclusion of a scheme name (such as
      * "http://" or "https://") as the prefix will denote a fully-qualified URL and this is also supported.
      */
-    private String defaultSuccessURL = "/";
+    private String defaultSuccessUrl = "/";
 
     /**
      * The URL which will be used as the failure destination.
      */
-    private String defaultFailureURL = "/error";
+    private String defaultFailureUrl = "/error";
 
     /**
      * The URL that the {@link SAMLProcessingFilter} will be listening to.
      */
-    private String ssoProcessingURL = "/saml/SSO";
+    private String ssoProcessingUrl = "/saml/SSO";
 
     /**
      * The URL that the {@link SAMLWebSSOHoKProcessingFilter} will be listening to. Only relevant if {@code
      * enableSsoHok} is true.
      */
-    private String ssoHokProcessingURL = "/saml/HoKSSO";
+    private String ssoHokProcessingUrl = "/saml/HoKSSO";
 
     /**
      * Whether to enable the {@link SAMLWebSSOHoKProcessingFilter} filter or not.
@@ -121,16 +121,16 @@ public class SAMLSSOProperties {
     /**
      * The URL that the {@link SAMLDiscovery} filter will be listening to.
      */
-    private String discoveryProcessingURL = "/saml/discovery";
+    private String discoveryProcessingUrl = "/saml/discovery";
 
     /**
      * Sets path where request dispatcher will send user for IDP selection. In case it is null the default IDP will
      * always be used.
      */
-    private String idpSelectionPageURL = "/idpselection";
+    private String idpSelectionPageUrl = "/idpselection";
 
     /**
      * The URL that the {@link SAMLEntryPoint} filter will be listening to.
      */
-    private String ssoLoginURL = "saml/login";
+    private String ssoLoginUrl = "saml/login";
 }

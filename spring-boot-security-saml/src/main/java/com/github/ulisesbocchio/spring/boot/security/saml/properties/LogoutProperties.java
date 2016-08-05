@@ -19,17 +19,17 @@ public class LogoutProperties {
      * (such as "http://" or "https://") as the prefix will denote a fully-qualified URL and this is also
      * supported.
      */
-    private String defaultTargetURL = "/";
+    private String defaultTargetUrl = "/";
 
     /**
      * Sets the URL used to determine if the {@link SAMLLogoutFilter} is invoked.
      */
-    private String logoutURL = "/saml/logout";
+    private String logoutUrl = "/saml/logout";
 
     /**
      * Sets the URL used to determine if the {@link SAMLLogoutProcessingFilter} is invoked.
      */
-    private String singleLogoutURL = "saml/SingleLogout";
+    private String singleLogoutUrl = "/saml/SingleLogout";
 
     /**
      * If true, removes the Authentication from the SecurityContext to prevent issues with concurrent requests.

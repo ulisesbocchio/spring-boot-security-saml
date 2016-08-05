@@ -166,7 +166,7 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
      *
      * @param sharedObjects the objects to register.
      */
-    private void markBeansAsRegistered(Map<Class<Object>, Object> sharedObjects) {
+    private void markBeansAsRegistered(Map<Class<?>, Object> sharedObjects) {
         sharedObjects.entrySet()
                 .forEach(entry -> beanRegistry().addRegistered(entry.getKey(), entry.getValue()));
     }

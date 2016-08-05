@@ -2,7 +2,6 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.WebSSOProfileOptionProperties;
@@ -89,11 +88,11 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (successHandler == null) {
             SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler = createDefaultSuccessHandler();
-            successRedirectHandler.setDefaultTargetUrl(Optional.ofNullable(defaultSuccessURL).orElseGet(config::getDefaultSuccessURL));
+            successRedirectHandler.setDefaultTargetUrl(Optional.ofNullable(defaultSuccessURL).orElseGet(config::getDefaultSuccessUrl));
             successHandler = postProcess(successRedirectHandler);
         }
 
-        defaultFailureURL = Optional.ofNullable(defaultFailureURL).orElseGet(config::getDefaultFailureURL);
+        defaultFailureURL = Optional.ofNullable(defaultFailureURL).orElseGet(config::getDefaultFailureUrl);
         if (failureHandler == null) {
             SimpleUrlAuthenticationFailureHandler authenticationFailureHandler = createDefaultFailureHandler();
             authenticationFailureHandler.setDefaultFailureUrl(defaultFailureURL);
@@ -106,7 +105,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         ssoFilter.setAuthenticationManager(authenticationManager);
         ssoFilter.setAuthenticationSuccessHandler(successHandler);
         ssoFilter.setAuthenticationFailureHandler(failureHandler);
-        ssoProcessingURL = Optional.ofNullable(ssoProcessingURL).orElseGet(config::getSsoProcessingURL);
+        ssoProcessingURL = Optional.ofNullable(ssoProcessingURL).orElseGet(config::getSsoProcessingUrl);
         endpoints.setSsoProcessingURL(ssoProcessingURL);
         ssoFilter.setFilterProcessesUrl(ssoProcessingURL);
 
@@ -116,22 +115,22 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
             ssoHoKFilter.setAuthenticationSuccessHandler(successHandler);
             ssoHoKFilter.setAuthenticationManager(authenticationManager);
             ssoHoKFilter.setAuthenticationFailureHandler(failureHandler);
-            ssoHoKProcessingURL = Optional.ofNullable(ssoHoKProcessingURL).orElseGet(config::getSsoHokProcessingURL);
+            ssoHoKProcessingURL = Optional.ofNullable(ssoHoKProcessingURL).orElseGet(config::getSsoHokProcessingUrl);
             endpoints.setSsoHoKProcessingURL(ssoHoKProcessingURL);
             ssoHoKFilter.setFilterProcessesUrl(ssoHoKProcessingURL);
         }
 
         SAMLDiscovery discoveryFilter = createDefaultSamlDiscoveryFilter();
-        discoveryProcessingURL = Optional.ofNullable(discoveryProcessingURL).orElseGet(config::getDiscoveryProcessingURL);
+        discoveryProcessingURL = Optional.ofNullable(discoveryProcessingURL).orElseGet(config::getDiscoveryProcessingUrl);
         endpoints.setDiscoveryProcessingURL(discoveryProcessingURL);
         discoveryFilter.setFilterProcessesUrl(discoveryProcessingURL);
-        idpSelectionPageURL = Optional.ofNullable(idpSelectionPageURL).orElseGet(config::getIdpSelectionPageURL);
+        idpSelectionPageURL = Optional.ofNullable(idpSelectionPageURL).orElseGet(config::getIdpSelectionPageUrl);
         endpoints.setIdpSelectionPageURL(idpSelectionPageURL);
         discoveryFilter.setIdpSelectionPath(idpSelectionPageURL);
 
         SAMLEntryPoint entryPoint = createDefaultSamlEntryPoint();
         entryPoint.setDefaultProfileOptions(Optional.ofNullable(profileOptions).orElseGet(this::getProfileOptions));
-        ssoLoginURL = Optional.ofNullable(ssoLoginURL).orElseGet(config::getSsoLoginURL);
+        ssoLoginURL = Optional.ofNullable(ssoLoginURL).orElseGet(config::getSsoLoginUrl);
         endpoints.setSsoLoginURL(ssoLoginURL);
         entryPoint.setFilterProcessesUrl(ssoLoginURL);
 
@@ -145,14 +144,14 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
         WebSSOProfileOptionProperties properties = config.getProfileOptions();
         WebSSOProfileOptions options = new WebSSOProfileOptions();
         options.setAllowCreate(properties.getAllowCreate());
-        options.setAllowedIDPs(properties.getAllowedIDPs());
+        options.setAllowedIDPs(properties.getAllowedIdps());
         options.setAssertionConsumerIndex(properties.getAssertionConsumerIndex());
         options.setAuthnContextComparison(properties.getAuthnContextComparison());
         options.setAuthnContexts(properties.getAuthnContexts());
         options.setBinding(properties.getBinding());
         options.setForceAuthN(properties.getForceAuthn());
         options.setIncludeScoping(properties.getIncludeScoping());
-        options.setNameID(properties.getNameID());
+        options.setNameID(properties.getNameId());
         options.setPassive(properties.getPassive());
         options.setProviderName(properties.getProviderName());
         options.setProxyCount(properties.getProxyCount());

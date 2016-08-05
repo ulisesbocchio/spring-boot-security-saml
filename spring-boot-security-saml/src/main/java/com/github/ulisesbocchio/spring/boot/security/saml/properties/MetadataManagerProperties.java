@@ -12,10 +12,10 @@ public class MetadataManagerProperties {
     /**
      * Sets name of IDP to be used as default.
      */
-    private String defaultIDP;
+    private String defaultIdp;
 
     /**
-     * Sets nameID of SP hosted on this machine. This can either be called from springContext or automatically
+     * Sets nameId of SP hosted on this machine. This can either be called from springContext or automatically
      * during invocation of metadata generation filter.
      */
     private String hostedSpName;

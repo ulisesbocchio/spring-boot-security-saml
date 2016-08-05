@@ -2,7 +2,6 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.LogoutProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
@@ -64,7 +63,7 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
     public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
         if (successHandler == null) {
             SimpleUrlLogoutSuccessHandler successLogoutHandler = createDefaultSuccessHandler();
-            defaultTargetURL = Optional.ofNullable(defaultTargetURL).orElseGet(config::getDefaultTargetURL);
+            defaultTargetURL = Optional.ofNullable(defaultTargetURL).orElseGet(config::getDefaultTargetUrl);
             successLogoutHandler.setDefaultTargetUrl(defaultTargetURL);
             endpoints.setDefaultTargetURL(defaultTargetURL);
             successHandler = postProcess(successLogoutHandler);
@@ -85,12 +84,12 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
         }
 
         SAMLLogoutFilter samlLogoutFilter = new SAMLLogoutFilter(successHandler, new LogoutHandler[]{localHandler}, new LogoutHandler[]{globalHandler});
-        logoutURL = Optional.ofNullable(logoutURL).orElseGet(config::getLogoutURL);
+        logoutURL = Optional.ofNullable(logoutURL).orElseGet(config::getLogoutUrl);
         endpoints.setLogoutURL(logoutURL);
         samlLogoutFilter.setFilterProcessesUrl(logoutURL);
 
         SAMLLogoutProcessingFilter samlLogoutProcessingFilter = new SAMLLogoutProcessingFilter(successHandler, globalHandler);
-        singleLogoutURL = Optional.ofNullable(singleLogoutURL).orElseGet(config::getSingleLogoutURL);
+        singleLogoutURL = Optional.ofNullable(singleLogoutURL).orElseGet(config::getSingleLogoutUrl);
         samlLogoutProcessingFilter.setFilterProcessesUrl(singleLogoutURL);
         endpoints.setSingleLogoutURL(singleLogoutURL);
 

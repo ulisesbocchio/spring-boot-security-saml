@@ -33,13 +33,13 @@ public class ExtendedMetadataProperties {
      * URL of the IDP Discovery service user should be redirected to upon request to determine which IDP to use.
      * Value can override settings in the local SP metadata. Only valid for local entities.
      */
-    private String idpDiscoveryURL;
+    private String idpDiscoveryUrl;
 
     /**
      * URL where the discovery service should send back response to our discovery request. Only valid for local
      * entities.
      */
-    private String idpDiscoveryResponseURL;
+    private String idpDiscoveryResponseUrl;
 
     /**
      * Indicates whether Enhanced Client/Proxy profile should be used for requests which support it. Only valid for
@@ -115,7 +115,7 @@ public class ExtendedMetadataProperties {
     private boolean requireLogoutRequestSigned = true;
 
     /**
-     * Flag indicating whether incoming LogoutResposne messages must be authenticated.
+     * Flag indicating whether incoming LogoutResponse messages must be authenticated.
      */
     private boolean requireLogoutResponseSigned;
 

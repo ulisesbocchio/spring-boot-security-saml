@@ -1,7 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.IdentityProvidersProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
@@ -98,7 +97,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
         if (metadataManagerBean == null) {
             if (metadataManager == null) {
                 metadataManager = createDefaultMetadataManager();
-                metadataManager.setDefaultIDP(Optional.ofNullable(defaultIDP).orElseGet(managerConfig::getDefaultIDP));
+                metadataManager.setDefaultIDP(Optional.ofNullable(defaultIDP).orElseGet(managerConfig::getDefaultIdp));
                 metadataManager.setHostedSPName(Optional.ofNullable(hostedSPName).orElseGet(managerConfig::getHostedSpName));
                 metadataManager.setRefreshCheckInterval(Optional.ofNullable(refreshCheckInterval).orElseGet(managerConfig::getRefreshCheckInterval));
             }
@@ -204,7 +203,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
     }
 
     /**
-     * Sets nameID of SP hosted on this machine. This can either be called from springContext or automatically during
+     * Sets nameId of SP hosted on this machine. This can either be called from springContext or automatically during
      * invocation of metadata generation filter.
      * <p>
      * Alternatively use property:
