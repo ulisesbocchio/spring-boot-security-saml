@@ -163,7 +163,8 @@ After the `ServiceProviderBuilder` is used, an `http()` method exists to go back
 ```java
 http() // or just http
     .authorizeRequests()
-    .requestMatchers(saml().endpointsMatcher()).permitAll()
+    .requestMatchers(saml().endpointsMatcher())
+    .permitAll()
 ```
 
 Are required to expose the SAML Service Provider endpoints without any security.
@@ -207,10 +208,10 @@ The following properties snippet is a sample configuration through `application.
  8. Provide a custom private key (DER format)
  9. And public cert (PEM format) to be used for signing outgoing requests. (To be configured in the IDP side also).
  
- All you need on the Java side is the `@EnableSAMLSSO` annotation for the default configuration, although if you wanna define a `ServiceProviderConfigurerAdapter` that's fine too, and you can select which configuration you keep on the DSL side and what you leave on the properties, it's up to you.
- 
- If what you need is to use a standard `WebSecurityConfigurerAdapter` to configure SAML and you would like to use properties also, you can do that too.
- Using the above properties all you need to do is to apply the `SAMLConfigurerBean` to the `HttpSecurity` and disable security for the SAML endpoints:
+All you need on the Java side is the `@EnableSAMLSSO` annotation for the default configuration, although if you wanna define a `ServiceProviderConfigurerAdapter` that's fine too, and you can select which configuration you keep on the DSL side and what you leave on the properties, it's up to you.
+
+If what you need is to use a standard `WebSecurityConfigurerAdapter` to configure SAML and you would like to use properties also, you can do that too.
+Using the above properties all you need to do is to apply the `SAMLConfigurerBean` to the `HttpSecurity` and disable security for the SAML endpoints:
  
  ```java
  @Configuration
