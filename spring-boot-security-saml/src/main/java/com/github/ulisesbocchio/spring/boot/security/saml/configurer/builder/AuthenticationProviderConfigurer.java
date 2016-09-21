@@ -1,8 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.AuthenticationProviderProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.user.SimpleSAMLUserDetailsService;
@@ -33,7 +32,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
 
     private Boolean excludeCredential = null;
     private Boolean forcePrincipalAsString = null;
@@ -58,13 +57,13 @@ public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<
     }
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         authenticationProviderBean = builder.getSharedObject(SAMLAuthenticationProvider.class);
         config = builder.getSharedObject(SAMLSSOProperties.class).getAuthenticationProvider();
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         if (authenticationProviderBean == null) {
             if (authenticationProvider == null) {
                 authenticationProvider = new SAMLAuthenticationProvider();

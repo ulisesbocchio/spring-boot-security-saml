@@ -1,8 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
@@ -19,7 +18,7 @@ import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
  *
  * @author Ulises Bocchio
  */
-public class WebSSOProfileHoKConsumerConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class WebSSOProfileHoKConsumerConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
     private WebSSOProfileConsumerHoKImpl hokProfileConsumer;
     private WebSSOProfileConsumerHoKImpl hokProfileConsumerBean;
 
@@ -32,12 +31,12 @@ public class WebSSOProfileHoKConsumerConfigurer extends SecurityConfigurerAdapte
     }
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         hokProfileConsumerBean = builder.getSharedObject(WebSSOProfileConsumerHoKImpl.class);
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         if (hokProfileConsumerBean == null) {
             if (hokProfileConsumer == null) {
                 hokProfileConsumer = createDefaultWebSSOProfileConsumerHoK();

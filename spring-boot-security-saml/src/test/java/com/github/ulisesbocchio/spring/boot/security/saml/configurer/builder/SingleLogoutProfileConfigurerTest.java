@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.saml.websso.SingleLogoutProfile;
@@ -14,11 +14,11 @@ import static org.mockito.Mockito.*;
  */
 public class SingleLogoutProfileConfigurerTest {
 
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
 
     @Before
     public void setup() {
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
     }
 
     @Test

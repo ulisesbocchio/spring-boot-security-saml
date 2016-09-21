@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.ExtendedMetadataProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.junit.Before;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ExtendedMetadataConfigurerTest {
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
     private ExtendedMetadataProperties extendedMetadataProperties;
 
     @Before
@@ -51,7 +51,7 @@ public class ExtendedMetadataConfigurerTest {
         when(extendedMetadataProperties.getTlsKey()).thenReturn("default");
         when(extendedMetadataProperties.getTrustedKeys()).thenReturn(Collections.singleton("default"));
 
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(ExtendedMetadata.class)).thenReturn(null);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
     }

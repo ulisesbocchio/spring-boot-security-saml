@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLProcessorProperties;
 import org.assertj.core.api.Assertions;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
  */
 @SuppressWarnings("unchecked")
 public class SAMLProcessorConfigurerTest {
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
     private ParserPool parserPool;
     private SAMLSSOProperties properties;
     private SAMLProcessorProperties samlProcessorConfig;
@@ -31,7 +31,7 @@ public class SAMLProcessorConfigurerTest {
         properties = mock(SAMLSSOProperties.class);
         samlProcessorConfig = spy(new SAMLProcessorProperties());
         when(properties.getSamlProcessor()).thenReturn(samlProcessorConfig);
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
         parserPool = mock(ParserPool.class);
         when(builder.getSharedObject(ParserPool.class)).thenReturn(parserPool);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);

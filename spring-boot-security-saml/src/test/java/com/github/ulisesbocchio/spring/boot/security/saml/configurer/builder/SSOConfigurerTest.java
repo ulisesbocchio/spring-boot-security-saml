@@ -1,7 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
  */
 public class SSOConfigurerTest {
 
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
     private ServiceProviderEndpoints serviceProviderEndpoints;
     private SAMLSSOProperties properties;
     private AuthenticationManager authenticationManager;
@@ -37,7 +37,7 @@ public class SSOConfigurerTest {
         properties = spy(new SAMLSSOProperties());
         serviceProviderEndpoints = spy(new ServiceProviderEndpoints());
         authenticationManager = mock(AuthenticationManager.class);
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(ServiceProviderEndpoints.class)).thenReturn(serviceProviderEndpoints);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
         when(builder.getSharedObject(AuthenticationManager.class)).thenReturn(authenticationManager);

@@ -41,14 +41,16 @@ The two configuration flavors are:
 
 ### Java DSL
 
-Configuring your Service Provider through the JAVA DSL is also pretty straight forward, and it follows the configurer/adapter/builder style that Spring Security currently has. A specific Interface and Adapter class are provided for the configuration, these are: `ServiceProviderConfigurer` and `ServiceProviderConfigurerAdapter` respectively.
-In most scenarios, you should be good with simply extending `ServiceProviderConfigurerAdapter` and overriding the `#configure(ServiceProviderSecurityBuilder serviceProvider)` method. This is an example:
+#### Using `ServiceProviderConfigurerAdapter`
+
+Configuring your Service Provider through the JAVA DSL is pretty straight forward, and it follows the configurer/adapter/builder style that Spring Security currently has. A specific Interface and Adapter class are provided for the configuration, these are: `ServiceProviderConfigurer` and `ServiceProviderConfigurerAdapter` respectively.
+In most scenarios, you should be good with simply extending `ServiceProviderConfigurerAdapter` and overriding the `#configure(ServiceProviderBuilder serviceProvider)` method. This is an example:
 
 ```java
 @Configuration
 public static class MyServiceProviderConfig extends ServiceProviderConfigurerAdapter {
     @Override
-    public void configure(ServiceProviderSecurityBuilder serviceProvider) throws Exception {
+    public void configure(ServiceProviderBuilder serviceProvider) throws Exception {
         // @formatter:off
         serviceProvider 
             .metadataGenerator() //(1)
@@ -88,7 +90,82 @@ In the above example, you can see how the following items are specified:
 6. And we provide a custom private key (DER format) and public cert (PEM format) to be used for signing outgoing requests. (To be configured in the IDP side also).
 
 This configuration is equivalent to the one showcased in the [Configuration Properties](#configuration-properties) section.
-For more documentation and available options, please see the JavaDoc  of `ServiceProviderSecurityBuilder` and read the [Configuration Cookbook](#configuration-cookbook). 
+For more documentation and available options, please see the JavaDoc  of `ServiceProviderBuilder` and read the [Configuration Cookbook](#configuration-cookbook). 
+
+#### Using `WebSecurityConfigurerAdapter`
+
+To accomplish the same configuration as above you can also use the regular Spring Security `WebSecurityConfigurerAdapter` to configure SAML authentication for your application in conjunction with any other security configuration your application may need.
+For this, besides creating your regular `WebSecurityConfigurerAdapter` configuration, you'll also need a `bean` of type `SAMLConfigurerBean` that you'll be able to plug into your `WebSecurityConfigurerAdapter`. The following is an example that showcases the
+exact same configuration from the previous section:
+
+```java
+@Configuration
+public static class MyServiceProviderConfig extends WebSecurityConfigurerAdapter {
+
+    @Bean
+    SAMLConfigurerBean saml() {
+        return new SAMLConfigurerBean();
+    }
+    
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+            
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        // @formatter:off
+        http.httpBasic()
+            .disable()
+            .csrf()
+            .disable()
+            .anonymous()
+        .and()
+            .apply(saml())
+            .serviceProvider()
+                .metadataGenerator() //(1)
+                .entityId("localhost-demo")
+            .and()
+                .sso() //(2)
+                .defaultSuccessURL("/home")
+                .idpSelectionPageURL("/idpselection")
+            .and()
+                .logout() //(3)
+                .defaultTargetURL("/")
+            .and()
+                .metadataManager() //(4)
+                .metadataLocations("classpath:/idp-ssocircle.xml")
+                .refreshCheckInterval(0)
+            .and()
+                .extendedMetadata() //(5)
+                .idpDiscoveryEnabled(true)
+            .and()
+                .keyManager() //(6)
+                .privateKeyDERLocation("classpath:/localhost.key.der")
+                .publicKeyPEMLocation("classpath:/localhost.cert")
+        .http()
+            .authorizeRequests()
+            .requestMatchers(saml().endpointsMatcher()).permitAll()
+        .and()
+            .authorizeRequests()
+            .anyRequest()
+            .authenticated();
+        // @formatter:on
+    }
+}
+```
+
+This is basically a manual configuration of Spring Security on which the `SAMLConfigurerBean` `bean` is defined and used as argument to `HttpSecurity.apply()` which registers the configurer and returns `ServiceProviderBuilder` for further customization.
+The `ServiceProviderBuilder` returned is the same type used in the previous example on the `ServiceProviderConfigurerAdapter.configure` method.
+After the `ServiceProviderBuilder` is used, an `http()` method exists to go back the the `HttpSecurity` configuration. In the example, the lines:
+ 
+```java
+http() // or just http
+    .authorizeRequests()
+    .requestMatchers(saml().endpointsMatcher()).permitAll()
+```
+
+Are required to expose the SAML Service Provider endpoints without any security.
 
 ### Configuration Properties
 
@@ -129,7 +206,7 @@ The following properties snippet is a sample configuration through `application.
  8. Provide a custom private key (DER format)
  9. And public cert (PEM format) to be used for signing outgoing requests. (To be configured in the IDP side also).
 
-For a more thorough description of the properties please see JavaDoc of class `SAMLSSOProperties` and `ServiceProviderSecurityBuilder`. For configuration examples, see [Configuration Cookbook](#configuration-cookbook).
+For a more thorough description of the properties please see JavaDoc of class `SAMLSSOProperties` and `ServiceProviderBuilder`. For configuration examples, see [Configuration Cookbook](#configuration-cookbook).
 
 ## Spring MVC Configuration
 

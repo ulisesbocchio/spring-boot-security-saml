@@ -1,8 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLProcessorProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.apache.commons.httpclient.HttpClient;
@@ -44,7 +43,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
 
     private static VelocityEngine velocityEngine;
     private SAMLProcessor sAMLProcessor;
@@ -72,14 +71,14 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<ServicePr
     }
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         sAMLProcessorBean = builder.getSharedObject(SAMLProcessor.class);
         processorConfig = builder.getSharedObject(SAMLSSOProperties.class).getSamlProcessor();
         parserPool = builder.getSharedObject(ParserPool.class);
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         if (sAMLProcessorBean == null) {
             if (sAMLProcessor == null) {
                 List<SAMLBinding> bindings = new ArrayList<>();

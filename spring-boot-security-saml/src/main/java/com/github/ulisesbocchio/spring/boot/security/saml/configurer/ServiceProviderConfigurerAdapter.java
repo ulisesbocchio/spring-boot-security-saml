@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 /**
  * Simple Adapter for {@link ServiceProviderConfigurer} to be used in conjunction with {@link EnableSAMLSSO} and
  * wanting to further customize the SAML Service Provider using the DSL provided by {@link
- * ServiceProviderSecurityBuilder}, which exposes most aspects of configuring Spring Security SAML. Users of this
+ * ServiceProviderBuilder}, which exposes most aspects of configuring Spring Security SAML. Users of this
  * interface are encouraged to use {@link ServiceProviderConfigurerAdapter} which is the default implementation with
  * empty methods, so users can choose which method to actually override.
  * <p>
@@ -45,7 +45,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
  *
  * @author Ulises Bocchio
  * @see ServiceProviderConfigurerAdapter
- * @see ServiceProviderSecurityBuilder
+ * @see ServiceProviderBuilder
  * @see EnableSAMLSSO
  */
 public class ServiceProviderConfigurerAdapter implements ServiceProviderConfigurer {
@@ -54,7 +54,7 @@ public class ServiceProviderConfigurerAdapter implements ServiceProviderConfigur
      * {@inheritDoc}
      */
     @Override
-    public void configure(ServiceProviderSecurityBuilder serviceProvider) throws Exception {
+    public void configure(ServiceProviderBuilder serviceProvider) throws Exception {
     }
 
     /**

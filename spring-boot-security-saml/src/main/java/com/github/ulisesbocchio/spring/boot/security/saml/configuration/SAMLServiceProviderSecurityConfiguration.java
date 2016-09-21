@@ -1,19 +1,27 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configuration;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.*;
+import com.github.ulisesbocchio.spring.boot.security.saml.bean.SAMLConfigurerBean;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurer;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurerAdapter;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.BeanRegistry;
+import lombok.Data;
+import org.assertj.core.util.Lists;
 import org.opensaml.xml.parse.ParserPool;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -27,13 +35,16 @@ import org.springframework.security.saml.parser.ParserPoolHolder;
 import org.springframework.security.saml.processor.SAMLProcessor;
 import org.springframework.security.saml.websso.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.unchecked;
 
 /**
  * Spring Security configuration entry point for the Service Provider. This configuration class basically collects
- * all relevant beans present in the application context to initialize and configure all {@link ServiceProviderConfigurer}
+ * all relevant beans present in the application context to initialize and configure all {@link
+ * ServiceProviderConfigurer}
  * present in the context. Usually one {@link ServiceProviderConfigurer} is enough and preferably one that extends
  * {@link ServiceProviderConfigurerAdapter} which provides empty implementations and subclasses can implement only the
  * relevant method(s) for the purpose of the current application.
@@ -45,10 +56,7 @@ import static com.github.ulisesbocchio.spring.boot.security.saml.util.Functional
  */
 @Configuration
 @EnableConfigurationProperties(SAMLSSOProperties.class)
-@Order(-17)
-public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    private List<ServiceProviderConfigurer> serviceProviderConfigurers = Collections.emptyList();
+public class SAMLServiceProviderSecurityConfiguration implements InitializingBean {
 
     @Autowired
     private ObjectPostProcessor<Object> objectPostProcessor;
@@ -111,24 +119,107 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
     @Autowired(required = false)
     private SAMLAuthenticationProvider samlAuthenticationProvider;
 
-    public SAMLServiceProviderSecurityConfiguration() {
-        super(false);
+    @Autowired(required = false)
+    List<ServiceProviderConfigurer> serviceProviderConfigurers = Lists.newArrayList();
+
+    @Autowired(required = false)
+    SAMLConfigurerBean samlConfigurerBean;
+
+    @Bean
+    ServiceProviderBuilderHolder serviceProviderBuilderHolder() {
+        return new ServiceProviderBuilderHolder();
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        serviceProviderConfigurers.stream().forEach(unchecked(c -> c.configure(web)));
+    @Data
+    public static class ServiceProviderBuilderHolder {
+        private ServiceProviderBuilder builder = null;
+    }
+
+    @Bean
+    public WebSecurityConfigurer samlWebSecurityConfigurer() {
+        return samlConfigurerBean == null ? new SAMLWebSecurityConfigurer(serviceProviderConfigurers, serviceProviderBuilderHolder()) : new NoWebSecurityConfigurerAdapter();
     }
 
     /**
-     * Configures Spring Security as a SAML 2.0 Service provider using a {@link ServiceProviderSecurityBuilder}, user
-     * provided {@link ServiceProviderConfigurer}s, and {@link ServiceProviderSecurityConfigurer}
+     * Used as a fallback when the {@link SAMLConfigurerBean} method is used. Basically a dummy web security
+     * configuration.
      */
+    private static class NoWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter implements Ordered {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.requestMatcher(request -> false);
+        }
+
+        @Override
+        public int getOrder() {
+            return Ordered.LOWEST_PRECEDENCE;
+        }
+    }
+
+    /**
+     * Default Web Security Configurer that delegates configuration of the service provider to {@link
+     * ServiceProviderConfigurer}
+     */
+    private static class SAMLWebSecurityConfigurer extends WebSecurityConfigurerAdapter implements Ordered {
+
+        private List<ServiceProviderConfigurer> serviceProviderConfigurers = Collections.emptyList();
+        private ServiceProviderBuilderHolder builderHolder;
+
+        @SuppressWarnings("SpringJavaAutowiringInspection")
+        public SAMLWebSecurityConfigurer(List<ServiceProviderConfigurer> serviceProviderConfigurers, ServiceProviderBuilderHolder builderHolder) {
+            super(false);
+            this.serviceProviderConfigurers = serviceProviderConfigurers;
+            this.builderHolder = builderHolder;
+        }
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            serviceProviderConfigurers.forEach(unchecked(c -> c.configure(web)));
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            builderHolder.getBuilder().setSharedObject(AuthenticationManager.class, authenticationManagerBean());
+            SAMLConfigurerBean saml = new SAMLConfigurerBean(builderHolder, authenticationManagerBean());
+
+            http.apply(saml);
+
+            // @formatter:off
+            http.httpBasic()
+                .disable()
+                .csrf()
+                .disable()
+                .anonymous()
+            .and()
+                .apply(saml)
+                .serviceProvider(serviceProviderConfigurers)
+            .http()
+                .authorizeRequests()
+                .requestMatchers(saml.endpointsMatcher()).permitAll();
+
+            serviceProviderConfigurers.forEach(unchecked(spc -> spc.configure(http)));
+
+            http
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated();
+            // @formatter:on
+        }
+
+        @Override
+        public int getOrder() {
+            return -17;
+        }
+    }
+
+    public SAMLServiceProviderSecurityConfiguration() {
+    }
+
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    public void afterPropertiesSet() {
         //All existing beans are thrown as shared objects to the ServiceProviderSecurityBuilder, which will wire all
         //beans/objects related to spring security SAML.
-        ServiceProviderSecurityBuilder securityConfigurerBuilder = new ServiceProviderSecurityBuilder(objectPostProcessor, beanFactory, beanRegistry());
+        ServiceProviderBuilder securityConfigurerBuilder = new ServiceProviderBuilder(objectPostProcessor, beanFactory, beanRegistry());
         securityConfigurerBuilder.setSharedObject(ParserPool.class, ParserPoolHolder.getPool());
         securityConfigurerBuilder.setSharedObject(WebSSOProfileConsumerImpl.class, (WebSSOProfileConsumerImpl) webSSOProfileConsumer);
         securityConfigurerBuilder.setSharedObject(WebSSOProfileConsumerHoKImpl.class, hokWebSSOProfileConsumer);
@@ -136,7 +227,6 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
         securityConfigurerBuilder.setSharedObject(ResourceLoader.class, resourceLoader);
         securityConfigurerBuilder.setSharedObject(SAMLSSOProperties.class, sAMLSsoProperties);
         securityConfigurerBuilder.setSharedObject(ExtendedMetadata.class, extendedMetadata);
-        securityConfigurerBuilder.setSharedObject(AuthenticationManager.class, authenticationManagerBean());
         securityConfigurerBuilder.setSharedObject(BeanRegistry.class, beanRegistry());
         securityConfigurerBuilder.setSharedObject(SAMLAuthenticationProvider.class, samlAuthenticationProvider);
         securityConfigurerBuilder.setSharedObject(SAMLContextProvider.class, samlContextProvider);
@@ -154,11 +244,7 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
         //To keep track of which beans were present in the Spring Context and which not, we register them in a
         //BeanRegistry bean. A custom inner type of this class.
         markBeansAsRegistered(securityConfigurerBuilder.getSharedObjects());
-
-        //After the builder has been customized by the configurer(s) provided, it's time to build the builder,
-        //which builds a SecurityConfigurer that will wire spring security with the Service Provider configuration
-        ServiceProviderSecurityConfigurer securityConfigurer = new ServiceProviderSecurityConfigurer(securityConfigurerBuilder, serviceProviderConfigurers);
-        http.apply(securityConfigurer);
+        serviceProviderBuilderHolder().setBuilder(securityConfigurerBuilder);
     }
 
     /**
@@ -169,16 +255,6 @@ public class SAMLServiceProviderSecurityConfiguration extends WebSecurityConfigu
     private void markBeansAsRegistered(Map<Class<?>, Object> sharedObjects) {
         sharedObjects.entrySet()
                 .forEach(entry -> beanRegistry().addRegistered(entry.getKey(), entry.getValue()));
-    }
-
-    /**
-     * Autowire {@link ServiceProviderConfigurer}s into the bean.
-     *
-     * @param serviceProviderConfigurers user provided {@link ServiceProviderConfigurer}s
-     */
-    @Autowired(required = false)
-    public void setServiceProviderConfigurers(List<ServiceProviderConfigurer> serviceProviderConfigurers) {
-        this.serviceProviderConfigurers = serviceProviderConfigurers;
     }
 
     /**

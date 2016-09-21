@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.AuthenticationProviderProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.user.SimpleSAMLUserDetailsService;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationProviderConfigurerTest {
 
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
     private AuthenticationProviderProperties authProviderProperties;
 
     @Before
@@ -32,7 +32,7 @@ public class AuthenticationProviderConfigurerTest {
         when(properties.getAuthenticationProvider()).thenReturn(authProviderProperties);
         when(authProviderProperties.isExcludeCredential()).thenReturn(false);
         when(authProviderProperties.isForcePrincipalAsString()).thenReturn(false);
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(SAMLAuthenticationProvider.class)).thenReturn(null);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
     }

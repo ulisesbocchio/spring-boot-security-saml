@@ -1,8 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.WebSSOProfileConsumer;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
@@ -19,7 +18,7 @@ import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
  *
  * @author Ulises Bocchio
  */
-public class WebSSOProfileConsumerConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class WebSSOProfileConsumerConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
 
     private WebSSOProfileConsumer webSSOProfileConsumer;
     private WebSSOProfileConsumer webSSOProfileConsumerBean;
@@ -33,12 +32,12 @@ public class WebSSOProfileConsumerConfigurer extends SecurityConfigurerAdapter<S
     }
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         webSSOProfileConsumerBean = builder.getSharedObject(WebSSOProfileConsumer.class);
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         if (webSSOProfileConsumerBean == null) {
             if (webSSOProfileConsumer == null) {
                 webSSOProfileConsumer = createWebSSOProfileConsumer();

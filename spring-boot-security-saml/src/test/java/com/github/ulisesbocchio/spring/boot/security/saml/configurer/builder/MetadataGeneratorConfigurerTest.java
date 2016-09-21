@@ -1,7 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataGeneratorProperties;
 import org.junit.Before;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
  */
 public class MetadataGeneratorConfigurerTest {
 
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
     private MetadataGeneratorProperties metadataGeneratorConfig;
     private ServiceProviderEndpoints serviceProviderEndpoints;
     private SAMLSSOProperties properties;
@@ -34,7 +34,7 @@ public class MetadataGeneratorConfigurerTest {
         serviceProviderEndpoints = spy(new ServiceProviderEndpoints());
         extendedMetadata = spy(new ExtendedMetadata());
         when(properties.getMetadataGenerator()).thenReturn(metadataGeneratorConfig);
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(ServiceProviderEndpoints.class)).thenReturn(serviceProviderEndpoints);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
         when(builder.getSharedObject(ExtendedMetadata.class)).thenReturn(extendedMetadata);

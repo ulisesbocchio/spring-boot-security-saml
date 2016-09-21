@@ -1,7 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.properties;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.annotation.EnableSAMLSSO;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -15,7 +15,7 @@ import org.springframework.security.saml.metadata.MetadataManager;
 /**
  * Configuration Properties exposed to allow customization of the Service Provider enabled by {@link EnableSAMLSSO}.
  * All configuration properties have their counterpart on the Java DSL provided by {@link
- * ServiceProviderSecurityBuilder}.
+ * ServiceProviderBuilder}.
  *
  * @author Ulises Bocchio
  */

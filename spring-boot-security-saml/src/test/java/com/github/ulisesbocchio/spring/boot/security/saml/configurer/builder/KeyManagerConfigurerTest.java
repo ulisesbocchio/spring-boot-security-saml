@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.KeyManagerProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.KeystoreFactory;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
  * @author Ulises Bocchio
  */
 public class KeyManagerConfigurerTest {
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
     private KeyManagerProperties keyManagerProperties;
 
     @Before
@@ -35,7 +35,7 @@ public class KeyManagerConfigurerTest {
 //        when(keyManagerProperties.getPublicKeyPemLocation()).thenReturn("classpath:localhost.cert");
 //        when(keyManagerProperties.getStoreLocation()).thenReturn("classpath:KeyStore.jks");
 //        when(keyManagerProperties.getStorePass()).thenReturn("storePass");
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(KeyManager.class)).thenReturn(null);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
         when(builder.getSharedObject(ResourceLoader.class)).thenReturn(new DefaultResourceLoader());

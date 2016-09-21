@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.TLSProperties;
 import org.junit.Before;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings("unchecked")
 public class TLSConfigurerTest {
 
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
     private TLSProperties tlsConfig;
     private SAMLSSOProperties properties;
 
@@ -28,7 +28,7 @@ public class TLSConfigurerTest {
         properties = mock(SAMLSSOProperties.class);
         tlsConfig = spy(new TLSProperties());
         when(properties.getTls()).thenReturn(tlsConfig);
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
     }
 

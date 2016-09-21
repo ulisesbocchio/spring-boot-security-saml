@@ -1,8 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.WebSSOProfile;
@@ -20,7 +19,7 @@ import org.springframework.security.saml.websso.WebSSOProfileImpl;
  *
  * @author Ulises Bocchio
  */
-public class WebSSOProfileConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class WebSSOProfileConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
 
     private WebSSOProfile webSSOProfile;
     private WebSSOProfile webSSOProfileBean;
@@ -34,12 +33,12 @@ public class WebSSOProfileConfigurer extends SecurityConfigurerAdapter<ServicePr
     }
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         webSSOProfileBean = builder.getSharedObject(WebSSOProfile.class);
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         if (webSSOProfileBean == null) {
             if (webSSOProfile == null) {
                 webSSOProfile = createDefaultWebSSOProfile();

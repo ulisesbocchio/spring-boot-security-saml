@@ -1,8 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.TLSProperties;
 import org.assertj.core.util.VisibleForTesting;
@@ -36,7 +35,7 @@ import static java.util.stream.Collectors.toSet;
  *
  * @author Ulises Bocchio
  */
-public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
 
     private String protocolName;
     private Integer protocolPort;
@@ -45,12 +44,12 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     private TLSProperties config;
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         config = builder.getSharedObject(SAMLSSOProperties.class).getTls();
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         TLSProtocolConfigurer configurer = createDefaultTlsProtocolConfigurer();
         configurer.setProtocolName(Optional.ofNullable(protocolName).orElseGet(config::getProtocolName));
         configurer.setProtocolPort(Optional.ofNullable(protocolPort).orElseGet(config::getProtocolPort));

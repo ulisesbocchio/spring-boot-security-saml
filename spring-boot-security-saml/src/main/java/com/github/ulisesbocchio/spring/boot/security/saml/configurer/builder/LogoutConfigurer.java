@@ -1,8 +1,8 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.LogoutProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.assertj.core.util.VisibleForTesting;
@@ -40,7 +40,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
     private String defaultTargetURL;
     private String logoutURL;
     private String singleLogoutURL;
@@ -53,14 +53,14 @@ public class LogoutConfigurer extends SecurityConfigurerAdapter<ServiceProviderS
     private ServiceProviderEndpoints endpoints;
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         config = builder.getSharedObject(SAMLSSOProperties.class).getLogout();
         endpoints = builder.getSharedObject(ServiceProviderEndpoints.class);
     }
 
     @SuppressWarnings("Duplicates")
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         if (successHandler == null) {
             SimpleUrlLogoutSuccessHandler successLogoutHandler = createDefaultSuccessHandler();
             defaultTargetURL = Optional.ofNullable(defaultTargetURL).orElseGet(config::getDefaultTargetUrl);

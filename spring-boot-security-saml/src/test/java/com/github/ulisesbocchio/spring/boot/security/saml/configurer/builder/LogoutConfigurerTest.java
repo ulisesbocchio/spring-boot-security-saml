@@ -1,7 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.LogoutProperties;
 import org.junit.Before;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
  */
 public class LogoutConfigurerTest {
 
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
     private LogoutProperties logoutProperties;
     private ServiceProviderEndpoints serviceProviderEndpoints;
     private SAMLSSOProperties properties;
@@ -31,7 +31,7 @@ public class LogoutConfigurerTest {
         logoutProperties = spy(new LogoutProperties());
         serviceProviderEndpoints = spy(new ServiceProviderEndpoints());
         when(properties.getLogout()).thenReturn(logoutProperties);
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(ServiceProviderEndpoints.class)).thenReturn(serviceProviderEndpoints);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
     }

@@ -1,8 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.WebSSOProfileHoKImpl;
 
@@ -18,7 +17,7 @@ import org.springframework.security.saml.websso.WebSSOProfileHoKImpl;
  *
  * @author Ulises Bocchio
  */
-public class WebSSOProfileHoKConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class WebSSOProfileHoKConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
     private WebSSOProfileHoKImpl hokProfile;
     private WebSSOProfileHoKImpl hokProfileBean;
 
@@ -31,12 +30,12 @@ public class WebSSOProfileHoKConfigurer extends SecurityConfigurerAdapter<Servic
     }
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         hokProfileBean = builder.getSharedObject(WebSSOProfileHoKImpl.class);
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         if (hokProfileBean == null) {
             if (hokProfile == null) {
                 hokProfile = createDefaultWebSSOProfileHoK();

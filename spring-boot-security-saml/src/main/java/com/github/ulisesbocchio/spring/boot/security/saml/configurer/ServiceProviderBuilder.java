@@ -5,12 +5,16 @@ import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProp
 import com.github.ulisesbocchio.spring.boot.security.saml.util.AutowiringObjectPostProcessor;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.BeanRegistry;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.CompositeObjectPostProcessor;
+import com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils;
+import com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.CheckedConsumer;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.saml.*;
 import org.springframework.security.saml.context.SAMLContextProvider;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
@@ -22,9 +26,10 @@ import org.springframework.security.saml.processor.SAMLProcessorImpl;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 import org.springframework.security.saml.websso.*;
 
-import java.util.Arrays;
-
-import static com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.unchecked;
+import java.lang.reflect.ParameterizedType;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Class for internal usage of this Spring Boot Plugin. It deals with all the nitty-gritty of wiring all required
@@ -41,15 +46,15 @@ import static com.github.ulisesbocchio.spring.boot.security.saml.util.Functional
  *
  * @author Ulises Bocchio
  */
-public class ServiceProviderSecurityBuilder extends
-        AbstractConfiguredSecurityBuilder<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder>
-        implements SecurityBuilder<ServiceProviderSecurityConfigurerBeans> {
+public class ServiceProviderBuilder extends
+        AbstractConfiguredSecurityBuilder<ServiceProviderBuilderResult, ServiceProviderBuilder>
+        implements SecurityBuilder<ServiceProviderBuilderResult> {
 
     private CompositeObjectPostProcessor compositePostProcessor = new CompositeObjectPostProcessor();
     private DefaultListableBeanFactory beanFactory;
     private BeanRegistry beanRegistry;
 
-    public ServiceProviderSecurityBuilder(ObjectPostProcessor<Object> objectPostProcessor, DefaultListableBeanFactory beanFactory, BeanRegistry beanRegistry) {
+    public ServiceProviderBuilder(ObjectPostProcessor<Object> objectPostProcessor, DefaultListableBeanFactory beanFactory, BeanRegistry beanRegistry) {
         super(objectPostProcessor, false);
         this.beanFactory = beanFactory;
         this.beanRegistry = beanRegistry;
@@ -78,7 +83,7 @@ public class ServiceProviderSecurityBuilder extends
     }
 
     @SneakyThrows
-    private <C extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder>> C getOrApply(
+    private <C extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder>> C getOrApply(
             C configurer) {
         C existingConfig = (C) getConfigurer(configurer.getClass());
         if (existingConfig != null) {
@@ -87,7 +92,7 @@ public class ServiceProviderSecurityBuilder extends
         return apply(configurer);
     }
 
-    private <C extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder>> C removeConfigurerAdapter(Class<C> configurer) {
+    private <C extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder>> C removeConfigurerAdapter(Class<C> configurer) {
         return removeConfigurer(configurer);
     }
 
@@ -116,8 +121,7 @@ public class ServiceProviderSecurityBuilder extends
 
     private void reorderConfigurers() {
         //Order of configurers is established by the following stream.
-        Arrays.asList(
-                KeyManagerConfigurer.class,
+        Stream.of(KeyManagerConfigurer.class,
                 ExtendedMetadataConfigurer.class,
                 MetadataManagerConfigurer.class,
                 AuthenticationProviderConfigurer.class,
@@ -133,13 +137,12 @@ public class ServiceProviderSecurityBuilder extends
                 SSOConfigurer.class,
                 TLSConfigurer.class,
                 MetadataGeneratorConfigurer.class)
-                .stream()
                 .map(this::removeConfigurerAdapter)
                 .forEach(this::getOrApply);
     }
 
     @Override
-    protected ServiceProviderSecurityConfigurerBeans performBuild() throws Exception {
+    protected ServiceProviderBuilderResult performBuild() throws Exception {
         //Some shared objects need to be registered as Spring Beans for proper Autowiring and initialization.
         //Some shared objects need to be registered as Spring Bean with specific names, as they are autowired by other
         //beans with name qualifiers.
@@ -199,6 +202,8 @@ public class ServiceProviderSecurityBuilder extends
 
         ServiceProviderEndpoints endpoints = getSharedObject(ServiceProviderEndpoints.class);
 
+        @SuppressWarnings("unchecked") CheckedConsumer<HttpSecurity, Exception> httpSecurityConsumer = getSharedObject(CheckedConsumer.class);
+
         postProcess(webSSOprofileConsumer);
         postProcess(samlContextProvider);
         postProcess(webSSOProfile);
@@ -230,10 +235,10 @@ public class ServiceProviderSecurityBuilder extends
         postProcess(keyManager);
         postProcess(tlsProtocolConfigurer);
 
-        ServiceProviderSecurityConfigurerBeans securityConfigurerBeans = new ServiceProviderSecurityConfigurerBeans(config, metadataManager, authenticationProvider, samlProcessor,
+        ServiceProviderBuilderResult securityConfigurerBeans = new ServiceProviderBuilderResult(config, metadataManager, authenticationProvider, samlProcessor,
                 samlLogoutFilter, samlLogoutProcessingFilter, metadataDisplayFilter, metadataGeneratorFilter,
                 sAMLProcessingFilter, sAMLWebSSOHoKProcessingFilter, sAMLDiscovery, sAMLEntryPoint, keyManager,
-                tlsProtocolConfigurer, endpoints);
+                tlsProtocolConfigurer, endpoints, httpSecurityConsumer);
         return securityConfigurerBeans;
     }
 
@@ -266,7 +271,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder samlContextProvider(SAMLContextProvider samlContextProvider) throws Exception {
+    public ServiceProviderBuilder samlContextProvider(SAMLContextProvider samlContextProvider) throws Exception {
         getOrApply(new SAMLContextProviderConfigurer(samlContextProvider));
         return this;
     }
@@ -302,7 +307,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder metadataManager(MetadataManager metadataManager) throws Exception {
+    public ServiceProviderBuilder metadataManager(MetadataManager metadataManager) throws Exception {
         getOrApply(new MetadataManagerConfigurer(metadataManager));
         return this;
     }
@@ -336,7 +341,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder keyManager(KeyManager keyManager) throws Exception {
+    public ServiceProviderBuilder keyManager(KeyManager keyManager) throws Exception {
         getOrApply(new KeyManagerConfigurer(keyManager));
         return this;
     }
@@ -370,7 +375,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder samlProcessor(SAMLProcessor samlProcessor) throws Exception {
+    public ServiceProviderBuilder samlProcessor(SAMLProcessor samlProcessor) throws Exception {
         getOrApply(new SAMLProcessorConfigurer(samlProcessor));
         return this;
     }
@@ -406,7 +411,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder ssoProfileConsumer(WebSSOProfileConsumer ssoProfileConsumer) throws Exception {
+    public ServiceProviderBuilder ssoProfileConsumer(WebSSOProfileConsumer ssoProfileConsumer) throws Exception {
         getOrApply(new WebSSOProfileConsumerConfigurer(ssoProfileConsumer));
         return this;
     }
@@ -442,7 +447,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder hokProfileConsumer(WebSSOProfileConsumerHoKImpl hokProfileConsumer) throws Exception {
+    public ServiceProviderBuilder hokProfileConsumer(WebSSOProfileConsumerHoKImpl hokProfileConsumer) throws Exception {
         getOrApply(new WebSSOProfileHoKConsumerConfigurer(hokProfileConsumer));
         return this;
     }
@@ -475,7 +480,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder ssoProfile(WebSSOProfile ssoProfile) throws Exception {
+    public ServiceProviderBuilder ssoProfile(WebSSOProfile ssoProfile) throws Exception {
         getOrApply(new WebSSOProfileConfigurer(ssoProfile));
         return this;
     }
@@ -509,7 +514,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder ecpProfile(WebSSOProfileECPImpl ecpProfile) throws Exception {
+    public ServiceProviderBuilder ecpProfile(WebSSOProfileECPImpl ecpProfile) throws Exception {
         getOrApply(new WebSSOProfileECPConfigurer(ecpProfile));
         return this;
     }
@@ -543,7 +548,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder hokProfile(WebSSOProfileHoKImpl hokProfile) throws Exception {
+    public ServiceProviderBuilder hokProfile(WebSSOProfileHoKImpl hokProfile) throws Exception {
         getOrApply(new WebSSOProfileHoKConfigurer(hokProfile));
         return this;
     }
@@ -575,7 +580,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder sloProfile(SingleLogoutProfile sloProfile) throws Exception {
+    public ServiceProviderBuilder sloProfile(SingleLogoutProfile sloProfile) throws Exception {
         getOrApply(new SingleLogoutProfileConfigurer(sloProfile));
         return this;
     }
@@ -612,7 +617,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder extendedMetadata(ExtendedMetadata extendedMetadata) throws Exception {
+    public ServiceProviderBuilder extendedMetadata(ExtendedMetadata extendedMetadata) throws Exception {
         getOrApply(new ExtendedMetadataConfigurer(extendedMetadata));
         return this;
     }
@@ -649,7 +654,7 @@ public class ServiceProviderSecurityBuilder extends
      * @return this builder for further customization.
      * @throws Exception Any exception during configuration.
      */
-    public ServiceProviderSecurityBuilder authenticationProvider(SAMLAuthenticationProvider provider) throws Exception {
+    public ServiceProviderBuilder authenticationProvider(SAMLAuthenticationProvider provider) throws Exception {
         getOrApply(new AuthenticationProviderConfigurer(provider));
         return this;
     }
@@ -750,5 +755,23 @@ public class ServiceProviderSecurityBuilder extends
      */
     public TLSConfigurer tls() throws Exception {
         return getOrApply(new TLSConfigurer());
+    }
+
+    /**
+     * Returns the original {@link HttpSecurity} to continue chaining configuration.
+     */
+    public HttpSecurity http() throws Exception {
+        return Optional.ofNullable(getSharedObject(HttpSecurity.class))
+                .orElseThrow(() -> new IllegalStateException("HttpSecurity has not been set"));
+    }
+
+    /**
+     * Allows for processing the original {@link HttpSecurity} AFTER the Service Provider configurer is configured. This is a workaround
+     * to allow configuration to be chained after the configuration of the Service Provider has taken effect since Spring Security Configurers
+     * are evaluated late in the game.
+     */
+    public ServiceProviderBuilder http(CheckedConsumer<HttpSecurity, Exception> httpConsumer) throws Exception {
+        setSharedObject(CheckedConsumer.class, httpConsumer);
+        return this;
     }
 }

@@ -1,8 +1,8 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataGeneratorProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.opensaml.saml2.metadata.EntityDescriptor;
@@ -45,7 +45,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
 
     private String metadataURL;
     private String entityId;
@@ -73,14 +73,14 @@ public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Servi
     }
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         config = builder.getSharedObject(SAMLSSOProperties.class).getMetadataGenerator();
         endpoints = builder.getSharedObject(ServiceProviderEndpoints.class);
         metadataGeneratorBean = builder.getSharedObject(MetadataGenerator.class);
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         extendedMetadata = builder.getSharedObject(ExtendedMetadata.class);
         MetadataDisplayFilter metadataDisplayFilter = new MetadataDisplayFilter();
         metadataURL = Optional.ofNullable(metadataURL).orElseGet(config::getMetadataUrl);

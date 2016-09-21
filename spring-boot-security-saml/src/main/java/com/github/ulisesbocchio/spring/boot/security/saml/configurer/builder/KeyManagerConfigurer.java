@@ -1,8 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurer;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.KeyManagerProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.KeystoreFactory;
@@ -42,7 +41,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
 
     private KeyManager keyManager;
     private KeyManager keyManagerBean;
@@ -66,7 +65,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
     }
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         keyManagerBean = builder.getSharedObject(KeyManager.class);
         config = builder.getSharedObject(SAMLSSOProperties.class).getKeyManager();
         resourceLoader = builder.getSharedObject(ResourceLoader.class);
@@ -74,7 +73,7 @@ public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProvi
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         if (keyManagerBean == null) {
             if (keyManager == null) {
                 privateKeyDERLocation = Optional.ofNullable(privateKeyDERLocation).orElseGet(config::getPrivateKeyDerLocation);

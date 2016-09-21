@@ -1,7 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.IdentityProvidersProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.ExtendedMetadataDelegateProperties;
@@ -53,7 +53,7 @@ import static java.util.stream.Collectors.toSet;
  *
  * @author Ulises Bocchio
  */
-public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
 
     List<MetadataProvider> metadataProviders = new ArrayList<>();
     private MetadataFilter metadataFilter = null;
@@ -82,7 +82,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
     }
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         resourceLoader = builder.getSharedObject(ResourceLoader.class);
         metadataManagerBean = builder.getSharedObject(MetadataManager.class);
         extendedDelegateConfig = builder.getSharedObject(SAMLSSOProperties.class).getExtendedDelegate();
@@ -91,7 +91,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Service
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         extendedMetadata = builder.getSharedObject(ExtendedMetadata.class);
 
         if (metadataManagerBean == null) {

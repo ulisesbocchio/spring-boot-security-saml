@@ -1,8 +1,8 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityConfigurerBeans;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.WebSSOProfileOptionProperties;
 import org.assertj.core.util.VisibleForTesting;
@@ -60,7 +60,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecurityConfigurerBeans, ServiceProviderSecurityBuilder> {
+public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
 
     private String defaultSuccessURL;
     private AuthenticationSuccessHandler successHandler;
@@ -78,14 +78,14 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderSecu
     private String ssoHoKProcessingURL;
 
     @Override
-    public void init(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void init(ServiceProviderBuilder builder) throws Exception {
         authenticationManager = builder.getSharedObject(AuthenticationManager.class);
         config = builder.getSharedObject(SAMLSSOProperties.class);
         endpoints = builder.getSharedObject(ServiceProviderEndpoints.class);
     }
 
     @Override
-    public void configure(ServiceProviderSecurityBuilder builder) throws Exception {
+    public void configure(ServiceProviderBuilder builder) throws Exception {
         if (successHandler == null) {
             SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler = createDefaultSuccessHandler();
             successRedirectHandler.setDefaultTargetUrl(Optional.ofNullable(defaultSuccessURL).orElseGet(config::getDefaultSuccessUrl));

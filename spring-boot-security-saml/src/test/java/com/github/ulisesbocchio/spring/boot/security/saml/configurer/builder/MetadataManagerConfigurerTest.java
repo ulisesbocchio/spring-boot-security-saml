@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderSecurityBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.ExtendedMetadataDelegateProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.IdentityProvidersProperties;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
  */
 @SuppressWarnings("unchecked")
 public class MetadataManagerConfigurerTest {
-    private ServiceProviderSecurityBuilder builder;
+    private ServiceProviderBuilder builder;
     private MetadataManagerProperties metadataManagerProperties;
     private ExtendedMetadataDelegateProperties extendedMetadataDelegateProperties;
     private SAMLSSOProperties properties;
@@ -56,7 +56,7 @@ public class MetadataManagerConfigurerTest {
         when(properties.getMetadataManager()).thenReturn(metadataManagerProperties);
         when(properties.getExtendedDelegate()).thenReturn(extendedMetadataDelegateProperties);
         when(properties.getIdps()).thenReturn(idpConfiguration);
-        builder = mock(ServiceProviderSecurityBuilder.class);
+        builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
         when(builder.getSharedObject(ExtendedMetadata.class)).thenReturn(extendedMetadata);
         resourceLoader = new DefaultResourceLoader();
