@@ -145,7 +145,8 @@ public static class MyServiceProviderConfig extends WebSecurityConfigurerAdapter
                 .publicKeyPEMLocation("classpath:/localhost.cert")
         .http()
             .authorizeRequests()
-            .requestMatchers(saml().endpointsMatcher()).permitAll()
+            .requestMatchers(saml().endpointsMatcher())
+            .permitAll()
         .and()
             .authorizeRequests()
             .anyRequest()
@@ -205,6 +206,48 @@ The following properties snippet is a sample configuration through `application.
  7. Enable IDP discovery, so when SAML SSO kicks in, we'll be presented with an IDP selection page before the actual login, (set to false to use default IDP).
  8. Provide a custom private key (DER format)
  9. And public cert (PEM format) to be used for signing outgoing requests. (To be configured in the IDP side also).
+ 
+ All you need on the Java side is the `@EnableSAMLSSO` annotation for the default configuration, although if you wanna define a `ServiceProviderConfigurerAdapter` that's fine too, and you can select which configuration you keep on the DSL side and what you leave on the properties, it's up to you.
+ 
+ If what you need is to use a standard `WebSecurityConfigurerAdapter` to configure SAML and you would like to use properties also, you can do that too.
+ Using the above properties all you need to do is to apply the `SAMLConfigurerBean` to the `HttpSecurity` and disable security for the SAML endpoints:
+ 
+ ```java
+ @Configuration
+ public static class MyServiceProviderConfig extends WebSecurityConfigurerAdapter {
+ 
+     @Bean
+     SAMLConfigurerBean saml() {
+         return new SAMLConfigurerBean();
+     }
+     
+     @Bean
+     public AuthenticationManager authenticationManagerBean() throws Exception {
+         return super.authenticationManagerBean();
+     }
+             
+     @Override
+     public void configure(HttpSecurity http) throws Exception {
+         // @formatter:off
+         http.httpBasic()
+             .disable()
+             .csrf()
+             .disable()
+             .anonymous()
+         .and()
+             .apply(saml())
+         .http()
+             .authorizeRequests()
+             .requestMatchers(saml().endpointsMatcher())
+             .permitAll()
+         .and()
+             .authorizeRequests()
+             .anyRequest()
+             .authenticated();
+         // @formatter:on
+     }
+ }
+ ```
 
 For a more thorough description of the properties please see JavaDoc of class `SAMLSSOProperties` and `ServiceProviderBuilder`. For configuration examples, see [Configuration Cookbook](#configuration-cookbook).
 
