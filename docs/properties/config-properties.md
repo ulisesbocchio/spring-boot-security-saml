@@ -49,7 +49,7 @@ The following table shows all the available properties (Parsed from Spring Confi
 |saml.sso.key-manager.store-pass	|null	|The KeyStore password. Not relevant when using privateKeyDerLocation and privateKeyDerLocation.	|
 |saml.sso.logout.clear-authentication	|true	|If true, removes the Authentication from the SecurityContext to prevent issues with concurrent requests.	|
 |saml.sso.logout.default-target-url	|/	|Supplies the default target Url that will be used if no saved request is found in the session, or the  alwaysUseDefaultTargetUrl property is set to true. If not set, defaults to /. It will be treated as relative  to the web-app's context path, and should include the leading /. Alternatively, inclusion of a scheme name  (such as "http://" or "https://") as the prefix will denote a fully-qualified URL and this is also  supported.	|
-|saml.sso.logout.invalidate-session	|false	|Causes the HttpSession to be invalidated when this LogoutHandler is invoked. Defaults to true.	|
+|saml.sso.logout.invalidate-session	|false	|Causes the HttpSession to be invalidated when this LogoutHandler is invoked. Defaults to false.	|
 |saml.sso.logout.logout-url	|/saml/logout	|Sets the URL used to determine if the {@link SAMLLogoutFilter} is invoked.	|
 |saml.sso.logout.single-logout-url	|saml/SingleLogout	|Sets the URL used to determine if the {@link SAMLLogoutProcessingFilter} is invoked.	|
 |saml.sso.metadata-generator.assertion-consumer-index	|0	|Generated assertion consumer service with the index equaling set value will be marked as default. Use  negative value to skip the default attribute altogether.	|
