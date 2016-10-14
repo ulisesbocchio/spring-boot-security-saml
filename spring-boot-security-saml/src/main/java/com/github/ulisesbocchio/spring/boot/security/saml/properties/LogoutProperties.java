@@ -37,7 +37,7 @@ public class LogoutProperties {
     private boolean clearAuthentication = true;
 
     /**
-     * Causes the HttpSession to be invalidated when this LogoutHandler is invoked. Defaults to true.
+     * Causes the HttpSession to be invalidated when this LogoutHandler is invoked. Defaults to false.
      */
     private boolean invalidateSession = false;
 }
