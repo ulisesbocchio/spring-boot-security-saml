@@ -76,6 +76,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuil
     private SAMLSSOProperties config;
     private ServiceProviderEndpoints endpoints;
     private String ssoHoKProcessingURL;
+    private SAMLEntryPoint samlEntryPointBean;
 
     @Override
     public void init(ServiceProviderBuilder builder) throws Exception {
@@ -128,7 +129,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuil
         endpoints.setIdpSelectionPageURL(idpSelectionPageURL);
         discoveryFilter.setIdpSelectionPath(idpSelectionPageURL);
 
-        SAMLEntryPoint entryPoint = createDefaultSamlEntryPoint();
+        SAMLEntryPoint entryPoint = Optional.ofNullable(samlEntryPointBean).orElseGet(this::createDefaultSamlEntryPoint);
         entryPoint.setDefaultProfileOptions(Optional.ofNullable(profileOptions).orElseGet(this::getProfileOptions));
         ssoLoginURL = Optional.ofNullable(ssoLoginURL).orElseGet(config::getSsoLoginUrl);
         endpoints.setSsoLoginURL(ssoLoginURL);
@@ -187,6 +188,17 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuil
     @VisibleForTesting
     protected SavedRequestAwareAuthenticationSuccessHandler createDefaultSuccessHandler() {
         return new SavedRequestAwareAuthenticationSuccessHandler();
+    }
+
+    /**
+     * Provide a specific {@link SAMLEntryPoint}.
+     *
+     * @param samlEntryPoint the actual entry point.
+     * @return this configurer for further customization
+     */
+    public SSOConfigurer samlEntryPoint(SAMLEntryPoint samlEntryPoint) {
+        this.samlEntryPointBean = samlEntryPoint;
+        return this;
     }
 
     /**
