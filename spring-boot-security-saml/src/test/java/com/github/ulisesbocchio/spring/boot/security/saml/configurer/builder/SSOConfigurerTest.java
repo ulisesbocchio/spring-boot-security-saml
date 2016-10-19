@@ -155,6 +155,106 @@ public class SSOConfigurerTest {
         profileOptions.setProxyCount(null);
         profileOptions.setRelayState("relayState");
 
+        configurer.init(builder);
+        configurer
+                .defaultSuccessURL("/success")
+                .failureHandler(failureHandler)
+                .successHandler(successHandler)
+                .defaultFailureURL("/failure")
+                .discoveryProcessingURL("/discovery")
+                .enableSsoHoK(true)
+                .idpSelectionPageURL("/idp")
+                .profileOptions(profileOptions)
+                .ssoHoKProcessingURL("/hok")
+                .ssoLoginURL("/login")
+                .ssoProcessingURL("/sso");
+        configurer.configure(builder);
+
+        verify(properties, never()).getDefaultFailureUrl();
+        verify(properties, never()).getDefaultSuccessUrl();
+        verify(properties, never()).getDiscoveryProcessingUrl();
+        verify(properties, never()).getIdpSelectionPageUrl();
+        verify(properties, never()).getSsoHokProcessingUrl();
+        verify(properties, never()).getSsoLoginUrl();
+        verify(properties, never()).getSsoProcessingUrl();
+        verify(properties, never()).getProfileOptions();
+
+        verify(successHandler, never()).setDefaultTargetUrl(eq("/success"));
+        verify(failureHandler, never()).setDefaultFailureUrl(eq("/failure"));
+
+        verify(ssoFilter).setAuthenticationManager(eq(authenticationManager));
+        verify(ssoFilter).setAuthenticationSuccessHandler(eq(successHandler));
+        verify(ssoFilter).setAuthenticationFailureHandler(eq(failureHandler));
+        verify(ssoFilter).setFilterProcessesUrl(eq("/sso"));
+
+        verify(ssoHoKFilter).setAuthenticationManager(eq(authenticationManager));
+        verify(ssoHoKFilter).setAuthenticationSuccessHandler(eq(successHandler));
+        verify(ssoHoKFilter).setAuthenticationFailureHandler(eq(failureHandler));
+        verify(ssoHoKFilter).setFilterProcessesUrl(eq("/hok"));
+
+        verify(serviceProviderEndpoints).setSsoProcessingURL("/sso");
+        verify(serviceProviderEndpoints).setSsoHoKProcessingURL("/hok");
+        verify(serviceProviderEndpoints).setDefaultFailureURL("/failure");
+        verify(serviceProviderEndpoints).setDiscoveryProcessingURL("/discovery");
+        verify(serviceProviderEndpoints).setIdpSelectionPageURL("/idp");
+        verify(serviceProviderEndpoints).setSsoLoginURL("/login");
+
+        verify(discoveryFilter).setFilterProcessesUrl(eq("/discovery"));
+        verify(discoveryFilter).setIdpSelectionPath(eq("/idp"));
+
+        verify(entryPoint).setFilterProcessesUrl(eq("/login"));
+        ArgumentCaptor<WebSSOProfileOptions> optionsCaptor = ArgumentCaptor.forClass(WebSSOProfileOptions.class);
+        verify(entryPoint).setDefaultProfileOptions(optionsCaptor.capture());
+        WebSSOProfileOptions options = optionsCaptor.getValue();
+        Assertions.assertThat(options.isAllowCreate()).isEqualTo(true);
+        Assertions.assertThat(options.getAllowedIDPs()).containsExactly("allowedIdps");
+        Assertions.assertThat(options.getAssertionConsumerIndex()).isEqualTo(999);
+        Assertions.assertThat(options.getAuthnContextComparison()).isEqualTo(AuthnContextComparisonTypeEnumeration.MINIMUM);
+        Assertions.assertThat(options.getAuthnContexts()).containsExactly("contexts");
+        Assertions.assertThat(options.getBinding()).isEqualTo("binding");
+        Assertions.assertThat(options.getForceAuthN()).isEqualTo(true);
+        Assertions.assertThat(options.isIncludeScoping()).isEqualTo(true);
+        Assertions.assertThat(options.getNameID()).isEqualTo("nameId");
+        Assertions.assertThat(options.getPassive()).isEqualTo(true);
+        Assertions.assertThat(options.getProviderName()).isEqualTo("providerName");
+        Assertions.assertThat(options.getProxyCount()).isEqualTo(null);
+        Assertions.assertThat(options.getRelayState()).isEqualTo("relayState");
+
+        verify(builder).setSharedObject(eq(SAMLProcessingFilter.class), eq(ssoFilter));
+        verify(builder).setSharedObject(eq(SAMLWebSSOHoKProcessingFilter.class), eq(ssoHoKFilter));
+        verify(builder).setSharedObject(eq(SAMLDiscovery.class), eq(discoveryFilter));
+        verify(builder).setSharedObject(eq(SAMLEntryPoint.class), eq(entryPoint));
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void configure_custom_entry_point() throws Exception {
+        SSOConfigurer configurer = spy(new SSOConfigurer());
+        SAMLProcessingFilter ssoFilter = mock(SAMLProcessingFilter.class);
+        when(configurer.createDefaultSamlProcessingFilter()).thenReturn(ssoFilter);
+        SAMLWebSSOHoKProcessingFilter ssoHoKFilter = mock(SAMLWebSSOHoKProcessingFilter.class);
+        when(configurer.createDefaultSamlHoKProcessingFilter()).thenReturn(ssoHoKFilter);
+        SAMLDiscovery discoveryFilter = mock(SAMLDiscovery.class);
+        when(configurer.createDefaultSamlDiscoveryFilter()).thenReturn(discoveryFilter);
+        when(configurer.createDefaultSamlEntryPoint()).thenThrow(IllegalStateException.class);
+        SavedRequestAwareAuthenticationSuccessHandler successHandler = mock(SavedRequestAwareAuthenticationSuccessHandler.class);
+        SimpleUrlAuthenticationFailureHandler failureHandler = mock(SimpleUrlAuthenticationFailureHandler.class);
+        WebSSOProfileOptions profileOptions = new WebSSOProfileOptions();
+        profileOptions.setAllowCreate(true);
+        profileOptions.setAllowedIDPs(Collections.singleton("allowedIdps"));
+        profileOptions.setAssertionConsumerIndex(999);
+        profileOptions.setAuthnContextComparison(AuthnContextComparisonTypeEnumeration.MINIMUM);
+        profileOptions.setAuthnContexts(Collections.singleton("contexts"));
+        profileOptions.setBinding("binding");
+        profileOptions.setForceAuthN(true);
+        profileOptions.setIncludeScoping(true);
+        profileOptions.setNameID("nameId");
+        profileOptions.setPassive(true);
+        profileOptions.setProviderName("providerName");
+        profileOptions.setProxyCount(null);
+        profileOptions.setRelayState("relayState");
+
         SAMLEntryPoint customEntryPoint = mock(SAMLEntryPoint.class);
         configurer.init(builder);
         configurer
