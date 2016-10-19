@@ -155,6 +155,7 @@ public class SSOConfigurerTest {
         profileOptions.setProxyCount(null);
         profileOptions.setRelayState("relayState");
 
+        SAMLEntryPoint customEntryPoint = mock(SAMLEntryPoint.class);
         configurer.init(builder);
         configurer
                 .defaultSuccessURL("/success")
@@ -167,7 +168,8 @@ public class SSOConfigurerTest {
                 .profileOptions(profileOptions)
                 .ssoHoKProcessingURL("/hok")
                 .ssoLoginURL("/login")
-                .ssoProcessingURL("/sso");
+                .ssoProcessingURL("/sso")
+                .samlEntryPoint(customEntryPoint);
         configurer.configure(builder);
 
         verify(properties, never()).getDefaultFailureUrl();
@@ -202,9 +204,9 @@ public class SSOConfigurerTest {
         verify(discoveryFilter).setFilterProcessesUrl(eq("/discovery"));
         verify(discoveryFilter).setIdpSelectionPath(eq("/idp"));
 
-        verify(entryPoint).setFilterProcessesUrl(eq("/login"));
+        verify(customEntryPoint).setFilterProcessesUrl(eq("/login"));
         ArgumentCaptor<WebSSOProfileOptions> optionsCaptor = ArgumentCaptor.forClass(WebSSOProfileOptions.class);
-        verify(entryPoint).setDefaultProfileOptions(optionsCaptor.capture());
+        verify(customEntryPoint).setDefaultProfileOptions(optionsCaptor.capture());
         WebSSOProfileOptions options = optionsCaptor.getValue();
         Assertions.assertThat(options.isAllowCreate()).isEqualTo(true);
         Assertions.assertThat(options.getAllowedIDPs()).containsExactly("allowedIdps");
@@ -223,7 +225,7 @@ public class SSOConfigurerTest {
         verify(builder).setSharedObject(eq(SAMLProcessingFilter.class), eq(ssoFilter));
         verify(builder).setSharedObject(eq(SAMLWebSSOHoKProcessingFilter.class), eq(ssoHoKFilter));
         verify(builder).setSharedObject(eq(SAMLDiscovery.class), eq(discoveryFilter));
-        verify(builder).setSharedObject(eq(SAMLEntryPoint.class), eq(entryPoint));
+        verify(builder).setSharedObject(eq(SAMLEntryPoint.class), eq(customEntryPoint));
 
     }
 
