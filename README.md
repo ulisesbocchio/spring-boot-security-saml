@@ -294,3 +294,5 @@ For SAML 2.0 documentation these are good starting points:
 - [SAML 2.0 Wikipedia](https://en.wikipedia.org/wiki/SAML_2.0)
 - [Ping Identity's article about SAML](https://www.pingidentity.com/en/resources/articles/saml.html)
 
+# License
+Lincensed under [MIT License](http://opensource.org/licenses/MIT)
