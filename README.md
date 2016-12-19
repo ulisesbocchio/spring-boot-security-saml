@@ -167,7 +167,7 @@ http() // or just http
     .permitAll()
 ```
 
-Are required to expose the SAML Service Provider endpoints. The `endpointsMatcher()` method returns a `RequestMatcher` that matches only the `SAML` endpoints and will match any customized URLs without you having to specify them.
+Are required to expose the SAML Service Provider endpoints. The `endpointsMatcher()` method returns a `RequestMatcher` that matches only the `SAML` endpoints and will match any default or customized URLs without you having to specify them twice.
 
 ### Configuration Properties
 
