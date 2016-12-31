@@ -345,6 +345,58 @@ public static SAMLBootstrap SAMLBootstrap() {
 }
 ```
 
+### Custom SAML Message Storage
+
+`spring-security-saml` stores SAML messages in session by default, if you wanna provide your own SAML storage you can provide
+a custom `SAMLContextProvider`with a custom `SAMLMessageStorageFactory`.
+
+With DSL:
+
+```java
+@Override
+public void configure(ServiceProviderBuilder serviceProvider) throws Exception {
+    SAMLContextProviderImpl contextProvider = new SAMLContextProviderImpl();
+    contextProvider.setStorageFactory(customMessageStorageFactory);
+    
+    serviceProvider
+            .samlContextProvider(contextProvider);
+    
+    // rest of configuration
+}
+```
+
+Overriding `SAMLContextProvider` Bean:
+
+```java
+@Bean
+SAMLContextProvider mySamlContextProvider(SAMLMessageStorageFactory messageStorageFactory) {
+    DSLSAMLContextProviderImpl contextProvider = new DSLSAMLContextProviderImpl();
+    contextProvider.setStorageFactory(messageStorageFactory);
+    return contextProvider;
+}
+```
+
+### Configure Bindings
+
+You may wanna set the bindings to use with Your IDP, this is how you can do it through the DSL:
+
+```java
+@Override
+public void configure(ServiceProviderBuilder serviceProvider) throws Exception {
+    WebSSOProfileOptions profileOptions = new WebSSOProfileOptions();
+    //POST Bindings
+    profileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+    //REDIRECT Bindings
+    profileOptions.setBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+    
+    serviceProvider
+            .sso()
+            .profileOptions(profileOptions);
+    
+    // rest of configuration
+}
+```
+
 ## Further Documentation
 
 For configuration specifics about Spring Security SAML please visit their [Documentation Reference](http://docs.spring.io/spring-security-saml/docs/1.0.x/reference/html/).

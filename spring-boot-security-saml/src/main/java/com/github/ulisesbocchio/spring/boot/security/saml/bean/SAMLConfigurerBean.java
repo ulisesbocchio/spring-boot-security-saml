@@ -18,6 +18,7 @@ import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -135,6 +136,8 @@ public class SAMLConfigurerBean extends SecurityConfigurerAdapter<DefaultSecurit
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        Assert.notNull(serviceProviderBuilder, "ServiceProviderBuilder can't be null");
+        Assert.notNull(authenticationManager, "AuthenticationManager can't be null");
         serviceProviderBuilder.setSharedObject(AuthenticationManager.class, authenticationManager);
     }
 
