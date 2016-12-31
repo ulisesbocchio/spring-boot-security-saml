@@ -2,7 +2,6 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.WebSSOProfileOptionProperties;
 import org.assertj.core.util.VisibleForTesting;
@@ -60,7 +59,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class SSOConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
+public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
     private String defaultSuccessURL;
     private AuthenticationSuccessHandler successHandler;

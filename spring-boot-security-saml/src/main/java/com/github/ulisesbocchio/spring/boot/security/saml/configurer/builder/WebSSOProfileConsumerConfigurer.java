@@ -1,7 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.WebSSOProfileConsumer;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
@@ -18,7 +17,7 @@ import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
  *
  * @author Ulises Bocchio
  */
-public class WebSSOProfileConsumerConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
+public class WebSSOProfileConsumerConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
     private WebSSOProfileConsumer webSSOProfileConsumer;
     private WebSSOProfileConsumer webSSOProfileConsumerBean;

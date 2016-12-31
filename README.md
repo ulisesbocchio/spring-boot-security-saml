@@ -252,6 +252,45 @@ Using the above properties all you need to do is to apply the `SAMLConfigurerBea
 
 For a more thorough description of the properties please see JavaDoc of class `SAMLSSOProperties` and `ServiceProviderBuilder`. For configuration examples, see [Configuration Cookbook](#configuration-cookbook).
 
+## Overridable Beans
+
+The Following Bean classes can be overridden when using this plugin. All you gotta do is add a Bean declaration anywhere in your Spring Configuration:
+
+
+|                   Class Name 	| DSL Version                     	|
+|-----------------------------:	|---------------------------------	|
+| ExtendedMetadata             	| ---             	                |
+| SAMLContextProvider          	| DSLSAMLContextProviderImpl       	|
+| KeyManager                   	| ---                             	|
+| MetadataManager              	| DSLMetadataManager              	|
+| MetadataGenerator            	| DSLMetadataGenerator            	|
+| SAMLProcessor                	| ---                	            |
+| WebSSOProfileConsumer        	| DSLWebSSOProfileConsumerImpl    	|
+| WebSSOProfileConsumerHoKImpl 	| DSLWebSSOProfileConsumerHoKImpl 	|
+| WebSSOProfile                	| DSLWebSSOProfileImpl             	|
+| WebSSOProfileECPImpl         	| DSLWebSSOProfileECPImpl         	|
+| WebSSOProfileHoKImpl         	| DSLWebSSOProfileHoKImpl         	|
+| SingleLogoutProfile          	| DSLSingleLogoutProfileImpl       	|
+| SAMLAuthenticationProvider   	| DSLSAMLAuthenticationProvider   	|
+| SAMLBootstrap                	|  ---                            	|
+| ParserPool                	|  ---                            	|
+| SAMLLogger                	|  ---                            	|
+
+
+Due to the fact that **MOST** `spring-security-saml` Bean classes use `@Autowire` to inject dependencies, the second column shows a DSL version of the same type
+with `@Autowire` turned off that you can use and populate, or implement your own. The ones that don't have a DSL version is because they don't need one.
+The beans are then wired by the plugin instead of relying on autowiring.
+Here's a sample of bean override:
+
+```java
+
+@Bean
+public SAMLContextProvider mySAMLContextProvider() {
+    return new DSLSAMLContextProvider();
+}
+
+```
+
 ## Spring MVC Configuration
 
 No default templates are provided with `spring-boot-security-saml` for IDP selection page, home page, or default logout page. Developers need to configure the desired template engine and make sure that the URLs configured for this plugin are resolvable through Spring MVC.
@@ -284,7 +323,79 @@ In [spring-security-saml-sample](https://github.com/ulisesbocchio/spring-boot-se
 ## Configuration Cookbook
 These examples are intended to cover some usual Spring Security SAML configuration scenarios through this plugin to showcase the dynamics of the new configuration style. It is not meant as extensive documentation of Spring Security SAML or the SAML 2.0 standard. For documentation regarding Spring Security SAML and SAML 2.0 please see [Further Documentation](#further-documentation) section.
 
-*** Coming Soon ***
+### SHA256 Signature
+
+Some IDPs like ADFS require SHA256 message signature. For this you can just override the `SAMLBootstrap` bean like this:
+ 
+```java
+public final class CustomSAMLBootstrap extends SAMLBootstrap {
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        super.postProcessBeanFactory(beanFactory);
+        BasicSecurityConfiguration config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+        config.registerSignatureAlgorithmURI("RSA", SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
+        config.setSignatureReferenceDigestMethod(SignatureConstants.ALGO_ID_DIGEST_SHA256);
+    }
+}
+```
+```java
+@Bean
+public static SAMLBootstrap SAMLBootstrap() {
+    return new CustomSAMLBootstrap();
+}
+```
+
+### Custom SAML Message Storage
+
+`spring-security-saml` stores SAML messages in session by default, if you wanna provide your own SAML storage you can provide
+a custom `SAMLContextProvider`with a custom `SAMLMessageStorageFactory`.
+
+With DSL:
+
+```java
+@Override
+public void configure(ServiceProviderBuilder serviceProvider) throws Exception {
+    SAMLContextProviderImpl contextProvider = new SAMLContextProviderImpl();
+    contextProvider.setStorageFactory(customMessageStorageFactory);
+    
+    serviceProvider
+            .samlContextProvider(contextProvider);
+    
+    // rest of configuration
+}
+```
+
+Overriding `SAMLContextProvider` Bean:
+
+```java
+@Bean
+SAMLContextProvider mySamlContextProvider(SAMLMessageStorageFactory messageStorageFactory) {
+    DSLSAMLContextProviderImpl contextProvider = new DSLSAMLContextProviderImpl();
+    contextProvider.setStorageFactory(messageStorageFactory);
+    return contextProvider;
+}
+```
+
+### Configure Bindings
+
+You may wanna set the bindings to use with Your IDP, this is how you can do it through the DSL:
+
+```java
+@Override
+public void configure(ServiceProviderBuilder serviceProvider) throws Exception {
+    WebSSOProfileOptions profileOptions = new WebSSOProfileOptions();
+    //POST Bindings
+    profileOptions.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+    //REDIRECT Bindings
+    profileOptions.setBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+    
+    serviceProvider
+            .sso()
+            .profileOptions(profileOptions);
+    
+    // rest of configuration
+}
+```
 
 ## Further Documentation
 

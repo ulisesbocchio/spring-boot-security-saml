@@ -1,7 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
@@ -18,7 +17,7 @@ import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
  *
  * @author Ulises Bocchio
  */
-public class WebSSOProfileHoKConsumerConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
+public class WebSSOProfileHoKConsumerConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
     private WebSSOProfileConsumerHoKImpl hokProfileConsumer;
     private WebSSOProfileConsumerHoKImpl hokProfileConsumerBean;
 

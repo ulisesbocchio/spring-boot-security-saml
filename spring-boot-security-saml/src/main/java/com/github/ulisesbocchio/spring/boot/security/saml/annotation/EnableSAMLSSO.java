@@ -4,7 +4,6 @@ package com.github.ulisesbocchio.spring.boot.security.saml.annotation;
  * @author Ulises Bocchio
  */
 
-import com.github.ulisesbocchio.spring.boot.security.saml.configuration.DefaultSAMLConfiguration;
 import com.github.ulisesbocchio.spring.boot.security.saml.configuration.SAMLServiceProviderSecurityConfiguration;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurerAdapter;
@@ -58,13 +57,12 @@ import java.lang.annotation.*;
  * @author Ulises Bocchio
  * @see ServiceProviderConfigurerAdapter
  * @see ServiceProviderConfigurer
- * @see DefaultSAMLConfiguration
  * @see SAMLServiceProviderSecurityConfiguration
  * @see SAMLSSOProperties
  **/
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({DefaultSAMLConfiguration.class, SAMLServiceProviderSecurityConfiguration.class})
+@Import({SAMLServiceProviderSecurityConfiguration.class})
 public @interface EnableSAMLSSO {
 }

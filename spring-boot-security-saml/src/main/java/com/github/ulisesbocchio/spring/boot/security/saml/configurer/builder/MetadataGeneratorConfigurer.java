@@ -2,7 +2,6 @@ package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataGeneratorProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.opensaml.saml2.metadata.EntityDescriptor;
@@ -45,7 +44,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
+public class MetadataGeneratorConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
     private String metadataURL;
     private String entityId;
