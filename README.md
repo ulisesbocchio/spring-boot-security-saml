@@ -323,7 +323,27 @@ In [spring-security-saml-sample](https://github.com/ulisesbocchio/spring-boot-se
 ## Configuration Cookbook
 These examples are intended to cover some usual Spring Security SAML configuration scenarios through this plugin to showcase the dynamics of the new configuration style. It is not meant as extensive documentation of Spring Security SAML or the SAML 2.0 standard. For documentation regarding Spring Security SAML and SAML 2.0 please see [Further Documentation](#further-documentation) section.
 
-*** Coming Soon ***
+### SHA256 Signature
+
+Some IDPs like ADFS require SHA256 message signature. For this you can just override the `SAMLBootstrap` bean like this:
+ 
+```java
+public final class CustomSAMLBootstrap extends SAMLBootstrap {
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        super.postProcessBeanFactory(beanFactory);
+        BasicSecurityConfiguration config = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+        config.registerSignatureAlgorithmURI("RSA", SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
+        config.setSignatureReferenceDigestMethod(SignatureConstants.ALGO_ID_DIGEST_SHA256);
+    }
+}
+```
+```java
+@Bean
+public static SAMLBootstrap SAMLBootstrap() {
+    return new CustomSAMLBootstrap();
+}
+```
 
 ## Further Documentation
 
