@@ -252,6 +252,45 @@ Using the above properties all you need to do is to apply the `SAMLConfigurerBea
 
 For a more thorough description of the properties please see JavaDoc of class `SAMLSSOProperties` and `ServiceProviderBuilder`. For configuration examples, see [Configuration Cookbook](#configuration-cookbook).
 
+## Overridable Beans
+
+The Following Bean classes can be overridden when using this plugin. All you gotta do is add a Bean declaration anywhere in your Spring Configuration:
+
+
+|                   Class Name 	| DSL Version                     	|
+|-----------------------------:	|---------------------------------	|
+| ExtendedMetadata             	| ---             	                |
+| SAMLContextProvider          	| DSLSAMLContextProviderImpl       	|
+| KeyManager                   	| ---                             	|
+| MetadataManager              	| DSLMetadataManager              	|
+| MetadataGenerator            	| DSLMetadataGenerator            	|
+| SAMLProcessor                	| ---                	            |
+| WebSSOProfileConsumer        	| DSLWebSSOProfileConsumerImpl    	|
+| WebSSOProfileConsumerHoKImpl 	| DSLWebSSOProfileConsumerHoKImpl 	|
+| WebSSOProfile                	| DSLWebSSOProfileImpl             	|
+| WebSSOProfileECPImpl         	| DSLWebSSOProfileECPImpl         	|
+| WebSSOProfileHoKImpl         	| DSLWebSSOProfileHoKImpl         	|
+| SingleLogoutProfile          	| DSLSingleLogoutProfileImpl       	|
+| SAMLAuthenticationProvider   	| DSLSAMLAuthenticationProvider   	|
+| SAMLBootstrap                	|  ---                            	|
+| ParserPool                	|  ---                            	|
+| SAMLLogger                	|  ---                            	|
+
+
+Due to the fact that **MOST** `spring-security-saml` Bean classes use `@Autowire` to inject dependencies, the second column shows a DSL version of the same type
+with `@Autowire` turned off that you can use and populate, or implement your own. The ones that don't have a DSL version is because they don't need one.
+The beans are then wired by the plugin instead of relying on autowiring.
+Here's a sample of bean override:
+
+```java
+
+@Bean
+public SAMLContextProvider mySAMLContextProvider() {
+    return new DSLSAMLContextProvider();
+}
+
+```
+
 ## Spring MVC Configuration
 
 No default templates are provided with `spring-boot-security-saml` for IDP selection page, home page, or default logout page. Developers need to configure the desired template engine and make sure that the URLs configured for this plugin are resolvable through Spring MVC.

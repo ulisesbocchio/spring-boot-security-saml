@@ -127,13 +127,13 @@ public class SAMLServiceProviderSecurityConfiguration implements InitializingBea
 
     @Bean(initMethod = "initialize")
     @ConditionalOnMissingBean
-    public StaticBasicParserPool parserPool() {
+    public ParserPool parserPool() {
         return new StaticBasicParserPool();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SAMLDefaultLogger samlLogger() {
+    public SAMLLogger samlLogger() {
         return new SAMLDefaultLogger();
     }
 
