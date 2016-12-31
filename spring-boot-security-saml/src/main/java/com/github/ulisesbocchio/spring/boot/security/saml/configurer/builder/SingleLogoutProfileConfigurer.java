@@ -1,7 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.websso.SingleLogoutProfile;
@@ -19,7 +18,7 @@ import org.springframework.security.saml.websso.SingleLogoutProfileImpl;
  *
  * @author Ulises Bocchio
  */
-public class SingleLogoutProfileConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
+public class SingleLogoutProfileConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
     private SingleLogoutProfile sloProfile;
     private SingleLogoutProfile sloProfileBean;

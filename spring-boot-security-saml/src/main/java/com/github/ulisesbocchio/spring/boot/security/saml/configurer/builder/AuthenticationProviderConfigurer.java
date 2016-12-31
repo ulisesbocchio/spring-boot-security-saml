@@ -1,7 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.AuthenticationProviderProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.user.SimpleSAMLUserDetailsService;
@@ -32,7 +31,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
+public class AuthenticationProviderConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
     private Boolean excludeCredential = null;
     private Boolean forcePrincipalAsString = null;

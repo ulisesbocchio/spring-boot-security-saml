@@ -1,7 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.TLSProperties;
 import org.assertj.core.util.VisibleForTesting;
@@ -35,7 +34,7 @@ import static java.util.stream.Collectors.toSet;
  *
  * @author Ulises Bocchio
  */
-public class TLSConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
+public class TLSConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
     private String protocolName;
     private Integer protocolPort;

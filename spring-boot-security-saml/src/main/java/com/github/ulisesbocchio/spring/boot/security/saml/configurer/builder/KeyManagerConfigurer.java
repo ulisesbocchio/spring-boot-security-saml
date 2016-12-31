@@ -1,7 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilderResult;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.KeyManagerProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.resource.KeystoreFactory;
@@ -41,7 +40,7 @@ import java.util.Optional;
  *
  * @author Ulises Bocchio
  */
-public class KeyManagerConfigurer extends SecurityConfigurerAdapter<ServiceProviderBuilderResult, ServiceProviderBuilder> {
+public class KeyManagerConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
     private KeyManager keyManager;
     private KeyManager keyManagerBean;
