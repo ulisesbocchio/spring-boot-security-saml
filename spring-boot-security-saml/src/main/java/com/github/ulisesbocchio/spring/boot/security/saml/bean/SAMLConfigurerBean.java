@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
@@ -130,9 +131,9 @@ import static com.github.ulisesbocchio.spring.boot.security.saml.util.Functional
 public class SAMLConfigurerBean extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> implements InitializingBean {
 
     @Autowired
-    private ServiceProviderBuilder serviceProviderBuilder;
+    protected ServiceProviderBuilder serviceProviderBuilder;
     @Autowired
-    private AuthenticationManager authenticationManager;
+    protected AuthenticationManager authenticationManager;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -238,15 +239,21 @@ public class SAMLConfigurerBean extends SecurityConfigurerAdapter<DefaultSecurit
     public void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         //http
-        http.addFilterAfter(serviceProviderBuilder.getSharedObject(MetadataGeneratorFilter.class), BasicAuthenticationFilter.class);
-        http.addFilterAfter(serviceProviderBuilder.getSharedObject(MetadataDisplayFilter.class), MetadataGeneratorFilter.class);
-        http.addFilterAfter(serviceProviderBuilder.getSharedObject(SAMLEntryPoint.class), MetadataDisplayFilter.class);
-        http.addFilterAfter(serviceProviderBuilder.getSharedObject(SAMLProcessingFilter.class), SAMLEntryPoint.class);
-        http.addFilterAfter(serviceProviderBuilder.getSharedObject(SAMLWebSSOHoKProcessingFilter.class), SAMLProcessingFilter.class);
-        http.addFilterAfter(serviceProviderBuilder.getSharedObject(SAMLLogoutProcessingFilter.class), SAMLWebSSOHoKProcessingFilter.class);
-        http.addFilterAfter(serviceProviderBuilder.getSharedObject(SAMLDiscovery.class), SAMLLogoutProcessingFilter.class);
-        http.addFilterAfter(serviceProviderBuilder.getSharedObject(SAMLLogoutFilter.class), SAMLDiscovery.class);
+        addFilterAfter(http, MetadataGeneratorFilter.class, BasicAuthenticationFilter.class);
+        addFilterAfter(http, MetadataDisplayFilter.class, MetadataGeneratorFilter.class);
+        addFilterAfter(http, SAMLEntryPoint.class, MetadataDisplayFilter.class);
+        addFilterAfter(http, SAMLProcessingFilter.class, SAMLEntryPoint.class);
+        addFilterAfter(http, SAMLWebSSOHoKProcessingFilter.class, SAMLProcessingFilter.class);
+        addFilterAfter(http, SAMLLogoutProcessingFilter.class, SAMLWebSSOHoKProcessingFilter.class);
+        addFilterAfter(http, SAMLDiscovery.class, SAMLLogoutProcessingFilter.class);
+        addFilterAfter(http, SAMLLogoutFilter.class, SAMLDiscovery.class);
         // @formatter:on
+    }
+
+    protected void addFilterAfter(HttpSecurity http, Class<? extends Filter> filterClass, Class<? extends Filter> beforeFilterClass) {
+        Optional.of(serviceProviderBuilder)
+                .map(spb -> spb.getSharedObject(filterClass))
+                .ifPresent(filter -> http.addFilterAfter(filter, beforeFilterClass));
     }
 
     private static class LazyEndpointsRequestMatcher implements RequestMatcher {
