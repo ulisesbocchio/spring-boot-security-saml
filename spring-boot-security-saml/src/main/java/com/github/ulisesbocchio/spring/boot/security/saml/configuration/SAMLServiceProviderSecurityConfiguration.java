@@ -150,7 +150,7 @@ public class SAMLServiceProviderSecurityConfiguration implements InitializingBea
     @Configuration
     static class SAMLWebSecurityConfigurer extends WebSecurityConfigurerAdapter implements Ordered {
 
-        @Autowired
+        @Autowired(required = false)
         @SuppressWarnings("SpringJavaAutowiringInspection")
         private List<ServiceProviderConfigurer> serviceProviderConfigurers = Collections.emptyList();
 
