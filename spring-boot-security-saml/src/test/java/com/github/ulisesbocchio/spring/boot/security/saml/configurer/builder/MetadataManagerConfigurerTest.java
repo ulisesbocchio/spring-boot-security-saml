@@ -8,6 +8,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataMan
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataFilter;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
@@ -55,7 +56,7 @@ public class MetadataManagerConfigurerTest {
         extendedMetadata = spy(new ExtendedMetadata());
         when(properties.getMetadataManager()).thenReturn(metadataManagerProperties);
         when(properties.getExtendedDelegate()).thenReturn(extendedMetadataDelegateProperties);
-        when(properties.getIdps()).thenReturn(idpConfiguration);
+        when(properties.getIdp()).thenReturn(idpConfiguration);
         builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
         when(builder.getSharedObject(ExtendedMetadata.class)).thenReturn(extendedMetadata);
@@ -98,7 +99,7 @@ public class MetadataManagerConfigurerTest {
         ArgumentCaptor<List> providersCaptor = ArgumentCaptor.forClass(List.class);
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer).createDefaultMetadataProvider(eq(idpConfiguration.getMetadataLocation()));
-        verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
+        verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class), any());
         verify(metadataManagerProperties, never()).getDefaultIdp();
         verify(metadataManagerProperties, never()).getHostedSpName();
         verify(metadataManagerProperties, never()).getRefreshCheckInterval();
@@ -119,7 +120,7 @@ public class MetadataManagerConfigurerTest {
         CachingMetadataManager metadataManager = mock(CachingMetadataManager.class);
         when(configurer.createDefaultMetadataManager()).thenReturn(metadataManager);
         ExtendedMetadataDelegate delegate = mock(ExtendedMetadataDelegate.class);
-        doReturn(delegate).when(configurer).createDefaultExtendedMetadataDelegate(any());
+        doReturn(delegate).when(configurer).createDefaultExtendedMetadataDelegate(any(), any());
         configurer.setBuilder(builder);
         configurer.init(builder);
         configurer.configure(builder);
@@ -127,7 +128,7 @@ public class MetadataManagerConfigurerTest {
         ArgumentCaptor<List> providersCaptor = ArgumentCaptor.forClass(List.class);
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer).createDefaultMetadataProvider(eq(idpConfiguration.getMetadataLocation()));
-        verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
+        verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class), any());
         verify(metadataManagerProperties).getDefaultIdp();
         verify(metadataManagerProperties).getHostedSpName();
         verify(metadataManagerProperties).getRefreshCheckInterval();
@@ -165,7 +166,7 @@ public class MetadataManagerConfigurerTest {
         verify(provider).setParserPool(eq(parserPool));
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer, never()).createDefaultMetadataProvider(eq(idpConfiguration.getMetadataLocation()));
-        verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
+        verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class), any());
         verify(metadataManagerProperties).getDefaultIdp();
         verify(metadataManagerProperties).getHostedSpName();
         verify(metadataManagerProperties).getRefreshCheckInterval();
@@ -194,7 +195,7 @@ public class MetadataManagerConfigurerTest {
         ArgumentCaptor<List> providersCaptor = ArgumentCaptor.forClass(List.class);
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer, never()).createDefaultMetadataProvider(eq(idpConfiguration.getMetadataLocation()));
-        verify(configurer, never()).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
+        verify(configurer, never()).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class), any());
         verify(metadataManagerProperties).getDefaultIdp();
         verify(metadataManagerProperties).getHostedSpName();
         verify(metadataManagerProperties).getRefreshCheckInterval();
@@ -222,7 +223,7 @@ public class MetadataManagerConfigurerTest {
         ArgumentCaptor<List> providersCaptor = ArgumentCaptor.forClass(List.class);
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer).createDefaultMetadataProvider(eq("classpath:idp-provided.xml"));
-        verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class));
+        verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class), any());
         verify(metadataManagerProperties).getDefaultIdp();
         verify(metadataManagerProperties).getHostedSpName();
         verify(metadataManagerProperties).getRefreshCheckInterval();
@@ -245,7 +246,7 @@ public class MetadataManagerConfigurerTest {
         ResourceBackedMetadataProvider provider = mock(ResourceBackedMetadataProvider.class);
         doReturn(provider).when(configurer).createDefaultMetadataProvider("classpath:idp-provided.xml");
         ExtendedMetadataDelegate delegate = mock(ExtendedMetadataDelegate.class);
-        doReturn(delegate).when(configurer).createDefaultExtendedMetadataDelegate(provider);
+        doReturn(delegate).when(configurer).createDefaultExtendedMetadataDelegate(eq(provider), any(ExtendedMetadata.class));
         MetadataFilter metadataFilter = mock(MetadataFilter.class);
         configurer.setBuilder(builder);
         configurer
@@ -265,7 +266,7 @@ public class MetadataManagerConfigurerTest {
         ArgumentCaptor<List> providersCaptor = ArgumentCaptor.forClass(List.class);
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer).createDefaultMetadataProvider(eq("classpath:idp-provided.xml"));
-        verify(configurer).createDefaultExtendedMetadataDelegate(eq(provider));
+        verify(configurer).createDefaultExtendedMetadataDelegate(eq(provider), any());
         verify(metadataManagerProperties, never()).getDefaultIdp();
         verify(metadataManagerProperties, never()).getHostedSpName();
         verify(metadataManagerProperties, never()).getRefreshCheckInterval();

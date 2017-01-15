@@ -73,7 +73,7 @@ public class SAMLProcessorConfigurerTest {
         SAMLProcessorImpl profile = mock(SAMLProcessorImpl.class);
         when(configurer.createDefaultSamlProcessor(anyListOf(SAMLBinding.class))).thenReturn(profile);
         HTTPArtifactBinding artifactBinding = mock(HTTPArtifactBinding.class);
-        doReturn(artifactBinding).when(configurer).createDefaultArtifactBinding();
+        doReturn(artifactBinding).when(configurer).createDefaultArtifactBinding(builder);
         HTTPPAOS11Binding paosBinding = mock(HTTPPAOS11Binding.class);
         doReturn(paosBinding).when(configurer).createDefaultPaosBinding();
         HTTPPostBinding postBinding = mock(HTTPPostBinding.class);

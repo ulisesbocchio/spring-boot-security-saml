@@ -1,5 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
+import com.github.ulisesbocchio.spring.boot.security.saml.bean.override.LocalExtendedMetadata;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder.*;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.CheckedConsumer;
@@ -78,7 +79,9 @@ public class ServiceProviderBuilder extends
         //All configurers are initialized only once.
         //Order of configurers is established by the following stream.
         Stream.of(keyManager(),
+                tls(),
                 extendedMetadata(),
+                localExtendedMetadata(),
                 metadataManager(),
                 authenticationProvider(),
                 samlContextProvider(),
@@ -91,7 +94,6 @@ public class ServiceProviderBuilder extends
                 sloProfile(),
                 logout(),
                 sso(),
-                tls(),
                 metadataGenerator())
                 .forEach(this::reApply);
     }
@@ -120,9 +122,7 @@ public class ServiceProviderBuilder extends
         SAMLEntryPoint sAMLEntryPoint = getSharedObject(SAMLEntryPoint.class);
         TLSProtocolConfigurer tlsProtocolConfigurer = getSharedObject(TLSProtocolConfigurer.class);
         SAMLLogger samlLogger = getSharedObject(SAMLLogger.class);
-
-        tlsProtocolConfigurer.setKeyManager(keyManager);
-        tlsProtocolConfigurer.afterPropertiesSet();
+        ArtifactResolutionProfile artifactProfile = getSharedObject(ArtifactResolutionProfile.class);
 
         metadataManager.setKeyManager(keyManager);
         metadataManager.setTLSConfigurer(tlsProtocolConfigurer);
@@ -147,6 +147,8 @@ public class ServiceProviderBuilder extends
         maybePopulateBaseProfile(hokWebSSOProfile, metadataManager, samlProcessor);
 
         maybePopulateBaseProfile(sloProfile, metadataManager, samlProcessor);
+
+        maybePopulateBaseProfile(artifactProfile, metadataManager, samlProcessor);
 
         metadataGenerator.setSamlWebSSOFilter(sAMLProcessingFilter);
         metadataGenerator.setSamlWebSSOHoKFilter(sAMLWebSSOHoKProcessingFilter);
@@ -561,13 +563,11 @@ public class ServiceProviderBuilder extends
 
     /**
      * Returns a {@link ExtendedMetadataConfigurer} for customization of the {@link ExtendedMetadata} default
-     * implementation {@link ExtendedMetadata}. Either use this method or {@link #extendedMetadata(ExtendedMetadata)}.
+     * implementation. Either use this method or {@link #extendedMetadata(ExtendedMetadata)}.
      * Alternatively define a {@link ExtendedMetadata} bean.
      * <p>
-     * Extended Metadata contains additional information describing a SAML entity. Metadata can be used both for local
-     * entities (= the ones accessible as part of the deployed application using the SAML Extension) and remote
-     * entities
-     * (= the ones user can interact with like IDPs).
+     * Extended Metadata contains additional information describing a SAML entity. This Metadata is only for remote
+     * entities (the ones user can interact with like IDPs).
      * </p>
      *
      * @return the {@link ExtendedMetadata} configurer.
@@ -578,13 +578,27 @@ public class ServiceProviderBuilder extends
     }
 
     /**
+     * Returns a {@link ExtendedMetadataConfigurer} for customization of the {@link LocalExtendedMetadata} default.
+     * Either use this method or {@link #localExtendedMetadata(LocalExtendedMetadata)}.
+     * Alternatively define a {@link LocalExtendedMetadata} bean.
+     * <p>
+     * Extended Metadata contains additional information describing a SAML entity. This metadata is for local
+     * entities (the ones accessible as part of the deployed application using the SAML Extension).
+     * </p>
+     *
+     * @return the {@link LocalExtendedMetadataConfigurer} configurer.
+     * @throws Exception Any exception during configuration.
+     */
+    public LocalExtendedMetadataConfigurer localExtendedMetadata() {
+        return getOrApply(new LocalExtendedMetadataConfigurer());
+    }
+
+    /**
      * Provide a specific {@link ExtendedMetadata}. Either use this method or {@link #extendedMetadata()}.
      * Alternatively define a {@link ExtendedMetadata} bean.
      * <p>
-     * Extended Metadata contains additional information describing a SAML entity. Metadata can be used both for local
-     * entities (= the ones accessible as part of the deployed application using the SAML Extension) and remote
-     * entities
-     * (= the ones user can interact with like IDPs).
+     * Extended Metadata contains additional information describing a SAML entity. This Metadata is only for remote
+     * entities (the ones user can interact with like IDPs).
      * </p>
      *
      * @param extendedMetadata the extended Metadata to use.
@@ -592,6 +606,23 @@ public class ServiceProviderBuilder extends
      * @throws Exception Any exception during configuration.
      */
     public ServiceProviderBuilder extendedMetadata(ExtendedMetadata extendedMetadata) {
+        getOrApply(new ExtendedMetadataConfigurer(extendedMetadata));
+        return this;
+    }
+
+    /**
+     * Provide a specific {@link LocalExtendedMetadata}. Either use this method or {@link #localExtendedMetadata()}.
+     * Alternatively define a {@link LocalExtendedMetadata} bean.
+     * <p>
+     * Extended Metadata contains additional information describing a SAML entity. This metadata is for local
+     * entities (the ones accessible as part of the deployed application using the SAML Extension).
+     * </p>
+     *
+     * @param extendedMetadata the extended Metadata to use.
+     * @return this builder for further customization.
+     * @throws Exception Any exception during configuration.
+     */
+    public ServiceProviderBuilder localExtendedMetadata(LocalExtendedMetadata extendedMetadata) {
         getOrApply(new ExtendedMetadataConfigurer(extendedMetadata));
         return this;
     }

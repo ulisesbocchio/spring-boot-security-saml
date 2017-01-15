@@ -5,6 +5,8 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.CheckedConsumer;
+import lombok.SneakyThrows;
+import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +15,7 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml.*;
-import org.springframework.security.saml.metadata.MetadataDisplayFilter;
-import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
+import org.springframework.security.saml.metadata.*;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -135,6 +136,8 @@ public class SAMLConfigurerBean extends SecurityConfigurerAdapter<DefaultSecurit
     @Autowired
     protected AuthenticationManager authenticationManager;
 
+    private Class<? extends Filter> afterFilter = BasicAuthenticationFilter.class;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(serviceProviderBuilder, "ServiceProviderBuilder can't be null");
@@ -238,22 +241,40 @@ public class SAMLConfigurerBean extends SecurityConfigurerAdapter<DefaultSecurit
     @Override
     public void configure(HttpSecurity http) throws Exception {
         // @formatter:off
-        //http
-        addFilterAfter(http, MetadataGeneratorFilter.class, BasicAuthenticationFilter.class);
-        addFilterAfter(http, MetadataDisplayFilter.class, MetadataGeneratorFilter.class);
-        addFilterAfter(http, SAMLEntryPoint.class, MetadataDisplayFilter.class);
-        addFilterAfter(http, SAMLProcessingFilter.class, SAMLEntryPoint.class);
-        addFilterAfter(http, SAMLWebSSOHoKProcessingFilter.class, SAMLProcessingFilter.class);
-        addFilterAfter(http, SAMLLogoutProcessingFilter.class, SAMLWebSSOHoKProcessingFilter.class);
-        addFilterAfter(http, SAMLDiscovery.class, SAMLLogoutProcessingFilter.class);
-        addFilterAfter(http, SAMLLogoutFilter.class, SAMLDiscovery.class);
+        if(!hasStaticServiceProviderMetadataConfigured()) {
+            addFilter(http, MetadataGeneratorFilter.class);
+        }
+        addFilter(http, MetadataDisplayFilter.class);
+        addFilter(http, SAMLEntryPoint.class);
+        addFilter(http, SAMLProcessingFilter.class);
+        addFilter(http, SAMLWebSSOHoKProcessingFilter.class);
+        addFilter(http, SAMLLogoutProcessingFilter.class);
+        addFilter(http, SAMLDiscovery.class);
+        addFilter(http, SAMLLogoutFilter.class);
         // @formatter:on
     }
 
-    protected void addFilterAfter(HttpSecurity http, Class<? extends Filter> filterClass, Class<? extends Filter> beforeFilterClass) {
+    protected void addFilter(HttpSecurity http, Class<? extends Filter> filterClass) {
         Optional.of(serviceProviderBuilder)
                 .map(spb -> spb.getSharedObject(filterClass))
-                .ifPresent(filter -> http.addFilterAfter(filter, beforeFilterClass));
+                .ifPresent(filter -> {
+                    http.addFilterAfter(filter, afterFilter);
+                    afterFilter = filterClass;
+                });
+    }
+
+    private boolean hasStaticServiceProviderMetadataConfigured() {
+        MetadataManager metadataManager = serviceProviderBuilder.getSharedObject(MetadataManager.class);
+        return metadataManager.getAvailableProviders().stream().anyMatch(this::isLocal);
+    }
+
+    @SneakyThrows
+    private boolean isLocal(ExtendedMetadataDelegate delegate) {
+        delegate.initialize();
+        EntityDescriptor entityDescriptor = (EntityDescriptor) delegate.getDelegate().getMetadata();
+        return Optional.ofNullable(delegate.getExtendedMetadata(entityDescriptor.getEntityID()))
+                .map(ExtendedMetadata::isLocal)
+                .orElse(false);
     }
 
     private static class LazyEndpointsRequestMatcher implements RequestMatcher {

@@ -7,10 +7,10 @@ import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataGen
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.MetadataDisplayFilter;
-import org.springframework.security.saml.metadata.MetadataGenerator;
-import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
+import org.opensaml.saml2.metadata.provider.MetadataProvider;
+import org.springframework.security.saml.metadata.*;
+
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
@@ -26,6 +26,7 @@ public class MetadataGeneratorConfigurerTest {
     private ServiceProviderEndpoints serviceProviderEndpoints;
     private SAMLSSOProperties properties;
     private ExtendedMetadata extendedMetadata;
+    private MetadataManager metadataManager;
 
     @Before
     public void setup() {
@@ -33,11 +34,14 @@ public class MetadataGeneratorConfigurerTest {
         metadataGeneratorConfig = spy(new MetadataGeneratorProperties());
         serviceProviderEndpoints = spy(new ServiceProviderEndpoints());
         extendedMetadata = spy(new ExtendedMetadata());
+        metadataManager = mock(MetadataManager.class);
+        doReturn(new ArrayList<>()).when(metadataManager).getAvailableProviders();
         when(properties.getMetadataGenerator()).thenReturn(metadataGeneratorConfig);
         builder = mock(ServiceProviderBuilder.class);
         when(builder.getSharedObject(ServiceProviderEndpoints.class)).thenReturn(serviceProviderEndpoints);
         when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
         when(builder.getSharedObject(ExtendedMetadata.class)).thenReturn(extendedMetadata);
+        when(builder.getSharedObject(MetadataManager.class)).thenReturn(metadataManager);
     }
 
     @Test

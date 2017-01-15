@@ -1,5 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.properties;
 
+import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import lombok.Data;
 import org.springframework.security.saml.SAMLConstants;
 
@@ -15,7 +16,11 @@ public class ExtendedMetadataProperties {
     /**
      * Setting of the value determines whether the entity is deployed locally (hosted on the current installation) or
      * whether it's an entity deployed elsewhere.
+     *
+     * @deprecated As of version 1.10 setting this property has no effect. Instead use {@link ServiceProviderBuilder#extendedMetadata()}
+     * or {@link ServiceProviderBuilder#localExtendedMetadata()}
      */
+    @Deprecated
     private boolean local;
 
     /**

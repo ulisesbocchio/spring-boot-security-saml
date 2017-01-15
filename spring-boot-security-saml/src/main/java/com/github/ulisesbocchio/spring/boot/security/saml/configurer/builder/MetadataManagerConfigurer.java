@@ -1,5 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
+import com.github.ulisesbocchio.spring.boot.security.saml.bean.override.LocalExtendedMetadata;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.IdentityProvidersProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
@@ -46,6 +47,11 @@ import static java.util.stream.Collectors.toSet;
  *     saml.sso.extended-delegate.force-metadata-revocation-check
  *     saml.sso.extended-delegate.metadata-require-signature
  *     saml.sso.extended-delegate.require-valid-metadata
+ *     saml.sso.local-extended-delegate.metadata-trusted-keys
+ *     saml.sso.local-extended-delegate.metadata-trust-check
+ *     saml.sso.local-extended-delegate.force-metadata-revocation-check
+ *     saml.sso.local-extended-delegate.metadata-require-signature
+ *     saml.sso.local-extended-delegate.require-valid-metadata
  *     saml.sso.idp.metadata-location
  * </pre>
  * </p>
@@ -54,22 +60,29 @@ import static java.util.stream.Collectors.toSet;
  */
 public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
-    List<MetadataProvider> metadataProviders = new ArrayList<>();
-    private MetadataFilter metadataFilter = null;
-    private ExtendedMetadata extendedMetadata = null;
-    private Boolean forceMetadataRevocationCheck = null;
-    private Boolean metadataRequireSignature = null;
-    private Boolean metadataTrustCheck = null;
-    private Set<String> metadataTrustedKeys = null;
-    private Boolean requireValidMetadata = null;
+    private List<MetadataProvider> metadataProviders = new ArrayList<>();
+
+    private static class DelegateProps {
+        private MetadataFilter metadataFilter = null;
+        private Boolean forceMetadataRevocationCheck = null;
+        private Boolean metadataRequireSignature = null;
+        private Boolean metadataTrustCheck = null;
+        private Set<String> metadataTrustedKeys = null;
+        private Boolean requireValidMetadata = null;
+    }
+
+    private DelegateProps localDelegate = new DelegateProps();
+    private DelegateProps remoteDelegate = new DelegateProps();
     private String defaultIDP;
     private String hostedSPName;
     private Long refreshCheckInterval;
     private List<String> metadataProviderLocations = new ArrayList<>();
+    private String localMetadataLocation = null;
     private MetadataManager metadataManager;
     private MetadataManager metadataManagerBean;
     private ResourceLoader resourceLoader;
     private ExtendedMetadataDelegateProperties extendedDelegateConfig;
+    private ExtendedMetadataDelegateProperties localExtendedDelegateConfig;
     private MetadataManagerProperties managerConfig;
     private IdentityProvidersProperties idpConfig;
 
@@ -85,13 +98,15 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
         resourceLoader = builder.getSharedObject(ResourceLoader.class);
         metadataManagerBean = builder.getSharedObject(MetadataManager.class);
         extendedDelegateConfig = builder.getSharedObject(SAMLSSOProperties.class).getExtendedDelegate();
+        localExtendedDelegateConfig = builder.getSharedObject(SAMLSSOProperties.class).getLocalExtendedDelegate();
         managerConfig = builder.getSharedObject(SAMLSSOProperties.class).getMetadataManager();
-        idpConfig = builder.getSharedObject(SAMLSSOProperties.class).getIdps();
+        idpConfig = builder.getSharedObject(SAMLSSOProperties.class).getIdp();
     }
 
     @Override
     public void configure(ServiceProviderBuilder builder) throws Exception {
-        extendedMetadata = builder.getSharedObject(ExtendedMetadata.class);
+        ExtendedMetadata extendedMetadata = builder.getSharedObject(ExtendedMetadata.class);
+        ExtendedMetadata localExtendedMetadata = builder.getSharedObject(LocalExtendedMetadata.class);
 
         if (metadataManagerBean == null) {
             if (metadataManager == null) {
@@ -122,8 +137,15 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
 
             List<MetadataProvider> extendedMetadataDelegates = metadataProviders.stream()
                     .map(this::setParserPool)
-                    .map(this::getExtendedProvider)
+                    .map(mp -> getExtendedProvider(mp, extendedMetadata, remoteDelegate, extendedDelegateConfig))
                     .collect(Collectors.toList());
+
+            String localMetadata = Optional.ofNullable(localMetadataLocation).orElseGet(idpConfig::getLocalMetadataLocation);
+            if (localMetadata != null) {
+                MetadataProvider localMetadataProvider = createDefaultMetadataProvider(localMetadata);
+                setParserPool(localMetadataProvider);
+                extendedMetadataDelegates.add(getExtendedProvider(postProcess(localMetadataProvider), localExtendedMetadata, localDelegate, localExtendedDelegateConfig));
+            }
 
 
             metadataManager.setProviders(extendedMetadataDelegates);
@@ -144,7 +166,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
     }
 
     @VisibleForTesting
-    protected ExtendedMetadataDelegate createDefaultExtendedMetadataDelegate(MetadataProvider provider) {
+    protected ExtendedMetadataDelegate createDefaultExtendedMetadataDelegate(MetadataProvider provider, ExtendedMetadata extendedMetadata) {
         return new ExtendedMetadataDelegate(provider, extendedMetadata);
     }
 
@@ -156,28 +178,28 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
     }
 
     @SneakyThrows
-    private ExtendedMetadataDelegate getExtendedProvider(MetadataProvider provider) {
+    private ExtendedMetadataDelegate getExtendedProvider(MetadataProvider provider, ExtendedMetadata extendedMetadata, DelegateProps props, ExtendedMetadataDelegateProperties extendedDelegateConfig) {
         if (provider instanceof ExtendedMetadataDelegate) {
             return (ExtendedMetadataDelegate) provider;
         }
-        ExtendedMetadataDelegate delegate = createDefaultExtendedMetadataDelegate(provider);
+        ExtendedMetadataDelegate delegate = createDefaultExtendedMetadataDelegate(provider, extendedMetadata);
 
-        delegate.setForceMetadataRevocationCheck(Optional.ofNullable(forceMetadataRevocationCheck)
+        delegate.setForceMetadataRevocationCheck(Optional.ofNullable(props.forceMetadataRevocationCheck)
                 .orElseGet(extendedDelegateConfig::isForceMetadataRevocationCheck));
 
-        delegate.setMetadataRequireSignature(Optional.ofNullable(metadataRequireSignature)
+        delegate.setMetadataRequireSignature(Optional.ofNullable(props.metadataRequireSignature)
                 .orElseGet(extendedDelegateConfig::isMetadataRequireSignature));
 
-        delegate.setMetadataTrustCheck(Optional.ofNullable(metadataTrustCheck)
+        delegate.setMetadataTrustCheck(Optional.ofNullable(props.metadataTrustCheck)
                 .orElseGet(extendedDelegateConfig::isMetadataTrustCheck));
 
-        delegate.setMetadataTrustedKeys(Optional.ofNullable(metadataTrustedKeys)
+        delegate.setMetadataTrustedKeys(Optional.ofNullable(props.metadataTrustedKeys)
                 .orElseGet(extendedDelegateConfig::getMetadataTrustedKeys));
 
-        delegate.setRequireValidMetadata(Optional.ofNullable(requireValidMetadata)
+        delegate.setRequireValidMetadata(Optional.ofNullable(props.requireValidMetadata)
                 .orElseGet(extendedDelegateConfig::isRequireValidMetadata));
 
-        delegate.setMetadataFilter(Optional.ofNullable(metadataFilter)
+        delegate.setMetadataFilter(Optional.ofNullable(props.metadataFilter)
                 .map(this::postProcess)
                 .orElse(null));
 
@@ -287,6 +309,25 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
     }
 
     /**
+     * Specify the location of the metadata file to be loaded as {@link ResourceBackedMetadataProvider}. Not
+     * relevant is using {@link #metadataProvider(MetadataProvider)}, {@link #metadataProviders(List)}, or
+     * {@link #metadataProviders(MetadataProvider...)}
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.idp.local-metadata-location
+     * </pre>
+     * </p>
+     *
+     * @param providerLocation the metadata files to load.
+     * @return this configurer for further customization
+     */
+    public MetadataManagerConfigurer localMetadataLocation(String providerLocation) {
+        localMetadataLocation = providerLocation;
+        return this;
+    }
+
+    /**
      * Sets the provided {@link MetadataProvider}s in the {@link MetadataManager}. Invocation if this method overrides
      * any existing {@link MetadataProvider} previously set with {@link #metadataProvider(MetadataProvider)}.
      * Takes precedence over {@link #metadataLocations(String...)}.
@@ -306,7 +347,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
      * @return this configurer for further customization
      */
     public MetadataManagerConfigurer metadataFilter(MetadataFilter filter) {
-        metadataFilter = filter;
+        remoteDelegate.metadataFilter = filter;
         return this;
     }
 
@@ -327,7 +368,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
      * @return this configurer for further customization
      */
     public MetadataManagerConfigurer forceMetadataRevocationCheck(boolean forceMetadataRevocationCheck) {
-        this.forceMetadataRevocationCheck = forceMetadataRevocationCheck;
+        remoteDelegate.forceMetadataRevocationCheck = forceMetadataRevocationCheck;
         return this;
     }
 
@@ -347,7 +388,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
      * @return this configurer for further customization
      */
     public MetadataManagerConfigurer metadataRequireSignature(boolean metadataRequireSignature) {
-        this.metadataRequireSignature = metadataRequireSignature;
+        remoteDelegate.metadataRequireSignature = metadataRequireSignature;
         return this;
     }
 
@@ -366,7 +407,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
      * @return this configurer for further customization
      */
     public MetadataManagerConfigurer metadataTrustCheck(boolean metadataTrustCheck) {
-        this.metadataTrustCheck = metadataTrustCheck;
+        remoteDelegate.metadataTrustCheck = metadataTrustCheck;
         return this;
     }
 
@@ -384,7 +425,7 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
      * @return this configurer for further customization
      */
     public MetadataManagerConfigurer metadataTrustedKeys(String... metadataTrustedKeys) {
-        this.metadataTrustedKeys = Arrays.stream(metadataTrustedKeys).collect(toSet());
+        remoteDelegate.metadataTrustedKeys = Arrays.stream(metadataTrustedKeys).collect(toSet());
         return this;
     }
 
@@ -402,7 +443,113 @@ public class MetadataManagerConfigurer extends SecurityConfigurerAdapter<Void, S
      * @return this configurer for further customization
      */
     public MetadataManagerConfigurer requireValidMetadata(boolean requireValidMetadata) {
-        this.requireValidMetadata = requireValidMetadata;
+        remoteDelegate.requireValidMetadata = requireValidMetadata;
+        return this;
+    }
+
+    /**
+     * Sets the metadata filter applied to the LOCAL metadata.
+     *
+     * @param filter the metadata filter applied to the metadata
+     * @return this configurer for further customization
+     */
+    public MetadataManagerConfigurer localMetadataFilter(MetadataFilter filter) {
+        localDelegate.metadataFilter = filter;
+        return this;
+    }
+
+    /**
+     * Determines whether check for certificate revocation should always be done as part of the PKIX validation.
+     * Revocation is evaluated by the underlaying JCE implementation and depending on configuration may include CRL and
+     * OCSP verification of the certificate in question. When set to false revocation is only performed when
+     * MetadataManager includes CRLs. For Local Entity
+     * Default is {@code false}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.local-extended-delegate.force-metadata-revocation-check
+     * </pre>
+     * </p>
+     *
+     * @param forceMetadataRevocationCheck revocation flag.
+     * @return this configurer for further customization
+     */
+    public MetadataManagerConfigurer localForceMetadataRevocationCheck(boolean forceMetadataRevocationCheck) {
+        localDelegate.forceMetadataRevocationCheck = forceMetadataRevocationCheck;
+        return this;
+    }
+
+    /**
+     * When set to true metadata from this provider should only be accepted when correctly signed and verified.
+     * Metadata with an invalid signature or signed by a not-trusted credential will be ignored.
+     * Default is {@code false}. For Local Entity
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.local-extended-delegate.metadata-require-signature
+     * </pre>
+     * </p>
+     *
+     * @param metadataRequireSignature flag to set.
+     * @return this configurer for further customization
+     */
+    public MetadataManagerConfigurer localMetadataRequireSignature(boolean metadataRequireSignature) {
+        localDelegate.metadataRequireSignature = metadataRequireSignature;
+        return this;
+    }
+
+    /**
+     * When true metadata signature will be verified for trust using PKIX with metadataTrustedKeys
+     * as anchors. For Local Entity
+     * Default is {@code false}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.local-extended-delegate.metadata-trust-check
+     * </pre>
+     * </p>
+     *
+     * @param metadataTrustCheck flag to set.
+     * @return this configurer for further customization
+     */
+    public MetadataManagerConfigurer localMetadataTrustCheck(boolean metadataTrustCheck) {
+        localDelegate.metadataTrustCheck = metadataTrustCheck;
+        return this;
+    }
+
+    /**
+     * Keys stored in the KeyManager which can be used to verify whether signature of the metadata is trusted.
+     * If not set any key stored in the keyManager is considered as trusted. For Local Entity
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.local-extended-delegate.metadata-trusted-keys
+     * </pre>
+     * </p>
+     *
+     * @param metadataTrustedKeys the names of the trusted keys.
+     * @return this configurer for further customization
+     */
+    public MetadataManagerConfigurer localMetadataTrustedKeys(String... metadataTrustedKeys) {
+        localDelegate.metadataTrustedKeys = Arrays.stream(metadataTrustedKeys).collect(toSet());
+        return this;
+    }
+
+    /**
+     * Sets whether the metadata returned by queries must be valid. For Local Entity
+     * Default is {@code false}.
+     * <p>
+     * Alternatively use property:
+     * <pre>
+     *      saml.sso.local-extended-delegate.require-valid-metadata
+     * </pre>
+     * </p>
+     *
+     * @param requireValidMetadata whether the metadata returned by queries must be valid.
+     * @return this configurer for further customization
+     */
+    public MetadataManagerConfigurer localRequireValidMetadata(boolean requireValidMetadata) {
+        localDelegate.requireValidMetadata = requireValidMetadata;
         return this;
     }
 }

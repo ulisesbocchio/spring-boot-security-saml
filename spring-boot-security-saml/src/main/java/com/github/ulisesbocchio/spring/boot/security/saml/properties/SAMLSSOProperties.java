@@ -26,13 +26,19 @@ public class SAMLSSOProperties {
      * Identity Provider Metadata Configuration.
      */
     @NestedConfigurationProperty
-    private IdentityProvidersProperties idps = new IdentityProvidersProperties();
+    private IdentityProvidersProperties idp = new IdentityProvidersProperties();
 
     /**
-     * Extended Metadata Configuration for local and remote entities.
+     * Extended Metadata Configuration for remote entities.
      */
     @NestedConfigurationProperty
     private ExtendedMetadataProperties extendedMetadata = new ExtendedMetadataProperties();
+
+    /**
+     * Extended Metadata Configuration for local entity.
+     */
+    @NestedConfigurationProperty
+    private ExtendedMetadataProperties localExtendedMetadata = new ExtendedMetadataProperties();
 
     /**
      * Extended Metadata Delegate configuration used to wrap Metadata Providers with extended metadata and other
@@ -40,6 +46,13 @@ public class SAMLSSOProperties {
      */
     @NestedConfigurationProperty
     private ExtendedMetadataDelegateProperties extendedDelegate = new ExtendedMetadataDelegateProperties();
+
+    /**
+     * Extended Metadata Delegate configuration used to wrap Metadata Providers with extended metadata and other
+     * options.
+     */
+    @NestedConfigurationProperty
+    private ExtendedMetadataDelegateProperties localExtendedDelegate = new ExtendedMetadataDelegateProperties();
 
     /**
      * SAML Authentication Provider Configuration options.

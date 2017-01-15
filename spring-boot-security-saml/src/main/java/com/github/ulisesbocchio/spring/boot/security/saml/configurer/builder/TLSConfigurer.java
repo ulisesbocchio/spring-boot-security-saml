@@ -5,6 +5,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProp
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.TLSProperties;
 import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
+import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 
 import java.util.Arrays;
@@ -49,11 +50,14 @@ public class TLSConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
 
     @Override
     public void configure(ServiceProviderBuilder builder) throws Exception {
+        KeyManager keyManager = builder.getSharedObject(KeyManager.class);
         TLSProtocolConfigurer configurer = createDefaultTlsProtocolConfigurer();
         configurer.setProtocolName(Optional.ofNullable(protocolName).orElseGet(config::getProtocolName));
         configurer.setProtocolPort(Optional.ofNullable(protocolPort).orElseGet(config::getProtocolPort));
         configurer.setSslHostnameVerification(Optional.ofNullable(sslHostnameVerification).orElseGet(config::getSslHostnameVerification));
         configurer.setTrustedKeys(Optional.ofNullable(trustedKeys).orElseGet(config::getTrustedKeys));
+        configurer.setKeyManager(keyManager);
+        configurer.afterPropertiesSet();
         builder.setSharedObject(TLSProtocolConfigurer.class, configurer);
     }
 

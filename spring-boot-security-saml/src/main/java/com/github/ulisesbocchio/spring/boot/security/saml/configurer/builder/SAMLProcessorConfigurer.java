@@ -4,13 +4,17 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLProcessorProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.velocity.app.VelocityEngine;
 import org.assertj.core.util.VisibleForTesting;
 import org.opensaml.xml.parse.ParserPool;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.processor.*;
 import org.springframework.security.saml.util.VelocityFactory;
+import org.springframework.security.saml.websso.ArtifactResolutionProfile;
 import org.springframework.security.saml.websso.ArtifactResolutionProfileImpl;
 
 import java.util.ArrayList;
@@ -97,7 +101,7 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<Void, Ser
                 if (artifactBinding != null) {
                     bindings.add(artifactBinding);
                 } else if (Optional.ofNullable(artifact).orElseGet(processorConfig::isArtifact)) {
-                    bindings.add(postProcess(createDefaultArtifactBinding()));
+                    bindings.add(postProcess(createDefaultArtifactBinding(builder)));
                 }
 
                 if (soapBinding != null) {
@@ -129,9 +133,12 @@ public class SAMLProcessorConfigurer extends SecurityConfigurerAdapter<Void, Ser
     }
 
     @VisibleForTesting
-    protected HTTPArtifactBinding createDefaultArtifactBinding() {
-        HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+    protected HTTPArtifactBinding createDefaultArtifactBinding(ServiceProviderBuilder builder) {
+        HttpClientParams params = new HttpClientParams();
+        params.setIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT, 60000);
+        HttpClient httpClient = new HttpClient(params, new MultiThreadedHttpConnectionManager());
         ArtifactResolutionProfileImpl artifactResolutionProfile = new ArtifactResolutionProfileImpl(httpClient);
+        builder.setSharedObject(ArtifactResolutionProfile.class, artifactResolutionProfile);
         HTTPSOAP11Binding soapBinding = new HTTPSOAP11Binding(parserPool);
         artifactResolutionProfile.setProcessor(new SAMLProcessorImpl(soapBinding));
         return new HTTPArtifactBinding(parserPool, getVelocityEngine(), artifactResolutionProfile);

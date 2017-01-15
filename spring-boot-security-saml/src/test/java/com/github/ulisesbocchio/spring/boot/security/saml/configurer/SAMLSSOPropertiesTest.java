@@ -71,7 +71,7 @@ public class SAMLSSOPropertiesTest {
         assertThat(config.getExtendedMetadata().isSupportUnsolicitedResponse()).isEqualTo(false);
         assertThat(config.getExtendedMetadata().getTlsKey()).isEqualTo("tlskey");
 
-        assertThat(config.getIdps().getMetadataLocation()).isEqualTo("metadatalocation");
+        assertThat(config.getIdp().getMetadataLocation()).isEqualTo("metadatalocation");
 
         assertThat(config.getKeyManager().getDefaultKey()).isEqualTo("defaultkey");
         assertThat(config.getKeyManager().getKeyPasswords()).containsOnlyKeys("foo", "localhost").containsValues("bar", "");

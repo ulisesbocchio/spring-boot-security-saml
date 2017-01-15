@@ -1,6 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configuration;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.bean.SAMLConfigurerBean;
+import com.github.ulisesbocchio.spring.boot.security.saml.bean.override.LocalExtendedMetadata;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurer;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderConfigurerAdapter;
@@ -67,6 +68,9 @@ public class SAMLServiceProviderSecurityConfiguration implements InitializingBea
 
     @Autowired(required = false)
     private ExtendedMetadata extendedMetadata;
+
+    @Autowired(required = false)
+    private LocalExtendedMetadata localExtendedMetadata;
 
     @Autowired(required = false)
     private SAMLContextProvider samlContextProvider;
@@ -211,6 +215,7 @@ public class SAMLServiceProviderSecurityConfiguration implements InitializingBea
         serviceProviderBuilder.setSharedObject(ResourceLoader.class, resourceLoader);
         serviceProviderBuilder.setSharedObject(SAMLSSOProperties.class, sAMLSsoProperties);
         serviceProviderBuilder.setSharedObject(ExtendedMetadata.class, extendedMetadata);
+        serviceProviderBuilder.setSharedObject(LocalExtendedMetadata.class, localExtendedMetadata);
         serviceProviderBuilder.setSharedObject(SAMLAuthenticationProvider.class, samlAuthenticationProvider);
         serviceProviderBuilder.setSharedObject(SAMLContextProvider.class, samlContextProvider);
         serviceProviderBuilder.setSharedObject(KeyManager.class, keyManager);

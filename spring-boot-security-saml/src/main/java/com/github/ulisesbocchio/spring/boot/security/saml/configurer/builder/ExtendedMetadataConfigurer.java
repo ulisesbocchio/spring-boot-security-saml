@@ -52,11 +52,11 @@ import static java.util.stream.Collectors.toSet;
  */
 public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
-    private ExtendedMetadata extendedMetadataBean;
-    private ExtendedMetadata extendedMetadata;
-    private ExtendedMetadataProperties extendedMetadataConfig;
+    protected ExtendedMetadata extendedMetadataBean;
+    protected ExtendedMetadata extendedMetadata;
+    protected ExtendedMetadataProperties extendedMetadataConfig;
 
-    private Boolean local;
+    protected Boolean local;
     private Boolean idpDiscoveryEnabled;
     private Boolean ecpEnabled;
     private Boolean signMetadata;
@@ -78,7 +78,7 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Void, 
     private Set<String> trustedKeys;
 
     public ExtendedMetadataConfigurer() {
-
+        local = false;
     }
 
     public ExtendedMetadataConfigurer(ExtendedMetadata extendedMetadata) {
@@ -96,8 +96,8 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Void, 
     public void configure(ServiceProviderBuilder builder) throws Exception {
         if (extendedMetadataBean == null) {
             if (extendedMetadata == null) {
-                extendedMetadata = new ExtendedMetadata();
-                extendedMetadata.setLocal(Optional.ofNullable(local).orElseGet(extendedMetadataConfig::isLocal));
+                extendedMetadata = createExtendedMetadata();
+                //extendedMetadata.setLocal(Optional.ofNullable(local).orElseGet(extendedMetadataConfig::isLocal));
                 extendedMetadata.setIdpDiscoveryEnabled(Optional.ofNullable(idpDiscoveryEnabled).orElseGet(extendedMetadataConfig::isIdpDiscoveryEnabled));
                 extendedMetadata.setEcpEnabled(Optional.ofNullable(ecpEnabled).orElseGet(extendedMetadataConfig::isEcpEnabled));
                 extendedMetadata.setSignMetadata(Optional.ofNullable(signMetadata).orElseGet(extendedMetadataConfig::isSignMetadata));
@@ -118,8 +118,16 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Void, 
                 extendedMetadata.setTlsKey(Optional.ofNullable(tlsKey).orElseGet(extendedMetadataConfig::getTlsKey));
                 extendedMetadata.setTrustedKeys(Optional.ofNullable(trustedKeys).orElseGet(extendedMetadataConfig::getTrustedKeys));
             }
-            builder.setSharedObject(ExtendedMetadata.class, extendedMetadata);
+            shareExtendedMetadata(builder);
         }
+    }
+
+    protected ExtendedMetadata createExtendedMetadata() {
+        return new ExtendedMetadata();
+    }
+
+    protected void shareExtendedMetadata(ServiceProviderBuilder builder) {
+        builder.setSharedObject(ExtendedMetadata.class, extendedMetadata);
     }
 
     /**
@@ -136,9 +144,11 @@ public class ExtendedMetadataConfigurer extends SecurityConfigurerAdapter<Void, 
      *
      * @param local true when entity is deployed locally
      * @return this configurer for further customization
+     * @deprecated As of version 1.10. Use {@link ServiceProviderBuilder#extendedMetadata()} or {@link ServiceProviderBuilder#localExtendedMetadata()}
      */
+    @Deprecated
     public ExtendedMetadataConfigurer local(Boolean local) {
-        this.local = local;
+        //this.local = local;
         return this;
     }
 
