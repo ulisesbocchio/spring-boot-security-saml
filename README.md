@@ -397,6 +397,61 @@ public void configure(ServiceProviderBuilder serviceProvider) throws Exception {
 }
 ```
 
+### Static SP Metadata
+
+You may wanna define your Service Provider Metadata statically. Usually there's no reason to do that since the SP metada configuration API through the DSL is pretty rich and
+is generated based on specified URLs and so on. But in case this is the way you prefer to setup your SP. Here's a sample config on how you can accomplish that:
+
+```java
+@Configuration
+public static class MyServiceProviderConfig extends ServiceProviderConfigurerAdapter {
+    @Override
+    public void configure(ServiceProviderBuilder serviceProvider) throws Exception {
+        // @formatter:off
+        serviceProvider
+            .metadataGenerator()
+            .entityId("localhost-demo")
+        .and()
+            .sso()
+            .defaultSuccessURL("/home")
+            .idpSelectionPageURL("/idpselection")
+        .and()
+            .logout()
+            .defaultTargetURL("/")
+        .and()
+            .metadataManager()
+            .metadataLocations("classpath:/idp-ssocircle.xml")
+            .localMetadataLocation("classpath:/sp-ssocircle.xml")
+            .refreshCheckInterval(0)
+        .and()
+            .extendedMetadata()
+            .idpDiscoveryEnabled(true)
+        .and()
+            .localExtendedMetadata()
+            .securityProfile("metaiop")
+            .sslSecurityProfile("pkix")
+            .signMetadata(true)
+            .signingKey("localhost")
+            .encryptionKey("localhost")
+            .requireArtifactResolveSigned(false)
+            .requireLogoutRequestSigned(false)
+            .idpDiscoveryEnabled(true)
+        .and()
+            //This Keystore contains also the public key of idp.ssocircle.com
+            .keyManager()
+            .storeLocation("classpath:/localhost.jks")
+            .storePass("foobar")
+            .defaultKey("localhost")
+            .keyPassword("localhost", "foobar");
+        // @formatter:on
+    }
+}
+```
+
+The part of the configuration that's specifically for static local metadata are `serviceProvider.metadataManager().localMetadataLocaltion("sp-ssocircle.xml")`
+and the options specified in `serviceProvider.localExtendedMetadata()`. Notice that when specifying this options, `MetadataGeneratorFilter` is no longer used, since the
+Service Provider metadata is specified statically. The endpoint `/saml/metadata` will then display the contents of the specified static metadata file. 
+
 ## Further Documentation
 
 For configuration specifics about Spring Security SAML please visit their [Documentation Reference](http://docs.spring.io/spring-security-saml/docs/1.0.x/reference/html/).
