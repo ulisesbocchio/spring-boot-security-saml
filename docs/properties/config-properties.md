@@ -40,7 +40,7 @@ The following table shows all the available properties (Parsed from Spring Confi
 |saml.sso.extended-metadata.support-unsolicited-response	|true	|Flag indicating whether to support unsolicited responses (IDP-initialized SSO). Only valid for remote  entities.	|
 |saml.sso.extended-metadata.tls-key	|null	|Key used for verification of SSL/TLS connections. For local entities key is included in the generated metadata  when specified.  For remote entities key is used to for server authentication of SSL/TLS when specified and when MetaIOP security  profile is used.	|
 |saml.sso.extended-metadata.trusted-keys	|null	|Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is  null  all keys in the keyStore will be treated as trusted.	|
-|saml.sso.idps.metadata-location	|classpath:idp-metadata.xml	|Specify the location(s) of the metadata files to be loaded as {@link ResourceBackedMetadataProvider}	|
+|saml.sso.idp.metadata-location	|classpath:idp-metadata.xml	|Specify the location(s) of the metadata files to be loaded as {@link ResourceBackedMetadataProvider}	|
 |saml.sso.key-manager.default-key	|localhost	|The default key name to use for encryption.	|
 |saml.sso.key-manager.key-passwords	|null	|They KeyStore private key passwords by key name.	|
 |saml.sso.key-manager.private-key-der-location	|null	|Specify a DER private key location. Used in conjunction with publicKeyPemLocation.	|
@@ -164,7 +164,7 @@ saml.sso.extended-metadata.tls-key=null
 #Keys used as anchors for trust verification when PKIX mode is enabled for the local entity. In case value is  null  all keys in the keyStore will be treated as trusted.
 saml.sso.extended-metadata.trusted-keys=null
 #Specify the location(s) of the metadata files to be loaded as {@link ResourceBackedMetadataProvider}
-saml.sso.idps.metadata-location=classpath:idp-metadata.xml
+saml.sso.idp.metadata-location=classpath:idp-metadata.xml
 #The default key name to use for encryption.
 saml.sso.key-manager.default-key=localhost
 #They KeyStore private key passwords by key name.

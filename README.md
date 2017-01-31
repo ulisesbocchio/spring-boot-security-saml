@@ -185,7 +185,7 @@ The following properties snippet is a sample configuration through `application.
              entity-id: localhost-demo    #(3)
          logout:
              default-target-url: /    #(4)
-         idps:
+         idp:
              metadata-location: classpath:/idp-ssocircle.xml    #(5) 
          metadata-manager:
              refresh-check-interval: 0    #(6)
