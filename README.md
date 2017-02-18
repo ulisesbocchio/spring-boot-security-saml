@@ -6,6 +6,9 @@
 
 This project targets a smooth integration between [spring-security-saml](http://projects.spring.io/spring-security-saml/) and Spring Boot by exposing a set of configurer adapters while dealing with the nitty-gritty and boiler plate of `spring-security-saml` configuration internally.
 
+# Works with
+Spring Boot 1.4.0+ (not tested on Spring Boot 1.5)
+
 ## Quickstart
 
 1. Add the following maven dependency to your project:
