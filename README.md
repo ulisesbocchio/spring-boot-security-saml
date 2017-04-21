@@ -454,7 +454,17 @@ public static class MyServiceProviderConfig extends ServiceProviderConfigurerAda
 
 The part of the configuration that's specifically for static local metadata are `serviceProvider.metadataManager().localMetadataLocaltion("sp-ssocircle.xml")`
 and the options specified in `serviceProvider.localExtendedMetadata()`. Notice that when specifying this options, `MetadataGeneratorFilter` is no longer used, since the
-Service Provider metadata is specified statically. The endpoint `/saml/metadata` will then display the contents of the specified static metadata file. 
+Service Provider metadata is specified statically. The endpoint `/saml/metadata` will then display the contents of the specified static metadata file.
+
+### Generate a Self Signed Private/Public key pair in DER/PEM format
+
+```bash
+# KEY AND CERT
+openssl genrsa -out localhost.key 2048
+openssl req -new -x509 -key localhost.key -out localhost.pem -days 3650 -subj /CN=localhost
+# PEM KEY to DER
+openssl pkcs8 -topk8 -inform PEM -outform DER -in  localhost.key -out  localhost.key.der -nocrypt
+```
 
 ## Further Documentation
 
