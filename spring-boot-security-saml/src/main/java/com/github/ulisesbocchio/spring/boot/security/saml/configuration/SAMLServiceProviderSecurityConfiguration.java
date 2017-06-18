@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -172,6 +173,11 @@ public class SAMLServiceProviderSecurityConfiguration implements InitializingBea
         @Bean
         public AuthenticationManager authenticationManagerBean() throws Exception {
             return super.authenticationManagerBean();
+        }
+
+        @Override
+        protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+            auth.parentAuthenticationManager(null);
         }
 
         @Override

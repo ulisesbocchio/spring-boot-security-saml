@@ -6,7 +6,9 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderEndpoints;
 import com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.CheckedConsumer;
 import lombok.SneakyThrows;
+import org.opensaml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml2.metadata.EntityDescriptor;
+import org.opensaml.xml.XMLObject;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +25,11 @@ import org.springframework.util.Assert;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import static com.github.ulisesbocchio.spring.boot.security.saml.util.FunctionalUtils.unchecked;
 
@@ -268,11 +273,42 @@ public class SAMLConfigurerBean extends SecurityConfigurerAdapter<DefaultSecurit
         return metadataManager.getAvailableProviders().stream().anyMatch(this::isLocal);
     }
 
+    private enum EntityDescriptorType {
+        ENTITY_DESCRIPTOR(EntityDescriptor.class),
+        ENTITIES_DESCRIPTOR(EntitiesDescriptor.class);
+
+        private Class<?> type;
+
+        EntityDescriptorType(Class<?> type) {
+            this.type = type;
+        }
+
+        static EntityDescriptorType from(Class<?> type) {
+            return Arrays.stream(values())
+                    .filter( edt -> edt.type.equals(type))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
     @SneakyThrows
     private boolean isLocal(ExtendedMetadataDelegate delegate) {
         delegate.initialize();
-        EntityDescriptor entityDescriptor = (EntityDescriptor) delegate.getDelegate().getMetadata();
-        return Optional.ofNullable(delegate.getExtendedMetadata(entityDescriptor.getEntityID()))
+        XMLObject metadata = delegate.getDelegate().getMetadata();
+
+        List<EntityDescriptor> descriptors = EntityDescriptor.class.isAssignableFrom(metadata.getClass())
+                ? Collections.singletonList((EntityDescriptor) metadata)
+                : (EntitiesDescriptor.class.isAssignableFrom(metadata.getClass())
+                    ? ((EntitiesDescriptor) metadata).getEntityDescriptors()
+                    : Collections.emptyList());
+
+        return descriptors.stream()
+                        .anyMatch(ed -> isLocal(delegate, ed.getEntityID()));
+    }
+
+    @SneakyThrows
+    private boolean isLocal(ExtendedMetadataDelegate delegate, String entityId) {
+        return Optional.ofNullable(delegate.getExtendedMetadata(entityId))
                 .map(ExtendedMetadata::isLocal)
                 .orElse(false);
     }
