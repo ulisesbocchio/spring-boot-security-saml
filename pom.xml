@@ -5,7 +5,7 @@
     <groupId>com.github.ulisesbocchio</groupId>
     <artifactId>spring-boot-security-saml-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.11</version>
+    <version>1.12-SNAPSHOT</version>
     <name>Spring Boot Security SAML Parent</name>
     <description>Parent POM for project that eases Integration between Spring Boot and spring-security-saml through properties and adapters</description>
     <url>https://github.com/ulisesbocchio/spring-boot-security-saml</url>
@@ -40,7 +40,7 @@
         <url>https://github.com/ulisesbocchio/spring-boot-security-saml</url>
         <connection>scm:git:git://github.com/ulisesbocchio/spring-boot-security-saml</connection>
         <developerConnection>scm:git:git@github.com:ulisesbocchio/spring-boot-security-saml.git</developerConnection>
-      <tag>spring-boot-security-saml-parent-1.11</tag>
+      <tag>spring-boot-security-saml-parent-1.0</tag>
   </scm>
 
     <developers>
