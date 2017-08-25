@@ -1,5 +1,7 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer;
 
+import com.github.ulisesbocchio.spring.boot.security.saml.bean.override.DSLSAMLContextProviderImpl;
+import com.github.ulisesbocchio.spring.boot.security.saml.bean.override.DSLSAMLContextProviderLB;
 import com.github.ulisesbocchio.spring.boot.security.saml.bean.override.LocalExtendedMetadata;
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder.*;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.saml.*;
 import org.springframework.security.saml.context.SAMLContextProvider;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
+import org.springframework.security.saml.context.SAMLContextProviderLB;
 import org.springframework.security.saml.key.JKSKeyManager;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.log.SAMLLogger;
@@ -21,7 +24,10 @@ import org.springframework.security.saml.processor.SAMLProcessorImpl;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 import org.springframework.security.saml.websso.*;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -78,13 +84,14 @@ public class ServiceProviderBuilder extends
     protected void beforeInit() throws Exception {
         //All configurers are initialized only once.
         //Order of configurers is established by the following stream.
+        boolean lbEnabled = getSharedObject(SAMLSSOProperties.class).getContextProvider().getLb().isEnabled();
         Stream.of(keyManager(),
                 tls(),
                 extendedMetadata(),
                 localExtendedMetadata(),
                 metadataManager(),
                 authenticationProvider(),
-                samlContextProvider(),
+                (lbEnabled ? samlContextProviderLb() : samlContextProvider()),
                 samlProcessor(),
                 ssoProfileConsumer(),
                 hokProfileConsumer(),
@@ -185,7 +192,7 @@ public class ServiceProviderBuilder extends
         sAMLProcessingFilter.setContextProvider(samlContextProvider);
         sAMLProcessingFilter.afterPropertiesSet();
 
-        if(sAMLWebSSOHoKProcessingFilter != null) {
+        if (sAMLWebSSOHoKProcessingFilter != null) {
             sAMLWebSSOHoKProcessingFilter.setSAMLProcessor(samlProcessor);
             sAMLWebSSOHoKProcessingFilter.setContextProvider(samlContextProvider);
             sAMLWebSSOHoKProcessingFilter.afterPropertiesSet();
@@ -222,7 +229,7 @@ public class ServiceProviderBuilder extends
      * Returns a {@link SAMLContextProviderConfigurer} for customization of the {@link SAMLContextProvider} default
      * implementation {@link SAMLContextProviderImpl}. Either use this method or {@link
      * #samlContextProvider(SAMLContextProvider)}.
-     * Alternatively define a {@link SAMLContextProvider} bean.
+     * Alternatively define a {@link DSLSAMLContextProviderImpl} bean.
      * <p>
      * The Context Provider is responsible for parsing HttpRequest/Response and determining which local entity (IDP/SP)
      * is responsible for its handling.
@@ -237,7 +244,7 @@ public class ServiceProviderBuilder extends
 
     /**
      * Provide a specific {@link SAMLContextProvider}. Either use this method or {@link #samlContextProvider()}.
-     * Alternatively define a {@link SAMLContextProvider} bean.
+     * Alternatively define a {@link DSLSAMLContextProviderImpl} bean.
      * <p>
      * The Context Provider is responsible for parsing HttpRequest/Response and determining which local entity (IDP/SP)
      * is responsible for its handling.
@@ -249,6 +256,42 @@ public class ServiceProviderBuilder extends
      */
     public ServiceProviderBuilder samlContextProvider(SAMLContextProvider samlContextProvider) {
         getOrApply(new SAMLContextProviderConfigurer(samlContextProvider));
+        return this;
+    }
+
+    /**
+     * Returns a {@link SAMLContextProviderLBConfigurer} for customization of the {@link SAMLContextProvider} default
+     * implementation {@link SAMLContextProviderLB}. Either use this method or {@link
+     * #samlContextProviderLb(SAMLContextProviderLB)}.
+     * Alternatively define a {@link DSLSAMLContextProviderLB} bean.
+     * <p>
+     * The Context Provider is responsible for parsing HttpRequest/Response and determining which local entity (IDP/SP)
+     * is responsible for its handling.
+     * </p>
+     *
+     * @return the {@link SAMLContextProviderLB} configurer.
+     * @throws Exception Any exception during configuration.
+     */
+    public SAMLContextProviderLBConfigurer samlContextProviderLb() {
+        removeConfigurer(SAMLContextProviderConfigurer.class);
+        return getOrApply(new SAMLContextProviderLBConfigurer());
+    }
+
+    /**
+     * Provide a specific {@link SAMLContextProviderLB}. Either use this method or {@link #samlContextProvider()}.
+     * Alternatively define a {@link DSLSAMLContextProviderLB} bean.
+     * <p>
+     * The Context Provider is responsible for parsing HttpRequest/Response and determining which local entity (IDP/SP)
+     * is responsible for its handling.
+     * </p>
+     *
+     * @param samlContextProviderLb the context provider to use.
+     * @return this builder for further customization.
+     * @throws Exception Any exception during configuration.
+     */
+    public ServiceProviderBuilder samlContextProviderLb(SAMLContextProviderLB samlContextProviderLb) {
+        removeConfigurer(SAMLContextProviderConfigurer.class);
+        getOrApply(new SAMLContextProviderLBConfigurer(samlContextProviderLb));
         return this;
     }
 
@@ -700,7 +743,7 @@ public class ServiceProviderBuilder extends
     /**
      * Provide a specific {@link MetadataGenerator}. Either use this method or {@link #sloProfile()}.
      * Alternatively define a {@link MetadataGenerator} bean.
-     *
+     * <p>
      * Returns a {@link MetadataGeneratorConfigurer} for customization of the {@link MetadataGenerator}, {@link
      * MetadataGeneratorFilter} and
      * {@link MetadataDisplayFilter}.

@@ -9,6 +9,8 @@ import org.springframework.security.saml.SAMLDiscovery;
 import org.springframework.security.saml.SAMLEntryPoint;
 import org.springframework.security.saml.SAMLProcessingFilter;
 import org.springframework.security.saml.SAMLWebSSOHoKProcessingFilter;
+import org.springframework.security.saml.context.SAMLContextProvider;
+import org.springframework.security.saml.context.SAMLContextProviderLB;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.metadata.MetadataManager;
 
@@ -101,6 +103,12 @@ public class SAMLSSOProperties {
      */
     @NestedConfigurationProperty
     private MetadataManagerProperties metadataManager = new MetadataManagerProperties();
+
+    /**
+     * Configuration options for the {@link SAMLContextProvider} and {@link SAMLContextProviderLB}
+     */
+    @NestedConfigurationProperty
+    private SAMLContextProviderProperties contextProvider = new SAMLContextProviderProperties();
 
     /**
      * Supplies the default target Url that will be used if no saved request is found in the session, or the

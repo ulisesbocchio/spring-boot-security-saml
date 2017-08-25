@@ -1,9 +1,14 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.opensaml.xml.parse.ParserPool;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.saml.context.SAMLContextProvider;
+import org.springframework.security.saml.metadata.ExtendedMetadata;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -15,17 +20,27 @@ import static org.mockito.Mockito.*;
 public class SAMLContextProviderConfigurerTest {
 
     private ServiceProviderBuilder builder;
+    private SAMLSSOProperties properties;
+    private SAMLContextProviderProperties contextProviderProperties;
+    private SAMLContextProviderLBProperties contextProviderLBProperties;
 
     @Before
     public void setup() {
         builder = mock(ServiceProviderBuilder.class);
+
+        properties = mock(SAMLSSOProperties.class);
+        contextProviderProperties = spy(new SAMLContextProviderProperties());
+        contextProviderLBProperties = spy(new SAMLContextProviderLBProperties());
+        when(properties.getContextProvider()).thenReturn(contextProviderProperties);
+        when(contextProviderProperties.getLb()).thenReturn(contextProviderLBProperties);
+        when(builder.getSharedObject(SAMLSSOProperties.class)).thenReturn(properties);
     }
 
     @Test
     public void init() throws Exception {
         SAMLContextProviderConfigurer configurer = new SAMLContextProviderConfigurer();
         configurer.init(builder);
-        verify(builder).getSharedObject(eq(SAMLContextProvider.class));
+        verify(builder).getSharedObject(eq(SAMLSSOProperties.class));
     }
 
     @Test

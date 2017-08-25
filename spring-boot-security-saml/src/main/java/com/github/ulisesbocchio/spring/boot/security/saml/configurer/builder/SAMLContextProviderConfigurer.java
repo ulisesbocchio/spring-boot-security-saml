@@ -1,10 +1,13 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLContextProviderProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.assertj.core.util.VisibleForTesting;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.context.SAMLContextProvider;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
+import org.springframework.security.saml.context.SAMLContextProviderLB;
 
 /**
  * Builder configurer that takes care of configuring/customizing the {@link SAMLContextProvider} bean.
@@ -20,7 +23,7 @@ import org.springframework.security.saml.context.SAMLContextProviderImpl;
 public class SAMLContextProviderConfigurer extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder> {
 
     private SAMLContextProvider samlContextProvider;
-    private SAMLContextProvider samlContextProviderBean;
+    private SAMLContextProviderProperties samlContextProviderProperties;
 
     public SAMLContextProviderConfigurer(SAMLContextProvider samlContextProvider) {
 
@@ -33,12 +36,13 @@ public class SAMLContextProviderConfigurer extends SecurityConfigurerAdapter<Voi
 
     @Override
     public void init(ServiceProviderBuilder builder) throws Exception {
-        samlContextProviderBean = builder.getSharedObject(SAMLContextProvider.class);
+        samlContextProviderProperties = builder.getSharedObject(SAMLSSOProperties.class).getContextProvider();
     }
 
     @Override
     public void configure(ServiceProviderBuilder builder) throws Exception {
-        if (samlContextProviderBean == null) {
+        SAMLContextProvider samlContextProviderBean = builder.getSharedObject(SAMLContextProvider.class);
+        if (samlContextProviderBean == null && !samlContextProviderProperties.getLb().isEnabled()) {
             if (samlContextProvider == null) {
                 samlContextProvider = createDefaultSamlContextProvider();
             }
