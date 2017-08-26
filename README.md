@@ -18,7 +18,7 @@ Spring Boot 1.5.0+
     <dependency>
         <groupId>com.github.ulisesbocchio</groupId>
         <artifactId>spring-boot-security-saml</artifactId>
-        <version>1.11</version>
+        <version>1.12</version>
     </dependency>
     
     ```
@@ -265,6 +265,7 @@ The Following Bean classes can be overridden when using this plugin. All you got
 |-----------------------------:	|---------------------------------	|
 | ExtendedMetadata             	| ---             	                |
 | SAMLContextProvider          	| DSLSAMLContextProviderImpl       	|
+| SAMLContextProviderLB        	| DSLSAMLContextProviderLB       	|
 | KeyManager                   	| ---                             	|
 | MetadataManager              	| DSLMetadataManager              	|
 | MetadataGenerator            	| DSLMetadataGenerator            	|
@@ -326,6 +327,60 @@ In [spring-security-saml-sample](https://github.com/ulisesbocchio/spring-boot-se
 
 ## Configuration Cookbook
 These examples are intended to cover some usual Spring Security SAML configuration scenarios through this plugin to showcase the dynamics of the new configuration style. It is not meant as extensive documentation of Spring Security SAML or the SAML 2.0 standard. For documentation regarding Spring Security SAML and SAML 2.0 please see [Further Documentation](#further-documentation) section.
+
+### Configure your application behind a load balancer
+
+In order to successfully redirect to the appropriate URLs when having your Spring Boot application behind a Load Balancer `spring-security-saml` provides an alternate `SAMLContextProviderLB`.
+This bean can be configured through the DSL and config properties as of `spring-boot-security-saml:1.12` like this:
+
+```java
+@Configuration
+    public static class MyServiceProviderConfig extends ServiceProviderConfigurerAdapter {
+
+        @Override
+        public void configure(ServiceProviderBuilder serviceProvider) throws Exception {
+
+            serviceProvider
+                .metadataGenerator()
+                .entityId("localhost-demo")
+            .and()
+                .sso()
+                .defaultSuccessURL("/home")
+                .idpSelectionPageURL("/idpselection")
+            .and()
+                .logout()
+                .defaultTargetURL("/")
+            .and()
+                .metadataManager()
+                .metadataLocations("classpath:/idp-ssocircle.xml")
+                .refreshCheckInterval(0)
+            .and()
+                .extendedMetadata()
+                .idpDiscoveryEnabled(true)
+            .and()
+                .keyManager()
+                .privateKeyDERLocation("classpath:/localhost.key.der")
+                .publicKeyPEMLocation("classpath:/localhost.cert")
+            .and()
+                .samlContextProviderLb()
+                .scheme("https")
+                .contextPath("/")
+                .serverName("www.example.com")
+                .serverPort(443)
+                .includeServerPortInRequestURL(false);
+
+        }
+    }
+``` 
+Or using the properties:
+
+```properties
+saml.sso.context-provider.lb.context-path=/
+saml.sso.context-provider.lb.include-server-port-in-request-url=false
+saml.sso.context-provider.lb.scheme=https
+saml.sso.context-provider.lb.server-name=www.example.com
+saml.sso.context-provider.lb.server-port=443
+```
 
 ### SHA256 Signature
 
