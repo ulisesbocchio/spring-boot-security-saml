@@ -531,9 +531,9 @@ For SAML 2.0 documentation these are good starting points:
 
 # Credits
 Special thanks to:
-* @vdenotaris for [his original work](https://github.com/vdenotaris/spring-boot-security-saml-sample) on creating a sample `spring-boot` app with `spring-security-saml` that inspired this plugin.
-* @vschafer for creating [`spring-security-saml`](http://projects.spring.io/spring-security-saml/). Without his work, this plugin woudn't be possible.
-* @rwinch, whose kind advice and [`spring-security-saml-dsl`](https://github.com/spring-projects/spring-security-saml-dsl) inspired this plugin.
+* [@vdenotaris](https://github.com/vdenotaris) for [his original work](https://github.com/vdenotaris/spring-boot-security-saml-sample) on creating a sample `spring-boot` app with `spring-security-saml` that inspired this plugin.
+* [@vschafer](https://github.com/vschafer) for creating [`spring-security-saml`](http://projects.spring.io/spring-security-saml/). Without his work, this plugin woudn't be possible.
+* [@rwinch](https://github.com/rwinch), whose kind advice and [`spring-security-saml-dsl`](https://github.com/spring-projects/spring-security-saml-dsl) inspired this plugin.
 * The Spring Team, for creating amazing open source software.
 
 # License
