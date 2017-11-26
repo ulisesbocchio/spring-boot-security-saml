@@ -529,5 +529,12 @@ For SAML 2.0 documentation these are good starting points:
 - [SAML 2.0 Wikipedia](https://en.wikipedia.org/wiki/SAML_2.0)
 - [Ping Identity's article about SAML](https://www.pingidentity.com/en/resources/articles/saml.html)
 
+# Credits
+Special thanks to:
+* [@vdenotaris](https://github.com/vdenotaris) for [his original work](https://github.com/vdenotaris/spring-boot-security-saml-sample) on creating a sample `spring-boot` app with `spring-security-saml` that inspired this plugin.
+* [@vschafer](https://github.com/vschafer) for creating [`spring-security-saml`](http://projects.spring.io/spring-security-saml/). Without his work, this plugin woudn't be possible.
+* [@rwinch](https://github.com/rwinch), whose kind advice and [`spring-security-saml-dsl`](https://github.com/spring-projects/spring-security-saml-dsl) inspired this plugin.
+* The Spring Team, for creating amazing open source software.
+
 # License
 Lincensed under [MIT License](http://opensource.org/licenses/MIT)
