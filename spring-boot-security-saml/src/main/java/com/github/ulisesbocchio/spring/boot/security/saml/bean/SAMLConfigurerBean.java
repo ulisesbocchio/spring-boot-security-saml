@@ -264,7 +264,7 @@ public class SAMLConfigurerBean extends SecurityConfigurerAdapter<DefaultSecurit
                 .map(spb -> spb.getSharedObject(filterClass))
                 .ifPresent(filter -> {
                     http.addFilterAfter(filter, afterFilter);
-                    afterFilter = filterClass;
+                    afterFilter = filter.getClass();
                 });
     }
 
