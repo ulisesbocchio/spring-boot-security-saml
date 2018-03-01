@@ -539,6 +539,14 @@ In order to add a custom `SAMLUserDetailsService` simply use the `authentication
         }
     }
 ```
+Or simply add a bean definition for a `SAMLUserDetailsService` implementation:
+
+```java
+@Bean
+public SAMLUserDetailsService mySamlUserDetailsService() {
+    return new MySAMLUserDetailsService();
+}
+```
 
 ## Further Documentation
 
