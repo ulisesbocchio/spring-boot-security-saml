@@ -45,7 +45,7 @@ public class ConfigPropertiesMarkdownGenerator {
             try {
                 in.close();
             } catch (IOException e) {
-            };
+            }
         }
     }
 
