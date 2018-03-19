@@ -52,6 +52,10 @@
         <id>mulesoft</id>
         <url>http://repository.mulesoft.org/releases/</url>
       </repository>
+      <repository>
+        <id>alfresco</id>
+        <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
+      </repository>
     </repositories>
 
     <developers>
