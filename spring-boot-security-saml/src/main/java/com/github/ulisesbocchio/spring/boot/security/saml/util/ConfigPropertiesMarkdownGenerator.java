@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.util;
 
-import org.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.metadata.*;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
