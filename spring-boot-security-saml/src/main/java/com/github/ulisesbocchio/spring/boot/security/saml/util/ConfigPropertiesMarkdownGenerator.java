@@ -1,6 +1,6 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.util;
 
-import org.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.metadata.*;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
@@ -30,18 +30,22 @@ public class ConfigPropertiesMarkdownGenerator {
                 .forEach(i -> System.out.printf("|%s\t|%s\t|%s\t|\n", i.getName(), i.getDefaultValue(), i.getDescription()));
     }
 
-    private static ConfigurationMetadata readMetadata(InputStream in) throws IOException {
+    private static ConfigurationMetadata readMetadata(InputStream in) {
         try {
             return new JsonMarshaller().read(in);
-        } catch (IOException ex) {
-            return null;
         } catch (JSONException ex) {
             throw new InvalidConfigurationMetadataException(
                     "Invalid meta-data: "
                             + ex.getMessage(),
                     Diagnostic.Kind.ERROR);
+        } catch (Exception ex) {
+            return null;
         } finally {
-            in.close();
+            // Close without throwing an exception
+            try {
+                in.close();
+            } catch (IOException e) {
+            }
         }
     }
 
