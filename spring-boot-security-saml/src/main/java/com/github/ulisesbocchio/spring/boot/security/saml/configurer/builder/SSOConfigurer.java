@@ -84,7 +84,10 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
         authenticationManager = builder.getSharedObject(AuthenticationManager.class);
         config = builder.getSharedObject(SAMLSSOProperties.class);
         endpoints = builder.getSharedObject(ServiceProviderEndpoints.class);
-        eventPublisher = builder.getSharedObject(ApplicationEventPublisher.class);
+        
+        if ( config.isEnableEventPublisher() )
+            eventPublisher = builder.getSharedObject(ApplicationEventPublisher.class);
+        else eventPublisher = null;
     }
 
     @Override
