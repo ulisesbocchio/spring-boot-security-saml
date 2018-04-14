@@ -154,4 +154,9 @@ public class SAMLSSOProperties {
      * The URL that the {@link SAMLEntryPoint} filter will be listening to.
      */
     private String ssoLoginUrl = "saml/login";
+    
+    /**
+     * Enabled the use of {@link ApplicationEventPublisher} for those Beans that support its use (disabled by default)
+     */
+    private boolean enableEventPublisher = false;
 }

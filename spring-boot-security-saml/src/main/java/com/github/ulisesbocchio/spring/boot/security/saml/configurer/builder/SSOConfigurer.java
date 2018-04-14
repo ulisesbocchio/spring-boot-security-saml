@@ -5,6 +5,7 @@ import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProv
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.WebSSOProfileOptionProperties;
 import org.assertj.core.util.VisibleForTesting;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLDiscovery;
@@ -76,12 +77,17 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
     private ServiceProviderEndpoints endpoints;
     private String ssoHoKProcessingURL;
     private SAMLEntryPoint samlEntryPointBean;
+    private ApplicationEventPublisher eventPublisher;
 
     @Override
     public void init(ServiceProviderBuilder builder) throws Exception {
         authenticationManager = builder.getSharedObject(AuthenticationManager.class);
         config = builder.getSharedObject(SAMLSSOProperties.class);
         endpoints = builder.getSharedObject(ServiceProviderEndpoints.class);
+        
+        if ( config.isEnableEventPublisher() )
+            eventPublisher = builder.getSharedObject(ApplicationEventPublisher.class);
+        else eventPublisher = null;
     }
 
     @Override
@@ -161,7 +167,9 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
 
     @VisibleForTesting
     protected SAMLWebSSOHoKProcessingFilter createDefaultSamlHoKProcessingFilter() {
-        return new SAMLWebSSOHoKProcessingFilter();
+        SAMLWebSSOHoKProcessingFilter filter = new SAMLWebSSOHoKProcessingFilter();
+        filter.setApplicationEventPublisher(eventPublisher);
+        return filter;
     }
 
     @VisibleForTesting
@@ -176,7 +184,9 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
 
     @VisibleForTesting
     protected SAMLProcessingFilter createDefaultSamlProcessingFilter() {
-        return new SAMLProcessingFilter();
+        SAMLProcessingFilter filter = new SAMLProcessingFilter();
+        filter.setApplicationEventPublisher(eventPublisher);
+        return filter;
     }
 
     @VisibleForTesting
