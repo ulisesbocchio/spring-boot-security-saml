@@ -14,6 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -114,6 +115,9 @@ public class SAMLServiceProviderSecurityConfiguration implements InitializingBea
 
     @Autowired(required = false)
     SAMLConfigurerBean samlConfigurerBean;
+    
+    @Autowired(required = false)
+    ApplicationEventPublisher eventPublisher;
 
     @Autowired
     ServiceProviderBuilder serviceProviderBuilder;
@@ -235,6 +239,7 @@ public class SAMLServiceProviderSecurityConfiguration implements InitializingBea
         serviceProviderBuilder.setSharedObject(WebSSOProfileConsumer.class, webSSOProfileConsumer);
         serviceProviderBuilder.setSharedObject(WebSSOProfileConsumerHoKImpl.class, hokWebSSOProfileConsumer);
         serviceProviderBuilder.setSharedObject(SAMLLogger.class, samlLogger);
+        serviceProviderBuilder.setSharedObject(ApplicationEventPublisher.class, eventPublisher);
     }
 
 }
