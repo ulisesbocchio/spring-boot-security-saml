@@ -21,4 +21,11 @@ public class DSLWebSSOProfileHoKImpl extends WebSSOProfileHoKImpl {
     public void setMetadata(MetadataManager metadata) {
         super.setMetadata(metadata);
     }
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// org.springframework.security.saml.websso.AbstractProfileBase.afterPropertiesSet()
+		// will check that properties are set, which is not desirable here
+		// as that defeats the purpose of the non-required autowire intent of this class.
+	}
 }
