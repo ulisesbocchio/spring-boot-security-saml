@@ -26,7 +26,7 @@ public class MetadataGeneratorProperties {
     /**
      * This Service Provider's SAML Entity ID. Used as entity id for generated requests from this Service Provider.
      */
-    private String entityId = "localhost";
+    private String entityId = null;
 
     /**
      * Local ID. Used as part of Entity Descriptor.
