@@ -89,7 +89,7 @@ The following table shows all the available properties (Parsed from Spring Confi
 |saml.sso.metadata-generator.bindings-slo	|null	|List of bindings to be included in the generated metadata for Single Logout. Ordering of bindings affects  inclusion in the generated metadata. Supported values are: "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")  and "redirect" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"). The following bindings are  included  by default: "post", "redirect".	|
 |saml.sso.metadata-generator.bindings-sso	|null	|List of bindings to be included in the generated metadata for Web Single Sign-On. Ordering of bindings  affects inclusion in the generated metadata. Supported values are: "artifact" (or  "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"), "post" (or "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")  and "paos" (or "urn:oasis:names:tc:SAML:2.0:bindings:PAOS"). The following bindings are included by default:  "artifact", "post".	|
 |saml.sso.metadata-generator.entity-base-url	|null	|This Service Provider's entity base URL. Provide if base URL cannot be inferred by using the hostname where  the Service Provider will be running. I.E. if running on the cloud behind a load balancer.	|
-|saml.sso.metadata-generator.entity-id	|localhost	|This Service Provider's SAML Entity ID. Used as entity id for generated requests from this Service Provider.	|
+|saml.sso.metadata-generator.entity-id	|null	|This Service Provider's SAML Entity ID. Used as entity id for generated requests from this Service Provider.	|
 |saml.sso.metadata-generator.id	|null	|Local ID. Used as part of Entity Descriptor.	|
 |saml.sso.metadata-generator.include-discovery-extension	|true	|When true discovery profile extension metadata pointing to the default SAMLEntryPoint will be generated and  stored in the generated metadata document.	|
 |saml.sso.metadata-generator.metadata-url	|/saml/metadata	|{@link MetadataDisplayFilter} processing URL. Defines which URL will display the Service Provider Metadata.	|
@@ -245,7 +245,7 @@ saml.sso.metadata-generator.bindings-sso=null
 #This Service Provider's entity base URL. Provide if base URL cannot be inferred by using the hostname where  the Service Provider will be running. I.E. if running on the cloud behind a load balancer.
 saml.sso.metadata-generator.entity-base-url=null
 #This Service Provider's SAML Entity ID. Used as entity id for generated requests from this Service Provider.
-saml.sso.metadata-generator.entity-id=localhost
+saml.sso.metadata-generator.entity-id=null
 #Local ID. Used as part of Entity Descriptor.
 saml.sso.metadata-generator.id=null
 #When true discovery profile extension metadata pointing to the default SAMLEntryPoint will be generated and  stored in the generated metadata document.
