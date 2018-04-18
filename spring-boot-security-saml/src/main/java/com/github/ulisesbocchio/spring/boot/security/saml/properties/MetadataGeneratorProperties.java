@@ -21,7 +21,7 @@ public class MetadataGeneratorProperties {
     /**
      * {@link MetadataDisplayFilter} processing URL. Defines which URL will display the Service Provider Metadata.
      */
-    private String metadataUrl = "/saml/metadata";
+    private String metadataUrl = MetadataDisplayFilter.FILTER_URL;
 
     /**
      * This Service Provider's SAML Entity ID. Used as entity id for generated requests from this Service Provider.
