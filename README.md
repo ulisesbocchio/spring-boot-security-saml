@@ -18,7 +18,7 @@ Spring Boot 1.5.0+
     <dependency>
         <groupId>com.github.ulisesbocchio</groupId>
         <artifactId>spring-boot-security-saml</artifactId>
-        <version>1.14</version>
+        <version>1.15</version>
     </dependency>
     
     ```
