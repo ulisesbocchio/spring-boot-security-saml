@@ -49,7 +49,7 @@ import static com.github.ulisesbocchio.spring.boot.security.saml.util.Functional
  *        }
  *
  *       {@literal @}Configuration
- *        public static class MvcConfig extends WebMvcConfigurerAdapter {
+ *        public static class MvcConfig implements WebMvcConfigurer {
  *
  *           {@literal @}Override
  *            public void addViewControllers(ViewControllerRegistry registry) {

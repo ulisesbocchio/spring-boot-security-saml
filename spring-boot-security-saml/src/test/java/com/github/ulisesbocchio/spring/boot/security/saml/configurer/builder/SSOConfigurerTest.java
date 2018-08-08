@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 
 import java.util.Collections;
 
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -109,7 +109,7 @@ public class SSOConfigurerTest {
         Assertions.assertThat(options.isAllowCreate()).isEqualTo(properties.getProfileOptions().getAllowCreate());
         Assertions.assertThat(options.getAllowedIDPs()).isEqualTo(properties.getProfileOptions().getAllowedIdps());
         Assertions.assertThat(options.getAssertionConsumerIndex()).isEqualTo(properties.getProfileOptions().getAssertionConsumerIndex());
-        Assertions.assertThat(options.getAuthnContextComparison()).isEqualTo(properties.getProfileOptions().getAuthnContextComparison());
+        Assertions.assertThat(options.getAuthnContextComparison()).isEqualTo(properties.getProfileOptions().getAuthnContextComparison().getType());
         Assertions.assertThat(options.getAuthnContexts()).isEqualTo(properties.getProfileOptions().getAuthnContexts());
         Assertions.assertThat(options.getBinding()).isEqualTo(properties.getProfileOptions().getBinding());
         Assertions.assertThat(options.getForceAuthN()).isEqualTo(properties.getProfileOptions().getForceAuthn());

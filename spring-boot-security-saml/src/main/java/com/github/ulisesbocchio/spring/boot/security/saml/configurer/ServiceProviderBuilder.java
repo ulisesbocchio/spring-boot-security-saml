@@ -24,10 +24,7 @@ import org.springframework.security.saml.processor.SAMLProcessorImpl;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 import org.springframework.security.saml.websso.*;
 
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -64,6 +61,7 @@ public class ServiceProviderBuilder extends
         }
     }
 
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     private <C extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder>> C getOrApply(
             C configurer) {
@@ -74,6 +72,7 @@ public class ServiceProviderBuilder extends
         return apply(configurer);
     }
 
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     private <C extends SecurityConfigurerAdapter<Void, ServiceProviderBuilder>> void reApply(C configurer) {
         C existing = (C) removeConfigurer(configurer.getClass());

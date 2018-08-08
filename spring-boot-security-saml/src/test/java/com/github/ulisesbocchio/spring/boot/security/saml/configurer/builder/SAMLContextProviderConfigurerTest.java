@@ -10,8 +10,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.saml.context.SAMLContextProvider;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**

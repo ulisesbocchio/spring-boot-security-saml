@@ -3,7 +3,7 @@ package com.github.ulisesbocchio.spring.boot.security.saml.properties;
 import lombok.Data;
 import org.opensaml.saml2.core.AuthnContextComparisonTypeEnumeration;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -13,6 +13,26 @@ import java.util.Set;
  */
 @Data
 public class WebSSOProfileOptionProperties {
+
+    /**
+     * Spring boot binding-friendly version of {@link AuthnContextComparisonTypeEnumeration}
+     */
+    public enum AuthnContextComparisonType {
+        MINIMUM(AuthnContextComparisonTypeEnumeration.MINIMUM),
+        EXACT(AuthnContextComparisonTypeEnumeration.EXACT),
+        BETTER(AuthnContextComparisonTypeEnumeration.BETTER),
+        MAXIMUM(AuthnContextComparisonTypeEnumeration.MAXIMUM);
+
+        private final AuthnContextComparisonTypeEnumeration typeEnumeration;
+
+        AuthnContextComparisonType(AuthnContextComparisonTypeEnumeration typeEnumeration) {
+            this.typeEnumeration = typeEnumeration;
+        }
+
+        public AuthnContextComparisonTypeEnumeration getType() {
+            return this.typeEnumeration;
+        }
+    }
 
     /**
      * Binding to be used for for sending SAML message to IDP.
@@ -80,10 +100,10 @@ public class WebSSOProfileOptionProperties {
     /**
      * Enable different {@link org.opensaml.saml2.core.AuthnContext} to be sent and validated based on {@code authnContextComparison}.
      */
-    private Collection<String> authnContexts;
+    private List<String> authnContexts;
 
     /**
      * Comparison to use for WebSSO requests. No change for null values.
      */
-    private AuthnContextComparisonTypeEnumeration authnContextComparison = AuthnContextComparisonTypeEnumeration.EXACT;
+    private AuthnContextComparisonType authnContextComparison = AuthnContextComparisonType.EXACT;
 }

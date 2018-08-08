@@ -7,14 +7,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.saml.metadata.ExtendedMetadata;
 
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -30,7 +30,7 @@ public class ExtendedMetadataConfigurerTest {
         SAMLSSOProperties properties = mock(SAMLSSOProperties.class);
         extendedMetadataProperties = mock(ExtendedMetadataProperties.class);
         when(properties.getExtendedMetadata()).thenReturn(extendedMetadataProperties);
-        when(extendedMetadataProperties.isLocal()).thenReturn(false);
+//        when(extendedMetadataProperties.isLocal()).thenReturn(false);
         when(extendedMetadataProperties.isIdpDiscoveryEnabled()).thenReturn(false);
         when(extendedMetadataProperties.isEcpEnabled()).thenReturn(false);
         when(extendedMetadataProperties.isSignMetadata()).thenReturn(false);
@@ -97,7 +97,7 @@ public class ExtendedMetadataConfigurerTest {
     public void testArguments() throws Exception {
         ExtendedMetadataConfigurer configurer = new ExtendedMetadataConfigurer();
         configurer
-                .local(true)
+//                .local(true)
                 .idpDiscoveryEnabled(true)
                 .ecpEnabled(true)
                 .signMetadata(true)
@@ -146,6 +146,7 @@ public class ExtendedMetadataConfigurerTest {
         assertThat(extendedMetadata.getTrustedKeys()).containsExactly("prop");
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testProperties() throws Exception {
         ExtendedMetadataConfigurer configurer = new ExtendedMetadataConfigurer();

@@ -1,14 +1,14 @@
 package com.github.ulisesbocchio.spring.boot.security.saml.configurer.builder;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.configurer.ServiceProviderBuilder;
-import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.ExtendedMetadataDelegateProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.IdentityProvidersProperties;
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.MetadataManagerProperties;
+import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
+import org.mockito.hamcrest.MockitoHamcrest;
 import org.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataFilter;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
@@ -26,11 +26,9 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -166,7 +164,7 @@ public class MetadataManagerConfigurerTest {
         verify(provider).setParserPool(eq(parserPool));
         verify(metadataManager).setProviders((List<MetadataProvider>) providersCaptor.capture());
         verify(configurer, never()).createDefaultMetadataProvider(eq(idpConfiguration.getMetadataLocation()));
-        verify(configurer).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class), any());
+        verify(configurer, never()).createDefaultExtendedMetadataDelegate(any(ResourceBackedMetadataProvider.class), any());
         verify(metadataManagerProperties).getDefaultIdp();
         verify(metadataManagerProperties).getHostedSpName();
         verify(metadataManagerProperties).getRefreshCheckInterval();
@@ -284,7 +282,7 @@ public class MetadataManagerConfigurerTest {
         verify(delegate).setForceMetadataRevocationCheck(eq(true));
         verify(delegate).setMetadataRequireSignature(eq(true));
         verify(delegate).setMetadataTrustCheck(eq(true));
-        verify(delegate).setMetadataTrustedKeys((Set<String>) argThat(contains("one", "two")));
+        verify(delegate).setMetadataTrustedKeys((Set<String>) MockitoHamcrest.argThat(contains("one", "two")));
         verify(delegate).setRequireValidMetadata(eq(true));
         verify(delegate).setMetadataFilter(eq(metadataFilter));
     }

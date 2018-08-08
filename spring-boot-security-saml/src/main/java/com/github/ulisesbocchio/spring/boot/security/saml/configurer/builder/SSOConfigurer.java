@@ -152,7 +152,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
         options.setAllowCreate(properties.getAllowCreate());
         options.setAllowedIDPs(properties.getAllowedIdps());
         options.setAssertionConsumerIndex(properties.getAssertionConsumerIndex());
-        options.setAuthnContextComparison(properties.getAuthnContextComparison());
+        options.setAuthnContextComparison(properties.getAuthnContextComparison().getType());
         options.setAuthnContexts(properties.getAuthnContexts());
         options.setBinding(properties.getBinding());
         options.setForceAuthN(properties.getForceAuthn());

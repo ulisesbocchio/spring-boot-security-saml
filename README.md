@@ -303,7 +303,7 @@ For instance, the following configuration is used in the Demo apps to specify th
 
 ```java
 @Configuration
-public static class MvcConfig extends WebMvcConfigurerAdapter {
+public static class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {

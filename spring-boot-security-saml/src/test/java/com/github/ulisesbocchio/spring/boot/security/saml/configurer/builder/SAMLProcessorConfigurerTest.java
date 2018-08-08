@@ -12,8 +12,8 @@ import org.springframework.security.saml.processor.*;
 
 import java.util.List;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -51,7 +51,7 @@ public class SAMLProcessorConfigurerTest {
         when(builder.getSharedObject(SAMLProcessor.class)).thenReturn(profile);
         configurer.init(builder);
         configurer.configure(builder);
-        verify(configurer, never()).createDefaultSamlProcessor(anyListOf(SAMLBinding.class));
+        verify(configurer, never()).createDefaultSamlProcessor(anyList());
         verify(builder, never()).setSharedObject(any(), any());
         verifyZeroInteractions(profile, samlProcessorConfig);
     }
@@ -62,7 +62,7 @@ public class SAMLProcessorConfigurerTest {
         SAMLProcessorConfigurer configurer = spy(new SAMLProcessorConfigurer(profile));
         configurer.init(builder);
         configurer.configure(builder);
-        verify(configurer, never()).createDefaultSamlProcessor(anyListOf(SAMLBinding.class));
+        verify(configurer, never()).createDefaultSamlProcessor(anyList());
         verify(builder).setSharedObject(SAMLProcessor.class, profile);
         verifyZeroInteractions(profile, samlProcessorConfig);
     }
@@ -71,7 +71,7 @@ public class SAMLProcessorConfigurerTest {
     public void configure_defaults() throws Exception {
         SAMLProcessorConfigurer configurer = spy(new SAMLProcessorConfigurer());
         SAMLProcessorImpl profile = mock(SAMLProcessorImpl.class);
-        when(configurer.createDefaultSamlProcessor(anyListOf(SAMLBinding.class))).thenReturn(profile);
+        when(configurer.createDefaultSamlProcessor(anyList())).thenReturn(profile);
         HTTPArtifactBinding artifactBinding = mock(HTTPArtifactBinding.class);
         doReturn(artifactBinding).when(configurer).createDefaultArtifactBinding(builder);
         HTTPPAOS11Binding paosBinding = mock(HTTPPAOS11Binding.class);
@@ -100,7 +100,7 @@ public class SAMLProcessorConfigurerTest {
     public void configure_custom_bindings() throws Exception {
         SAMLProcessorConfigurer configurer = spy(new SAMLProcessorConfigurer());
         SAMLProcessorImpl profile = mock(SAMLProcessorImpl.class);
-        when(configurer.createDefaultSamlProcessor(anyListOf(SAMLBinding.class))).thenReturn(profile);
+        when(configurer.createDefaultSamlProcessor(anyList())).thenReturn(profile);
         HTTPArtifactBinding artifactBinding = mock(HTTPArtifactBinding.class);
         HTTPPAOS11Binding paosBinding = mock(HTTPPAOS11Binding.class);
         HTTPPostBinding postBinding = mock(HTTPPostBinding.class);
@@ -130,7 +130,7 @@ public class SAMLProcessorConfigurerTest {
     public void configure_disabled_bindings() throws Exception {
         SAMLProcessorConfigurer configurer = spy(new SAMLProcessorConfigurer());
         SAMLProcessorImpl profile = mock(SAMLProcessorImpl.class);
-        when(configurer.createDefaultSamlProcessor(anyListOf(SAMLBinding.class))).thenReturn(profile);
+        when(configurer.createDefaultSamlProcessor(anyList())).thenReturn(profile);
         configurer
                 .disableRedirectBinding()
                 .disableArtifactBinding()

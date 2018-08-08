@@ -5,12 +5,12 @@ import com.github.ulisesbocchio.spring.boot.security.saml.properties.SAMLSSOProp
 import com.github.ulisesbocchio.spring.boot.security.saml.properties.TLSProperties;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.hamcrest.MockitoHamcrest;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 
 import java.util.Set;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.Mockito.*;
 
 /**
@@ -78,7 +78,7 @@ public class TLSConfigurerTest {
         verify(tlsProtocolConfigurer).setProtocolName(eq("protocol"));
         verify(tlsProtocolConfigurer).setProtocolPort(eq(9999));
         verify(tlsProtocolConfigurer).setSslHostnameVerification(eq("strict"));
-        verify(tlsProtocolConfigurer).setTrustedKeys((Set<String>) argThat(contains("one", "two")));
+        verify(tlsProtocolConfigurer).setTrustedKeys((Set<String>) MockitoHamcrest.argThat(contains("one", "two")));
     }
 
 }
