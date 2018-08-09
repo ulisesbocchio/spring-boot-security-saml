@@ -7,8 +7,9 @@
 This project targets a smooth integration between [spring-security-saml](http://projects.spring.io/spring-security-saml/) and Spring Boot by exposing a set of configurer adapters while dealing with the nitty-gritty and boiler plate of `spring-security-saml` configuration internally.
 
 # Works with
-Spring Boot 1.4.0+
-Spring Boot 1.5.0+
+* Spring Boot 1.4.0+
+* Spring Boot 1.5.0+
+* Spring Boot 2.0.0+
 
 ## Quickstart
 
@@ -18,7 +19,7 @@ Spring Boot 1.5.0+
     <dependency>
         <groupId>com.github.ulisesbocchio</groupId>
         <artifactId>spring-boot-security-saml</artifactId>
-        <version>1.15</version>
+        <version>1.16</version>
     </dependency>
     
     ```
