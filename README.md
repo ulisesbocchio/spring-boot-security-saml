@@ -116,6 +116,12 @@ public static class MyServiceProviderConfig extends WebSecurityConfigurerAdapter
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+    
+    //Needed in some cases to prevent infinite loop 
+    @Override
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+        auth.parentAuthenticationManager(null);
+    }
             
     @Override
     public void configure(HttpSecurity http) throws Exception {
