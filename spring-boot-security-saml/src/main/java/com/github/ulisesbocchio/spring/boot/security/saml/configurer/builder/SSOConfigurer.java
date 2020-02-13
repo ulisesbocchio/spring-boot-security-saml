@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 import java.util.Optional;
 
@@ -78,6 +79,7 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
     private String ssoHoKProcessingURL;
     private SAMLEntryPoint samlEntryPointBean;
     private ApplicationEventPublisher eventPublisher;
+    private SessionAuthenticationStrategy sessionAuthenticationStrategy;
 
     @Override
     public void init(ServiceProviderBuilder builder) throws Exception {
@@ -114,6 +116,9 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
         ssoProcessingURL = Optional.ofNullable(ssoProcessingURL).orElseGet(config::getSsoProcessingUrl);
         endpoints.setSsoProcessingURL(ssoProcessingURL);
         ssoFilter.setFilterProcessesUrl(ssoProcessingURL);
+        if (sessionAuthenticationStrategy != null) {
+            ssoFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
+        }
 
         SAMLWebSSOHoKProcessingFilter ssoHoKFilter = null;
         if (Optional.ofNullable(enableSsoHoK).orElseGet(config::isEnableSsoHok)) {
@@ -124,6 +129,9 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
             ssoHoKProcessingURL = Optional.ofNullable(ssoHoKProcessingURL).orElseGet(config::getSsoHokProcessingUrl);
             endpoints.setSsoHoKProcessingURL(ssoHoKProcessingURL);
             ssoHoKFilter.setFilterProcessesUrl(ssoHoKProcessingURL);
+            if (sessionAuthenticationStrategy != null) {
+                ssoHoKFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
+            }
         }
 
         SAMLDiscovery discoveryFilter = createDefaultSamlDiscoveryFilter();
@@ -411,4 +419,16 @@ public class SSOConfigurer extends SecurityConfigurerAdapter<Void, ServiceProvid
         this.profileOptions = profileOptions;
         return this;
     }
+
+    /**
+     * Set the {@link SessionAuthenticationStrategy} for the {@link SAMLProcessingFilter}
+     *
+     * @param sessionAuthenticationStrategy to set
+     * @return this configurer for further customization
+     */
+    public SSOConfigurer sessionAuthenticationStrategy(SessionAuthenticationStrategy sessionAuthenticationStrategy) {
+        this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
+        return this;
+    }
+
 }

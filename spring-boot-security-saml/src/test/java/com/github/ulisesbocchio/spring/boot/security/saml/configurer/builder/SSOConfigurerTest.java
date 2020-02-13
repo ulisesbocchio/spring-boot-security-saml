@@ -16,6 +16,7 @@ import org.springframework.security.saml.SAMLWebSSOHoKProcessingFilter;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 import java.util.Collections;
 
@@ -140,6 +141,7 @@ public class SSOConfigurerTest {
         when(configurer.createDefaultSamlEntryPoint()).thenReturn(entryPoint);
         SavedRequestAwareAuthenticationSuccessHandler successHandler = mock(SavedRequestAwareAuthenticationSuccessHandler.class);
         SimpleUrlAuthenticationFailureHandler failureHandler = mock(SimpleUrlAuthenticationFailureHandler.class);
+        SessionAuthenticationStrategy sessionAuthenticationStrategy = mock(SessionAuthenticationStrategy.class);
         WebSSOProfileOptions profileOptions = new WebSSOProfileOptions();
         profileOptions.setAllowCreate(true);
         profileOptions.setAllowedIDPs(Collections.singleton("allowedIdps"));
@@ -167,7 +169,8 @@ public class SSOConfigurerTest {
                 .profileOptions(profileOptions)
                 .ssoHoKProcessingURL("/hok")
                 .ssoLoginURL("/login")
-                .ssoProcessingURL("/sso");
+                .ssoProcessingURL("/sso")
+                .sessionAuthenticationStrategy(sessionAuthenticationStrategy);
         configurer.configure(builder);
 
         verify(properties, never()).getDefaultFailureUrl();
@@ -186,11 +189,13 @@ public class SSOConfigurerTest {
         verify(ssoFilter).setAuthenticationSuccessHandler(eq(successHandler));
         verify(ssoFilter).setAuthenticationFailureHandler(eq(failureHandler));
         verify(ssoFilter).setFilterProcessesUrl(eq("/sso"));
+        verify(ssoFilter).setSessionAuthenticationStrategy(eq(sessionAuthenticationStrategy));
 
         verify(ssoHoKFilter).setAuthenticationManager(eq(authenticationManager));
         verify(ssoHoKFilter).setAuthenticationSuccessHandler(eq(successHandler));
         verify(ssoHoKFilter).setAuthenticationFailureHandler(eq(failureHandler));
         verify(ssoHoKFilter).setFilterProcessesUrl(eq("/hok"));
+        verify(ssoHoKFilter).setSessionAuthenticationStrategy(eq(sessionAuthenticationStrategy));
 
         verify(serviceProviderEndpoints).setSsoProcessingURL("/sso");
         verify(serviceProviderEndpoints).setSsoHoKProcessingURL("/hok");
